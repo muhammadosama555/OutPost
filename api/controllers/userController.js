@@ -8,7 +8,7 @@ exports.registerUser = async (req, res) => {
     let user = await User.findOne({ email });
 
     if (user) {
-      return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
+      return next(new errorResponse('user already exists',400))
     }
 
     // create new user
@@ -30,8 +30,7 @@ exports.registerUser = async (req, res) => {
 
     });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    next(new errorResponse('user not registered',400))
   }
 };
 
@@ -44,16 +43,16 @@ exports.loginUser = async (req,res,next)=>{
 
     //Validate email and password
     if(!email || !password){
-        return next(new ErrorResponse('Please provide correct email and password',404))
+        return next(new errorResponse('Please provide correct email and password',404))
     }
     const user=await User.findOne({email}).select('+password')
     if(!user){
-        return next(new ErrorResponse('User not found',404))
+        return next(new errorResponse('User not found',404))
     }
 
     const isMatch=await user.matchPassword(password)
     if(!isMatch){
-        return next(new ErrorResponse('Invalid password',401))
+        return next(new errorResponse('Invalid password',401))
     }
 
 
@@ -170,6 +169,7 @@ exports.createProfile = async (req, res) => {
 // Import necessary modules and models
 const jwt = require('jsonwebtoken');
 const Post = require('../models/post');
+const errorResponse = require('../../utils/errorResponse');
 ;
 
 // Create a new post
@@ -179,7 +179,7 @@ exports.createPost = async (req, res) => {
     const authHeader = req.headers.authorization;
     // If the authorization header doesn't exist, return an error
     if (!authHeader) {
-      return res.status(401).json({ error: 'Authorization header missing' });
+      return next(new errorResponse('Authorization header missing',401))
     }
     // Extract the token from the authorization header
     const token = authHeader.split(' ')[1];
