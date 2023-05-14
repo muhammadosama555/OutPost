@@ -1,18 +1,14 @@
 const User = require('../models/User');
+const ErrorResponse= require("../utils/errorResponse")
+const asyncHandler=require('../middlewares/asyncHandler')
 
-exports.registerUser = async (req, res) => {
+exports.registerUser = asyncHandler( async (req, res,next) => {
   const { name, email, password } = req.body;
 
-  try {
-    // check if user already exists
-    let user = await User.findOne({ email });
 
-    if (user) {
-      return next(new errorResponse('user already exists',400))
-    }
 
     // create new user
-    user = new User({
+    const user = new User({
       name,
       email,
       password,
@@ -29,10 +25,8 @@ exports.registerUser = async (req, res) => {
         token:token
 
     });
-  } catch (err) {
-    next(new errorResponse('user not registered',400))
-  }
-};
+  
+});
 
 //desc   login  user
 //route   Post /api/v1/auth/login
@@ -136,40 +130,62 @@ exports.updateUser = async (req, res) => {
 
 //Create user profile
 
+exports.createProfile =  asyncHandler( async(req, res,next) => {
+  const { profilePicture, bio, contact } = req.body;
+  const userId = req.params.id;
 
-exports.createProfile = async (req, res) => {
-  const { profilePicture, bio, contactDetails } = req.body;
-
-  try {
-    // find user by ID
-    const user = await User.findById(req.user.id);
+ 
+    const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ msg: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    // update user profile data
-    user.profilePicture = profilePicture;
-    user.bio = bio;
-    user.contactDetails = contactDetails;
+    if (profilePicture) {
+      user.profile.picture = profilePicture;
+    }
 
-    // save updated user to database
-    await user.save();
+    if (bio) {
+      user.profile.bio = bio;
+    }
 
-    // return updated user data
-    res.json(user);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-};
+    if (contact) {
+      user.profile.contact = contact;
+    }
+
+    const updatedUser = await user.save();
+
+})
+// exports.createProfile = asyncHandler( async (req, res) => {
+//   const { profilePicture, bio, contactDetails } = req.body;
+
+ 
+//     // find user by ID
+//     const user = await User.findById(req.user.id);
+
+//     if (!user) {
+//       return res.status(404).json({ msg: 'User not found' });
+//     }
+
+//     // update user profile data
+//     user.profilePicture = profilePicture;
+//     user.bio = bio;
+//     user.contactDetails = contactDetails;
+
+//     // save updated user to database
+//     await user.save();
+
+//     // return updated user data
+//     res.json(user);
+//   } )
+
 
 
 
 // Import necessary modules and models
 const jwt = require('jsonwebtoken');
 const Post = require('../models/post');
-const errorResponse = require('../../utils/errorResponse');
+const errorResponse = require('../utils/errorResponse');
 ;
 
 // Create a new post
