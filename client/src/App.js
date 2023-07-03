@@ -5,10 +5,11 @@ import { ReactQueryDevtools } from 'react-query/devtools'
 import {BrowserRouter,Routes,Route} from "react-router-dom";
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import { useSelector } from 'react-redux';
+import Login from './pages/Login';
+
 
 const queryClient = new QueryClient()
 
