@@ -21,6 +21,7 @@ const auth=require('./routes/auth.js')
 
 const app=express()
 app.use(express.json())
+app.use(bodyparser.json());
 
 //use routes
 app.use('/api/users',users)

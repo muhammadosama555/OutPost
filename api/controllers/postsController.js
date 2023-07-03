@@ -9,31 +9,33 @@ const ErrorResponse= require("../utils/errorResponse")
 const jwt = require('jsonwebtoken');
 const Post = require('../models/post');
 const User = require('../models/User');
+const asyncHandler = require("../middlewares/asyncHandler");
 
 
-
-// Create a new post
 exports.createPost = async (req, res) => {
   try {
+    const { title, content, imageUrl } = req.body;
+
     // Get the authorization header from the request
     const authHeader = req.headers.authorization;
     // If the authorization header doesn't exist, return an error
     if (!authHeader) {
-      return next(new errorResponse('Authorization header missing',401))
+      return res.status(401).json({ error: 'Authorization header missing' });
     }
     // Extract the token from the authorization header
     const token = authHeader.split(' ')[1];
     // Verify the token to get the user ID
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decodedToken.userId;
-
+    
+    const userId = decodedToken.id;
+    
 
     // Create a new post object with the user ID and post data
     const post = new Post({
-      title,
-      content,
-      imageUrl,
-      author: userId
+      title: title,
+      content: content,
+      imageUrl: imageUrl,
+      owner: userId // Set the owner field to the userId
     });
     // Save the new post to the database
     await post.save();
@@ -51,3 +53,51 @@ exports.createPost = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+
+
+//Update Post
+exports.updatePost=asyncHandler(async(req,res)=>{
+    const post=await Post.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, // Return the updated user
+      runValidators: true, // Run validation on the update data
+    })
+
+    res.status(200).json({
+      success:true,
+      data:post
+    })
+})
+
+
+//Get All Posts
+exports.getAllPosts=asyncHandler(async(req,res)=>{
+  const posts=await Post.find()
+
+  res.status(200).json({
+    success:true,
+    data:posts
+  })
+})
+
+//Get Single Post
+exports.getPost=asyncHandler(async(req,res)=>{
+       const post=await Post.findById(req.params.id)
+
+       res.status(200).json({
+        success:true,
+        data:post
+       })
+})
+
+
+//delete Post
+exports.deletePost=asyncHandler(async(req,res)=>{
+
+      await Post.findByIdAndDelete(req.params.id)  
+
+      res.status(200).json({
+        success:true,
+        message: 'post deleted successfully'
+      })
+})
