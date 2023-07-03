@@ -9,7 +9,7 @@ router.get('/',getAllUser)
 router.delete('/:id',deleteUser)
 router.put('/:id',updateUser)
 router.put('/:id/profile',createProfile)
-router.post('/post',createPost)
+
 
 
 module.exports=router
