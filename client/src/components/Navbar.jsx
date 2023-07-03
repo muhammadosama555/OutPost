@@ -1,6 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useLogout } from '../apiCalls/userApiCalls';
+
 export default function Navbar() {
+
+  const { mutate: logoutMutate, isLoading: isLogoutLoading } = useLogout();
+
+  const handleLogout = () => {
+    logoutMutate();
+  };
+
   return (
     <>
       <nav className='border-b fixed w-full z-20 bg-white border-gray-300'>
@@ -9,6 +18,9 @@ export default function Navbar() {
             <div className="logo">
               <h3>OutPost</h3>
             </div>
+            <Link to="/" className='cursor-pointer'>
+             {isLogoutLoading ? "...is Logging out" : "Logout"}
+              </Link>
             <div className="searchbar">
               <form>
   <label htmlfor="default-search" className="mb-2 text-sm font-medium sr-only dark:text-white">Search</label>

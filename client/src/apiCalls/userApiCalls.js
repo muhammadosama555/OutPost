@@ -23,3 +23,36 @@ export const useLogin = () => {
   });
 };
 
+// User to logout
+
+export const logout = async () => {
+  return axios.get(`${API_BASE_URL}/auth/logout`);
+}
+
+export const useLogout = () => {
+  const dispatch = useDispatch();
+const navigate = useNavigate();
+return useMutation(logout,{
+  onSuccess: (data) => {
+    dispatch(logoutSuccess())
+    persistor.purge();
+    navigate("/");
+    toast.success('User is Logout Sucessfully!');
+  },
+})
+}
+
+// get user details
+
+const getUserDetails = async (userId, token) => {
+  return axios.get(`${API_BASE_URL}/users/${userId}`, {
+    headers: {
+      authorization: "Bearer " + token,
+    },
+  });
+};
+
+export const useGetUserDetails = (userId, token) => {
+  return useQuery(["user", userId, token], () => getUserDetails(userId, token));
+};
+
