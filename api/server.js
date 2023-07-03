@@ -1,8 +1,9 @@
 const express= require("express")
 const dotenv= require("dotenv")
+const errorHandler=require('./middlewares/error')
 const connectDb= require("./config/db.js")
 const bodyparser=require("body-parser")
-const errorHandler=require('../middlewares/error.js')
+
 
 
 //LOAD env variables
@@ -14,6 +15,7 @@ connectDb()
 
 //mount routes
 const users=require('./routes/user.js')
+const posts=require('./routes/posts.js')
 
 
 const app=express()
@@ -21,8 +23,7 @@ app.use(express.json())
 
 //use routes
 app.use('/api/users',users)
-
-app.use(errorHandler)
+app.use('/api/posts',posts)
 
 //errorHandler
 app.use(errorHandler)

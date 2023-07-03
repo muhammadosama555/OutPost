@@ -1,18 +1,14 @@
 const User = require('../models/User');
+const ErrorResponse= require("../utils/errorResponse")
+const asyncHandler=require('../middlewares/asyncHandler')
 
-exports.registerUser = async (req, res) => {
+exports.registerUser = asyncHandler( async (req, res,next) => {
   const { name, email, password } = req.body;
 
-  try {
-    // check if user already exists
-    let user = await User.findOne({ email });
 
-    if (user) {
-      return next(new errorResponse('user already exists',400))
-    }
 
     // create new user
-    user = new User({
+    const user = new User({
       name,
       email,
       password,
@@ -29,10 +25,8 @@ exports.registerUser = async (req, res) => {
         token:token
 
     });
-  } catch (err) {
-    next(new errorResponse('user not registered',400))
-  }
-};
+  
+});
 
 //desc   login  user
 //route   Post /api/v1/auth/login
@@ -136,79 +130,38 @@ exports.updateUser = async (req, res) => {
 
 //Create user profile
 
+exports.createProfile =  asyncHandler( async(req, res,next) => {
+  const { profilePicture, bio, contact } = req.body;
+  const userId = req.params.id;
 
-exports.createProfile = async (req, res) => {
-  const { profilePicture, bio, contactDetails } = req.body;
-
-  try {
-    // find user by ID
-    const user = await User.findById(req.user.id);
+ 
+    const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ msg: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    // update user profile data
-    user.profilePicture = profilePicture;
-    user.bio = bio;
-    user.contactDetails = contactDetails;
-
-    // save updated user to database
-    await user.save();
-
-    // return updated user data
-    res.json(user);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-};
-
-
-
-// Import necessary modules and models
-const jwt = require('jsonwebtoken');
-const Post = require('../models/post');
-const errorResponse = require('../../utils/errorResponse');
-;
-
-// Create a new post
-exports.createPost = async (req, res) => {
-  try {
-    // Get the authorization header from the request
-    const authHeader = req.headers.authorization;
-    // If the authorization header doesn't exist, return an error
-    if (!authHeader) {
-      return next(new errorResponse('Authorization header missing',401))
+    if (profilePicture) {
+      user.profile.picture = profilePicture;
     }
-    // Extract the token from the authorization header
-    const token = authHeader.split(' ')[1];
-    // Verify the token to get the user ID
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decodedToken.userId;
+
+    if (bio) {
+      user.profile.bio = bio;
+    }
+
+    if (contact) {
+      user.profile.contact = contact;
+    }
+
+    const updatedUser = await user.save();
+    res.status(200).json({
+      success:true,
+      user:user
+    })
+
+})
 
 
-    // Create a new post object with the user ID and post data
-    const post = new Post({
-      title,
-      content,
-      imageUrl,
-      author: userId
-    });
-    // Save the new post to the database
-    await post.save();
 
-    // Add the new post to the user's posts array
-    const user = await User.findById(userId);
-    user.posts.push(post._id);
-    await user.save();
 
-    // Return the new post as the response
-    res.status(201).json(post);
-  } catch (error) {
-    // Handle errors
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
 
