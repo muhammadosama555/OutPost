@@ -26,13 +26,13 @@ export default function login() {
                   <div className='flex flex-col space-y-1'>
                     <label htmlFor="" className='font-medium text-gray-500'>Email</label>
                     <div className='w-full border-b'>
-                      <input type="email" className='outline-none w-[250px] pb-2 text-sm' placeholder='Enter email address' />
+                      <input type="email" className='outline-none w-full px-1 pb-2 text-sm' placeholder='Enter email address' />
                     </div>
                   </div>
                   <div className='flex flex-col space-y-1'>
                     <label htmlFor="" className='font-medium text-gray-500'>Password</label>
                     <div className='w-full border-b'>
-                      <input type="password" className='outline-none w-[250px] pb-2 text-sm' placeholder='Password' />
+                      <input type="password" className='outline-none w-full px-1 pb-2 text-sm' placeholder='Password' />
                     </div>
                   </div>
                 </div>
