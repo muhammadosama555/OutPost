@@ -13,9 +13,4 @@ router.get('/:id',getPost)
 router.delete('/:id',deletePost)
 
 
-
-
-
-
-
 module.exports=router

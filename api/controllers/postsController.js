@@ -1,10 +1,4 @@
 const ErrorResponse= require("../utils/errorResponse")
-
-
-
-
-
-
 // Import necessary modules and models
 const jwt = require('jsonwebtoken');
 const Post = require('../models/post');
