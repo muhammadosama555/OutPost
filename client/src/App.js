@@ -7,21 +7,34 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import { useSelector } from 'react-redux';
 
 const queryClient = new QueryClient()
 
 function App() {
+
+  const { currentUser } = useSelector((state) => state.userSlice);
   
   return (
     <QueryClientProvider client={queryClient}>
     <BrowserRouter>
+    {currentUser ? (
+          <>
     <Navbar />
     <Routes>
     <Route path='/' element={<Home/>}/>
-    <Route path='/login' element={<Login/>}/>
     <Route path='/profile' element={<Profile/>}/>
     </Routes>
     <Footer />
+    </>) :
+    (
+      <>
+      <Routes>
+    <Route path='/' element={<Login/>}/>
+    </Routes>
+      </>
+    )
+    }
     </BrowserRouter>
     <ReactQueryDevtools intialIsOpen={false} position="bottom-right" />
     </QueryClientProvider>

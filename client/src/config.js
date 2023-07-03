@@ -1,3 +1,3 @@
-let  API_BASE_URL = 'http://142.93.244.189/api'
+let  API_BASE_URL = 'http://localhost:5000/api'
 
 export { API_BASE_URL };

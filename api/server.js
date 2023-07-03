@@ -3,6 +3,7 @@ const dotenv= require("dotenv")
 const errorHandler=require('./middlewares/error')
 const connectDb= require("./config/db.js")
 const bodyparser=require("body-parser")
+const cors = require("cors");
 
 
 
@@ -13,16 +14,20 @@ dotenv.config({path: './config/config.env'})
 //db connected
 connectDb()
 
-//mount routes
-const users=require('./routes/user.js')
-const posts=require('./routes/posts.js')
-const auth=require('./routes/auth.js')
+
 
 
 const app=express()
 app.use(express.json())
+//cors
+app.use(cors());
 
-//use routes
+//Routes the files
+const users=require('./routes/user.js')
+const posts=require('./routes/posts.js')
+const auth=require('./routes/auth.js')
+
+//moun the routes
 app.use('/api/users',users)
 app.use('/api/posts',posts)
 app.use('/api/auth',auth)
