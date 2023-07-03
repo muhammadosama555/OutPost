@@ -3,8 +3,7 @@ const { registerUser, getAllUser, deleteUser, updateUser, createProfile, loginUs
 const router=express.Router()
 
 
-router.post('/register',registerUser)
-router.post('/login',loginUser)
+
 router.get('/',getAllUser)
 router.delete('/:id',deleteUser)
 router.put('/:id',updateUser)

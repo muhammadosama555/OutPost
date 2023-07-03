@@ -16,6 +16,7 @@ connectDb()
 //mount routes
 const users=require('./routes/user.js')
 const posts=require('./routes/posts.js')
+const auth=require('./routes/auth.js')
 
 
 const app=express()
@@ -24,6 +25,7 @@ app.use(express.json())
 //use routes
 app.use('/api/users',users)
 app.use('/api/posts',posts)
+app.use('/api/auth',auth)
 
 //errorHandler
 app.use(errorHandler)
