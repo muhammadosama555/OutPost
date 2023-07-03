@@ -24,7 +24,15 @@ exports.getAllUser = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+//Get Single Comment
+exports.getUser=asyncHandler(async(req,res)=>{
+  const user= await User.findById(req.params.id)
 
+  res.status(200).json({
+      success:true,
+      data:user
+  })
+})
 //delete user 
 exports.deleteUser = async (req, res) => {
 

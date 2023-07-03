@@ -26,11 +26,16 @@ app.use(cors());
 const users=require('./routes/user.js')
 const posts=require('./routes/posts.js')
 const auth=require('./routes/auth.js')
+const comment=require('./routes/comment.js')
 
-//moun the routes
+
+
+
+//use routes
 app.use('/api/users',users)
 app.use('/api/posts',posts)
 app.use('/api/auth',auth)
+app.use('/api/comment',comment)
 
 //errorHandler
 app.use(errorHandler)
