@@ -1,13 +1,13 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { useLogout } from '../apiCalls/userApiCalls';
+import { Link } from 'react-router-dom';
 
 export default function Navbar() {
 
   const { mutate: logoutMutate, isLoading: isLogoutLoading } = useLogout();
 
   const handleLogout = () => {
-    logoutMutate();
+    logoutMutate()
   };
 
   return (
@@ -16,11 +16,11 @@ export default function Navbar() {
         <div className="desktop flex justify-between py-2 px-10">
           <div className='flex justify-self-start items-center gap-3'>
             <div className="logo">
-              <h3>OutPost</h3>
+              <h3 >OutPost</h3>
             </div>
-            <Link to="/" className='cursor-pointer'>
+            <button onClick={handleLogout}>
              {isLogoutLoading ? "...is Logging out" : "Logout"}
-              </Link>
+              </button> 
             <div className="searchbar">
               <form>
   <label htmlfor="default-search" className="mb-2 text-sm font-medium sr-only dark:text-white">Search</label>
