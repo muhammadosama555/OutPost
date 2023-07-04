@@ -1,26 +1,11 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { useGetPosts } from '../apiCalls/postApiCalls'
 import Loader from './Loader'
 
-export default function Posts() {
-
-
-     const { currentUser } = useSelector(state => state.userSlice) || null
-     console.log(currentUser)
-     const token = currentUser.token
-
-
-  const { isLoading: isPostsLoading, data: posts } = useGetPosts(token)
-  console.log(posts?.data)
+export default function Posts({post}) {
 
      return (
-          <>
-          {isPostsLoading ? <Loader/> : 
-          (
-               <>
-               {posts.data.data.map((post)=>(
-                    <div className='mt-10' key={post._id}>
+
+                    <div className='mt-10'>
                     <div className="post border-b pb-6 border-gray-300">
                          <div className="head flex items-center justify-between">
                               <div className='flex items-center'>
@@ -63,7 +48,7 @@ export default function Posts() {
                                    <h2 className='text-sm font-medium'>{post.likes.length} likes</h2>
                               </div>
                               <div className='pt-3'>
-                                   <h2 className='text-sm'><span className='text-sm font-medium'>UserName</span>{post.title}</h2>
+                                   <h2 className='text-sm'><span className='text-sm font-medium'>UserName </span>{post.title}</h2>
                               </div>
                               <div className='pt-5'>
                                    <span className='text-sm text-gray-500'>more</span>
@@ -79,13 +64,7 @@ export default function Posts() {
                          </div>
                     </div>
                </div>
-               ))}
-               </>
-              
-          )
-          }
-              
-          </>
+        
      )
 }
 

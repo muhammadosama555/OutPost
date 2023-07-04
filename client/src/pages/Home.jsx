@@ -4,6 +4,7 @@ import CreatePost from '../components/CreatePost'
 import { useSelector } from 'react-redux'
 import { useGetUserDetails } from '../apiCalls/userApiCalls'
 import Loader from '../components/Loader'
+import { useGetPosts } from '../apiCalls/postApiCalls'
 
 export default function Home() {
 
@@ -14,6 +15,7 @@ const token = currentUser.token
 
 
 const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
+const { isLoading: isPostsLoading, data: posts } = useGetPosts(token)
 console.log(userDetails?.data)
 
 const fallbackImage = '/images/avatar.jpg';
@@ -193,8 +195,15 @@ const fallbackImage = '/images/avatar.jpg';
             </div>
           </div>
 
-          <Posts/>
-          
+          {isPostsLoading ? <Loader/> : 
+            (
+              <>
+              {posts.data.data.map((post)=>(
+                <Posts key={post._id} post={post} />
+               ))}
+               </> 
+            )
+               }
 
         </div>
 

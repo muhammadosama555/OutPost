@@ -67,7 +67,7 @@ exports.updatePost=asyncHandler(async(req,res)=>{
 //Get All Posts
 exports.getAllPosts=asyncHandler(async(req,res)=>{
   const posts=await Post.find()
-
+ 
   res.status(200).json({
     success:true,
     data:posts
