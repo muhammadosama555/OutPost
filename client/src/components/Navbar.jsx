@@ -23,15 +23,14 @@ export default function Navbar() {
               </button> 
             <div className="searchbar">
               <form>
-  <label htmlfor="default-search" className="mb-2 text-sm font-medium sr-only dark:text-white">Search</label>
-  <div className="relative">
-    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-      <svg aria-label="Search" className="w-5 h-5 text-gray-600" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height={24} role="img" viewBox="0 0 24 24" width={24}><path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z" fill="none" stroke="currentColor" strokelinecap="round" strokelinejoin="round" strokewidth={2} /><line fill="none" stroke="currentColor" strokelinecap="round" strokelinejoin="round" strokewidth={2} x1="16.511" x2={22} y1="16.511" y2={22} /></svg>
-    </div>
-    <input type="search" id="default-search" className="block w-full p-3 pl-10 text-sm rounded-full text-gray-900 outline-none bg-gray-50" placeholder="Search for Outpost..." required />
-  </div>
-</form>
-
+                <label htmlfor="default-search" className="mb-2 text-sm font-medium sr-only dark:text-white">Search</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg aria-label="Search" className="w-5 h-5 text-gray-600" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height={24} role="img" viewBox="0 0 24 24" width={24}><path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z" fill="none" stroke="currentColor" strokelinecap="round" strokelinejoin="round" strokewidth={2} /><line fill="none" stroke="currentColor" strokelinecap="round" strokelinejoin="round" strokewidth={2} x1="16.511" x2={22} y1="16.511" y2={22} /></svg>
+                  </div>
+                  <input type="search" id="default-search" className="block w-full p-3 pl-10 text-sm rounded-full text-gray-900 outline-none bg-gray-50" placeholder="Search for Outpost..." required />
+                </div>
+              </form>
             </div>
           </div>
           <div className='menu flex items-center w-full justify-center px-28 fixed pt-2 right-0 left-0 gap-16'>
