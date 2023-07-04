@@ -180,9 +180,9 @@ export default function Home() {
 
         </div>
 
-        {/* <div className='fixed inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
+        <div className='fixed inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
           <CreatePost/>
-        </div> */}
+        </div>
 
         <div className=' right-side-bar pl-6 pr-6 pt-8 w-[380px] border-l h-full border-gray-200'>
           <div className='profile relative flex items-center gap-4'>
