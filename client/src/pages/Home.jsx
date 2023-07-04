@@ -1,26 +1,45 @@
 import React from 'react'
 import Posts from '../components/Posts'
 import CreatePost from '../components/CreatePost'
+import { useSelector } from 'react-redux'
+import { useGetUserDetails } from '../apiCalls/userApiCalls'
+import Loader from '../components/Loader'
+
 export default function Home() {
+
+  const { currentUser } = useSelector(state => state.userSlice) || null
+  console.log(currentUser)
+const userId = currentUser.data._id
+const token = currentUser.token
+
+
+const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
+console.log(userDetails?.data)
+
+const fallbackImage = '/images/avatar.jpg';
+
   return (
     <>
       
       <div className='flex justify-between pt-14 '>
         <div className='left-side-bar pl-4 pt-8 w-[340px]  border-r border-gray-200'>
-
+        {isUserLoading ? <Loader/> :
+        (
           <div className='profile flex items-center gap-4'>
             <div className='w-12 flex items-center justify-center'>
               <div className='w-10 h-10 border border-gray-200  rounded-full'
                 style={{
-                  backgroundImage: `url("/images/profile.jpg")`,
+                  backgroundImage: `url("${userDetails.data.data.profile.picture}"), url("${fallbackImage}")`,
                   backgroundPosition: 'center',
                   backgroundSize: 'cover',
                   backgroundRepeat: 'no-repeat',
                 }}>
               </div>
             </div>
-            <p className='tracking-wide'>UserName</p>
+           <p className='tracking-wide'>{userDetails.data.data.name}</p>
           </div>
+             )
+          }
           <div className='search flex items-center pt-2 gap-4'>
             <div className='w-12 h-12 flex items-center justify-center'>
               <svg aria-label="Search" className="w-6 h-6 text-gray-600" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height={24} role="img" viewBox="0 0 24 24" width={24}><path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} /><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} x1="16.511" x2={22} y1="16.511" y2={22} /></svg>
@@ -175,33 +194,35 @@ export default function Home() {
           </div>
 
           <Posts/>
-          <Posts/>
           
 
         </div>
 
-        <div className='fixed inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
+        <div className='fixed hidden inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
           <CreatePost/>
         </div>
 
         <div className=' right-side-bar pl-6 pr-6 pt-8 w-[380px] border-l h-full border-gray-200'>
-          <div className='profile relative flex items-center gap-4'>
-            <div className='w-14 flex items-center justify-center'>
-              <div className='w-14 h-14 border border-gray-200  rounded-full'
-                style={{
-                  backgroundImage: `url("/images/profile.jpg")`,
-                  backgroundPosition: 'center',
-                  backgroundSize: 'cover',
-                  backgroundRepeat: 'no-repeat',
-                }}>
-              </div>
-            </div>
-            <div className='flex flex-col -space-y-1'>
-              <p className='text-sm font-bold tracking-wide'>UserName</p>
-              <p className='text-lg text-[#7e7979] uppercase'>UserName</p>
-            </div>
-            <p className='absolute right-0 text-sm font-bold tracking-wide'>Switch</p>
-          </div>
+        {isUserLoading ? <Loader/> : (
+         <div className='profile relative flex items-center gap-4'>
+         <div className='w-14 flex items-center justify-center'>
+           <div className='w-14 h-14 border border-gray-200  rounded-full'
+             style={{
+               backgroundImage: `url("${userDetails.data.data.profile.picture}"), url("${fallbackImage}")`,
+               backgroundPosition: 'center',
+               backgroundSize: 'cover',
+               backgroundRepeat: 'no-repeat',
+             }}>
+           </div>
+         </div>
+         <div className='flex flex-col -space-y-1'>
+           <p className='text-sm font-bold tracking-wide'>{userDetails.data.data.name}</p>
+           <p className='text-lg text-[#7e7979] uppercase'>{userDetails.data.data.name}</p>
+         </div>
+         <p className='absolute right-0 text-sm font-bold tracking-wide'>Switch</p>
+       </div>
+        )}
+          
           <div className='Suggestions relative flex flex-col gap-4 pt-4'>
             <div className='flex'>
               <p className='font-bold text-[#9b9696] tracking-wide'>Suggestions For You</p>

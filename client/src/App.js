@@ -6,6 +6,7 @@ import {BrowserRouter,Routes,Route} from "react-router-dom";
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Register from './pages/Register';
+import Login from './pages/Login';
 import Profile from './pages/Profile';
 import { useSelector } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
@@ -33,6 +34,7 @@ function App() {
       <>
       <Routes>
     <Route path='/' element={<Login/>}/>
+    <Route path='/register' element={<Register/>}/>
     </Routes>
       </>
     )

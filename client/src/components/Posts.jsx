@@ -1,9 +1,26 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
+import { useGetPosts } from '../apiCalls/postApiCalls'
+import Loader from './Loader'
 
 export default function Posts() {
+
+
+     const { currentUser } = useSelector(state => state.userSlice) || null
+     console.log(currentUser)
+     const token = currentUser.token
+
+
+  const { isLoading: isPostsLoading, data: posts } = useGetPosts(token)
+  console.log(posts?.data)
+
      return (
           <>
-               <div className='mt-10'>
+          {isPostsLoading ? <Loader/> : 
+          (
+               <>
+               {posts.data.data.map((post)=>(
+                    <div className='mt-10' key={post._id}>
                     <div className="post border-b pb-6 border-gray-300">
                          <div className="head flex items-center justify-between">
                               <div className='flex items-center'>
@@ -23,7 +40,7 @@ export default function Posts() {
                          <div className="body pt-4">
                               <div className='flex items-center justify-center'>
                                    <div className="image w-[500px] flex items-center justify-center bg-black">
-                                        <img className='h-[600px]' src="/images/post.jpg" alt="" />
+                                        <img className='h-[600px]' src={post.imageUrl} alt="" />
                                    </div>
                               </div>
                               <div className="actions pt-4 flex justify-between items-center">
@@ -43,25 +60,31 @@ export default function Posts() {
                                    </div>
                               </div>
                               <div className='pt-4'>
-                                   <h2 className='text-sm font-medium'>128 likes</h2>
+                                   <h2 className='text-sm font-medium'>{post.likes.length} likes</h2>
                               </div>
                               <div className='pt-3'>
-                                   <h2 className='text-sm'><span className='text-sm font-medium'>UserName</span> The Palm Jumeirah ...</h2>
+                                   <h2 className='text-sm'><span className='text-sm font-medium'>UserName</span>{post.title}</h2>
                               </div>
                               <div className='pt-5'>
                                    <span className='text-sm text-gray-500'>more</span>
                               </div>
                               <div className='pt-1'>
-                                   <span className='text-sm text-gray-500'>View all 18 comments</span>
+                                   <span className='text-sm text-gray-500'>View all {post.comments.length} comments</span>
                               </div>
                               <div className='pt-2 flex items-center justify-between'>
                                    <input type="text" className='text-sm outline-none placeholder-gray-400' placeholder='Add a comment ...' />
                                   <svg aria-label="Emoji" className="w-4 h-4 mr-1" color="rgb(115, 115, 115)" fill="rgb(115, 115, 115)" height={13} role="img" viewBox="0 0 24 24" width={13}><title>Emoji</title><path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" /></svg>
-
+     
                               </div>
                          </div>
                     </div>
                </div>
+               ))}
+               </>
+              
+          )
+          }
+              
           </>
      )
 }
