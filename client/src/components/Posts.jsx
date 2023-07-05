@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function Posts({ post }) {
+  
   return (
     <div className="mt-10">
       <div className="post border-b pb-6 border-gray-300">
