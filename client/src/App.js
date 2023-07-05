@@ -6,11 +6,11 @@ import {BrowserRouter,Routes,Route} from "react-router-dom";
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Register from './pages/Register';
+import Login from './pages/Login';
 import Profile from './pages/Profile';
 import { useSelector } from 'react-redux';
-import Login from './pages/Login';
-
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const queryClient = new QueryClient()
 
@@ -34,10 +34,21 @@ function App() {
       <>
       <Routes>
     <Route path='/' element={<Login/>}/>
+    <Route path='/register' element={<Register/>}/>
     </Routes>
       </>
     )
     }
+    <ToastContainer
+        autoClose={3000}
+        draggable={false}
+        position="top-right"
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnHover
+      />
     </BrowserRouter>
     <ReactQueryDevtools intialIsOpen={false} position="bottom-right" />
     </QueryClientProvider>

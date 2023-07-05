@@ -1,6 +1,31 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import FacebookIcon from '@mui/icons-material/Facebook';
-export default function login() {
+import { useCreateUser } from '../apiCalls/userApiCalls';
+
+export default function Register() {
+
+  const nameInputElement = useRef();
+  const emailInputElement = useRef();
+  const passwordInputElement = useRef();
+
+
+  const { mutate: createUserMutate, isLoading: isCreateUserLoading, isError: isCreateUserError, error: createUserError, } = useCreateUser();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = {
+      name: nameInputElement.current?.value,
+      email: emailInputElement.current?.value,
+      password: passwordInputElement.current?.value,
+    };
+
+
+    createUserMutate(data);
+
+  };
+
+
+
   return (
     <>
       <div className=' flex flex-col gap-3 items-center justify-center w-screen h-screen'>
@@ -19,26 +44,46 @@ export default function login() {
                     <h2 className='px-5 text-gray-500 font-medium'>OR</h2>
                 <div className='w-full h-[1px] bg-gray-300'></div>
               </div>
-              <form action="" className='space-y-4 px-2'>
+              <form onSubmit={handleSubmit} action="" className='space-y-4 px-2'>
                 <div className='space-y-2'>
                   <div className='w-full py-2 px-2 border border-gray-200 rounded-md'>
-                    <input type="text" className='outline-none w-full text-sm' placeholder='Mobile Number or Email'/>
+                    <input
+                     type="text"
+                      className='outline-none w-full text-sm'
+                       name='name'
+                       placeholder='micheal'
+                       ref={nameInputElement}
+                       />
                   </div>
                   <div className='w-full py-2 px-2 border border-gray-200 rounded-md'>
-                    <input type="text" className='outline-none w-full text-sm' placeholder='Full Name'/>
+                    <input
+                     type="email"
+                      className='outline-none w-full text-sm'
+                      name='email'
+                    placeholder='micheal@gmail.com'
+                    ref={emailInputElement}
+                       />
                   </div>
                   <div className='w-full py-2 px-2 border border-gray-200 rounded-md'>
-                    <input type="text" className='outline-none w-full text-sm' placeholder='Username'/>
-                  </div>
-                  <div className='w-full py-2 px-2 border border-gray-200 rounded-md'>
-                    <input type="password" className='outline-none w-full text-sm' placeholder='Password'/>
+                    <input
+                     type="password"
+                      className='outline-none w-full text-sm'
+                       placeholder='Password'
+                       name='password'
+                       ref={passwordInputElement}
+                       />
                   </div>
                 </div>
                 <p className='text-xs text-center w-full tracking-wide px-2'>People who use our service may have uploaded your contact information to Instagram. Learn More</p>
                 <p className='text-xs text-center w-full tracking-wide px-2'>By signing up, you agree to our Terms , Privacy Policy and Cookies Policy .</p>
                 <div className="button w-full pt-1">
-                  <button className='bg-[#0084ff] hover:bg-[#007aec] transition-all ease-in-out  text-white w-full py-2 rounded-md text-sm font-medium tracking-wide'>Sign up</button>
+                  <button className='bg-[#0084ff] hover:bg-[#007aec] transition-all ease-in-out  text-white w-full py-2 rounded-md text-sm font-medium tracking-wide'>{isCreateUserLoading ? "...is Signing Up" : "Sign Up"}</button>
                 </div>
+                {isCreateUserError && (
+              <div className="text-sm font-medium text-red-600 pt-2">
+                <p>{createUserError.response.data.error}</p>
+              </div>
+            )}
               </form>
             </div>
         </div>

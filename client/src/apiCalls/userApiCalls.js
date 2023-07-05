@@ -56,3 +56,19 @@ export const useGetUserDetails = (userId, token) => {
   return useQuery(["user", userId, token], () => getUserDetails(userId, token));
 };
 
+// create user
+
+export const createUser = async (userData) => {
+  return axios.post(`${API_BASE_URL}/auth/register`, userData);
+};
+
+export const useCreateUser = () => {
+  const navigate = useNavigate();
+  return useMutation(createUser, {
+    onSuccess: (data) => {
+      navigate("/");
+      toast.success('User created Successfully!');
+    },
+  });
+};
+
