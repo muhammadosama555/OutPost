@@ -77,6 +77,9 @@ exports.getAllPosts=asyncHandler(async(req,res)=>{
 //Get Single Post
 exports.getPost=asyncHandler(async(req,res)=>{
        const post=await Post.findById(req.params.id)
+       .populate('owner','name,profile.picture')
+       .populate('likes','name,profile.picture')
+       .populate('comments')
 
        res.status(200).json({
         success:true,
