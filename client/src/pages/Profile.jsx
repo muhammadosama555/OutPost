@@ -8,12 +8,12 @@ export default function Profile() {
 
      const { currentUser } = useSelector(state => state.userSlice) || null
      console.log(currentUser)
-  const userId = currentUser.data._id
-  const token = currentUser.token
+     const userId = currentUser.data._id
+     const token = currentUser.token
 
 
-  const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
-  console.log(userDetails?.data)
+     const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
+     console.log(userDetails?.data)
 
      return (
           <>
@@ -73,7 +73,7 @@ export default function Profile() {
                                    POSTS
                               </div>
                          </div>
-                         
+
                     </div>
                </div>
           </>
