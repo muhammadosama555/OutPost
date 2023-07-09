@@ -28,6 +28,7 @@ const posts=require('./routes/post.js')
 const auth=require('./routes/auth.js')
 const comment=require('./routes/comment.js')
 const follow=require('./routes/follow.js')
+const notification=require('./routes/notification.js')
 
 
 
@@ -38,6 +39,7 @@ app.use('/api/posts',posts)
 app.use('/api/auth',auth)
 app.use('/api/comment',comment)
 app.use('/api/follows',follow)
+app.use('/api/notifications',notification)
 
 //errorHandler
 app.use(errorHandler)
