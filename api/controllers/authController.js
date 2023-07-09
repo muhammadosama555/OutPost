@@ -3,13 +3,13 @@ const ErrorResponse= require("../utils/errorResponse")
 const asyncHandler=require('../middlewares/asyncHandler')
 
 exports.registerUser = asyncHandler( async (req, res,next) => {
-    const { name, email, password } = req.body;
+    const { username,firstName,lastName, email, password } = req.body;
   
   
   
       // create new user
       const user = new User({
-        name,
+        username,firstName,lastName,
         email,
         password,
       });
