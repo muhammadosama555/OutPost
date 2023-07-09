@@ -67,6 +67,16 @@ exports.updatePost=asyncHandler(async(req,res)=>{
 //Get All Posts
 exports.getAllPosts=asyncHandler(async(req,res)=>{
   const posts=await Post.find()
+  .populate('owner','name profile.picture')
+  .populate('likes','name profile.picture')
+  .populate('comments')
+  .populate({
+    path: 'comments',
+    populate: {
+      path: 'owner',
+      select: 'name profile.picture'
+    }
+  });
  
   res.status(200).json({
     success:true,
@@ -77,9 +87,16 @@ exports.getAllPosts=asyncHandler(async(req,res)=>{
 //Get Single Post
 exports.getPost=asyncHandler(async(req,res)=>{
        const post=await Post.findById(req.params.id)
-       .populate('owner','name,profile.picture')
-       .populate('likes','name,profile.picture')
+       .populate('owner','name profile.picture')
+       .populate('likes','name profile.picture')
        .populate('comments')
+       .populate({
+        path: 'comments',
+        populate: {
+          path: 'owner',
+          select: 'name profile.picture'
+        }
+      });
 
        res.status(200).json({
         success:true,

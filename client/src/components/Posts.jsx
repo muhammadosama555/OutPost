@@ -1,6 +1,8 @@
 import React from "react";
 
 export default function Posts({ post }) {
+
+  const fallbackImage = '/images/avatar.jpg';
   
   return (
     <div className="mt-10">
@@ -8,9 +10,16 @@ export default function Posts({ post }) {
         <div className="head flex items-center justify-between">
           <div className="flex items-center">
             <div className="border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center">
-              <div className="border border-gray-300 w-8 h-8 rounded-full"></div>
+              <div className="border border-gray-300 w-8 h-8 rounded-full"
+              style={{
+                      backgroundImage: `url("${post.owner.profile?.picture}"), url("${fallbackImage}")`,
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover',
+                      backgroundRepeat: 'no-repeat',
+                    }}>
+              </div>
             </div>
-            <h2 className="UserName font-medium pl-2">Lorem Ipsum</h2>
+            <h2 className="UserName font-medium pl-2">{post.owner.name}</h2>
             <div className="time flex items-center pl-3 gap-1 pt-[1px]">
               <div className="h-1 w-1 rounded-full bg-gray-500"></div>
               <h2 className="text-gray-500">1d</h2>
@@ -136,7 +145,7 @@ export default function Posts({ post }) {
           </div>
           <div className="pt-3">
             <h2 className="text-sm">
-              <span className="text-sm font-medium">UserName </span>
+              <span className="text-sm font-medium">{post.owner.name} </span>
               {post.title}
             </h2>
           </div>

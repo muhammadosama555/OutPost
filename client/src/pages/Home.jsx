@@ -19,7 +19,7 @@ export default function Home() {
 
   const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
   const { isLoading: isPostsLoading, data: posts } = useGetPosts(token)
-  console.log(userDetails?.data)
+  console.log(posts?.data)
 
   const fallbackImage = '/images/avatar.jpg';
 
@@ -27,8 +27,6 @@ export default function Home() {
     <>
 
       <div className='flex justify-between pt-14 '>
-
-
         <div className='left-side-bar pl-4 pt-8 w-[340px]  border-r border-gray-200'>
           {isUserLoading ? <Loader /> :
             (
@@ -51,8 +49,6 @@ export default function Home() {
           <div className='search flex items-center pt-2 gap-4'>
             <div className='w-12 h-12 flex items-center justify-center'>
               <svg aria-label="Search" className="w-6 h-6 text-gray-600" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height={24} role="img" viewBox="0 0 24 24" width={24}><path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} /><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} x1="16.511" x2={22} y1="16.511" y2={22} /></svg>
-
-
             </div>
             <p className='tracking-wide w-full'>Explore</p>
           </div>
@@ -193,9 +189,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
-          <Posts />
-          <Posts />
 
 
         </div>

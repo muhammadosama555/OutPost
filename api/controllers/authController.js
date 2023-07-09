@@ -37,16 +37,16 @@ exports.registerUser = asyncHandler( async (req, res,next) => {
   
       //Validate email and password
       if(!email || !password){
-          return next(new errorResponse('Please provide correct email and password',404))
+          return next(new ErrorResponse('Please provide correct email and password',404))
       }
       const user=await User.findOne({email}).select('+password')
       if(!user){
-          return next(new errorResponse('User not found',404))
+          return next(new ErrorResponse('User not found',404))
       }
   
       const isMatch=await user.matchPassword(password)
       if(!isMatch){
-          return next(new errorResponse('Invalid password',401))
+          return next(new ErrorResponse('Invalid password',401))
       }
   
   
