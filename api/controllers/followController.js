@@ -2,11 +2,11 @@ const ErrorResponse= require("../utils/errorResponse")
 
 const asyncHandler = require("../middlewares/asyncHandler");
 
-const Follower = require('../models/Follower');
+const Follower = require('../models/Follow');
 const User = require('../models/User');
 
 
-exports.createFollower = asyncHandler(async (req, res) => {
+exports.followUser = asyncHandler(async (req, res) => {
   try {
     const { followerId, followingId } = req.body;
     const followerRelation = new Follower({ follower: followerId, following: followingId });
@@ -26,7 +26,7 @@ exports.createFollower = asyncHandler(async (req, res) => {
 
 
 //Update Follower
-exports.updateFollower = asyncHandler(async (req, res) => {
+exports.updateFollow = asyncHandler(async (req, res) => {
   try {
     const { followerId, followingId } = req.body;
     const follower = await Follower.findByIdAndUpdate(
@@ -49,9 +49,9 @@ exports.updateFollower = asyncHandler(async (req, res) => {
 
 
 //Get All Followers
-exports.getAllFollowers =asyncHandler( async (req, res) => {
+exports.getAllFollows =asyncHandler( async (req, res) => {
   try {
-    const followers = await Follower.find().populate('follower following');
+    const followers = await Follower.find().populate('follower following','name profile.picture');
 
     res.status(200).json(followers);
   } catch (error) {
@@ -62,9 +62,9 @@ exports.getAllFollowers =asyncHandler( async (req, res) => {
 
 
 //Get Single Follower
-exports.getFollower = asyncHandler(async (req, res) => {
+exports.getFollow = asyncHandler(async (req, res) => {
   try {
-    const follower = await Follower.findById(req.params.id).populate('follower following');
+    const follower = await Follower.findById(req.params.id).populate('follower following','name profile.picture');
 
     if (!follower) {
       return res.status(404).json({ error: 'Follower not found' });
@@ -79,7 +79,7 @@ exports.getFollower = asyncHandler(async (req, res) => {
 
 
 //Delete Follower
-exports.deleteFollower = asyncHandler(async (req, res) => {
+exports.unfollowUser = asyncHandler(async (req, res) => {
   try {
     const follower = await Follower.findById(req.params.id);
 
