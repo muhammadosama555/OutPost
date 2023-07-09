@@ -24,10 +24,10 @@ app.use(cors());
 
 //Routes the files
 const users=require('./routes/user.js')
-const posts=require('./routes/posts.js')
+const posts=require('./routes/post.js')
 const auth=require('./routes/auth.js')
 const comment=require('./routes/comment.js')
-const follower=require('./routes/follower.js')
+const follow=require('./routes/follow.js')
 
 
 
@@ -37,7 +37,7 @@ app.use('/api/users',users)
 app.use('/api/posts',posts)
 app.use('/api/auth',auth)
 app.use('/api/comment',comment)
-app.use('/api/follower',follower)
+app.use('/api/follows',follow)
 
 //errorHandler
 app.use(errorHandler)
