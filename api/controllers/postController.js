@@ -3,12 +3,13 @@ const ErrorResponse= require("../utils/errorResponse")
 const jwt = require('jsonwebtoken');
 const Post = require('../models/post');
 const User = require('../models/User');
+const Tag = require('../models/Tag');
 const asyncHandler = require("../middlewares/asyncHandler");
 
 
 exports.createPost = async (req, res) => {
   try {
-    const { title, content, imageUrl } = req.body;
+    const { title, content, imageUrl, tags} = req.body;
 
     // Get the authorization header from the request
     const authHeader = req.headers.authorization;
@@ -23,24 +24,35 @@ exports.createPost = async (req, res) => {
     
     const userId = decodedToken.id;
     
+   
 
     // Create a new post object with the user ID and post data
     const post = new Post({
       title: title,
       content: content,
       imageUrl: imageUrl,
-      owner: userId // Set the owner field to the userId
+      owner: userId, // Set the owner field to the userId
+      tags,
     });
-    // Save the new post to the database
-    await post.save();
+     // Save the new post to the database
+     const savedPost = await post.save();
 
-    // Add the new post to the user's posts array
-    const user = await User.findById(userId);
-    user.posts.push(post._id);
-    await user.save();
-
-    // Return the new post as the response
-    res.status(201).json(post);
+     // Update each tag to include this post
+     for (const tagId of tags) {
+       const tag = await Tag.findById(tagId);
+       if (tag) {
+         tag.posts.push(savedPost._id);
+         await tag.save();
+       }
+     }
+ 
+     // Add the new post to the user's posts array
+     const user = await User.findById(userId);
+     user.posts.push(savedPost._id);
+     await user.save();
+ 
+     // Return the new post as the response
+     res.status(201).json(savedPost);
   } catch (error) {
     // Handle errors
     console.error(error);
