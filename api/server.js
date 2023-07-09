@@ -27,8 +27,8 @@ const users=require('./routes/user.js')
 const posts=require('./routes/post.js')
 const auth=require('./routes/auth.js')
 const comment=require('./routes/comment.js')
-const follow=require('./routes/follow.js')
-const notification=require('./routes/notification.js')
+const follows=require('./routes/follow.js')
+const notifications=require('./routes/notification.js')
 
 
 
@@ -38,8 +38,8 @@ app.use('/api/users',users)
 app.use('/api/posts',posts)
 app.use('/api/auth',auth)
 app.use('/api/comment',comment)
-app.use('/api/follows',follow)
-app.use('/api/notifications',notification)
+app.use('/api/follows',follows)
+app.use('/api/notifications',notifications)
 
 //errorHandler
 app.use(errorHandler)
