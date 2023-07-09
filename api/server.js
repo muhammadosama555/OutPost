@@ -41,6 +41,7 @@ app.use('/api/auth',auth)
 app.use('/api/comments',comments)
 app.use('/api/follows',follows)
 app.use('/api/notifications',notifications)
+app.use('/api/media',media)
 app.use('/api/tags',tags)
 
 //errorHandler
