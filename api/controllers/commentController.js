@@ -6,7 +6,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 
 const Comment = require('../models/Comment');
 
-//------------------------------------------------------ Create Comment  -----------------------------------------//
+//------------------------------------------------------ Create Comment  ------------------------------------------//
 //desc    Create Comment
 //route   /api/comments
 //access  private
