@@ -2,7 +2,10 @@ const Tag = require('../models/Tag');
 const asyncHandler = require("../middlewares/asyncHandler");
 const Post = require('../models/post');
 
-// Create a new Tag
+//------------------------------------------------------ Create Tag  -----------------------------------------//
+//desc    Create Tag
+//route   /api/tags
+//access  private
 exports.createTag = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
 
@@ -32,37 +35,15 @@ exports.createTag = asyncHandler(async (req, res, next) => {
   });
 });
 
-
-// Get all Tags
-exports.getAllTags = asyncHandler(async (req, res, next) => {
-  const tags = await Tag.find().populate('posts');
-
-  res.status(200).json({
-    success: true,
-    data: tags
-  });
-});
-
-// Get a single Tag
-exports.getTag = asyncHandler(async (req, res, next) => {
-  const tag = await Tag.findById(req.params.id).populate('posts');
-
-  if (!tag) {
-    return next(new Error("Tag not found with id of " + req.params.id));
-  }
-
-  res.status(200).json({
-    success: true,
-    data: tag
-  });
-});
-
-// Update a Tag
+//------------------------------------------------------ Update Tag  -----------------------------------------//
+//desc    Update Tag
+//route   /api/tags/:id
+//access  private
 exports.updateTag = asyncHandler(async (req, res, next) => {
   let tag = await Tag.findById(req.params.id);
 
   if (!tag) {
-    return next(new Error("Tag not found with id of " + req.params.id));
+    return next(new ErrorResponse(`Tag not found with id of ${req.params.id}`, 404));
   }
 
   tag = await Tag.findByIdAndUpdate(req.params.id, req.body, {
@@ -76,12 +57,51 @@ exports.updateTag = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Delete a Tag
+
+//------------------------------------------------------ Get All Tags  -----------------------------------------//
+//desc    Get All Tags
+//route   /api/tags
+//access  private
+exports.getAllTags = asyncHandler(async (req, res, next) => {
+  const tags = await Tag.find().populate('posts');
+
+  if (!tags) {
+    return next(new ErrorResponse(`No Tags Found`, 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: tags
+  });
+});
+
+//------------------------------------------------------ Get Single Tag  -----------------------------------------//
+//desc    Get Single Tag
+//route   /api/tags/:id
+//access  private
+exports.getTag = asyncHandler(async (req, res, next) => {
+  const tag = await Tag.findById(req.params.id).populate('posts');
+
+  if (!tag) {
+    return next(new ErrorResponse(`Tag not found with id of ${req.params.id}`, 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: tag
+  });
+});
+
+
+//------------------------------------------------------ Delete Tag  -----------------------------------------//
+//desc    Delete Tag
+//route   /api/tags/:id
+//access  private
 exports.deleteTag = asyncHandler(async (req, res, next) => {
   const tag = await Tag.findById(req.params.id);
 
   if (!tag) {
-    return next(new Error("Tag not found with id of " + req.params.id));
+    return next(new ErrorResponse(`Tag not found with id of ${req.params.id}`, 404));
   }
 
   await Tag.findByIdAndDelete(req.params.id)

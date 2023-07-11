@@ -2,10 +2,12 @@ const User = require('../models/User');
 const ErrorResponse= require("../utils/errorResponse")
 const asyncHandler=require('../middlewares/asyncHandler')
 
+//------------------------------------------------------ Register user  -----------------------------------------//
+//desc    Register user
+//route   /api/auth/register
+//access  public
 exports.registerUser = asyncHandler( async (req, res,next) => {
     const { username,firstName,lastName, email, password } = req.body;
-  
-  
   
       // create new user
       const user = new User({
@@ -28,11 +30,11 @@ exports.registerUser = asyncHandler( async (req, res,next) => {
     
   });
   
-  //desc   login  user
-  //route   Post /api/v1/auth/login
-  //access  Public
-  
-  exports.loginUser = async (req,res,next)=>{
+//------------------------------------------------------ Login user  -----------------------------------------//
+//desc    Login user
+//route   /api/auth/login
+//access  public
+exports.loginUser = async (req,res,next)=>{
       const {email,password} =req.body
   
       //Validate email and password
@@ -71,10 +73,15 @@ exports.registerUser = asyncHandler( async (req, res,next) => {
       })
   }
 
-  //desc    GET logout user
-//route   Post /api/v1/admin/logout
-//access  Private
+//------------------------------------------------------ Logout user  -----------------------------------------//
+//desc    Logout user
+//route   /api/auth/logout
+//access  private
 exports.logout = asyncHandler(async (req, res, next) => {
+  // Check if the user is logged in
+  if (!req.user) {
+    return next(new ErrorResponse('No user is currently logged in', 401));
+   }
     res.cookie("token", null, {
       expires: new Date(Date.now()),
       httpOnly: true,

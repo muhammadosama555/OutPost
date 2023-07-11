@@ -6,16 +6,19 @@ const User = require('../models/User');
 const Tag = require('../models/Tag');
 const asyncHandler = require("../middlewares/asyncHandler");
 
-
+//------------------------------------------------------ Create Post  -----------------------------------------//
+//desc    Create Post
+//route   /api/posts
+//access  private
 exports.createPost = async (req, res) => {
-  try {
+
     const { title, content, imageUrl, tags} = req.body;
 
     // Get the authorization header from the request
     const authHeader = req.headers.authorization;
     // If the authorization header doesn't exist, return an error
     if (!authHeader) {
-      return res.status(401).json({ error: 'Authorization header missing' });
+      return next(new ErrorResponse('Authorization header missing', 401));
     }
     // Extract the token from the authorization header
     const token = authHeader.split(' ')[1];
@@ -53,21 +56,22 @@ exports.createPost = async (req, res) => {
  
      // Return the new post as the response
      res.status(201).json(savedPost);
-  } catch (error) {
-    // Handle errors
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
+ 
 };
 
-
-
-//Update Post
+//------------------------------------------------------ Update Post  -----------------------------------------//
+//desc    Update Post
+//route   /api/posts/:id
+//access  private
 exports.updatePost=asyncHandler(async(req,res)=>{
     const post=await Post.findByIdAndUpdate(req.params.id, req.body, {
       new: true, // Return the updated user
       runValidators: true, // Run validation on the update data
     })
+
+    if (!post) {
+      return next(new ErrorResponse(`Post not found with id of ${req.params.id}`, 404));
+    }
 
     res.status(200).json({
       success:true,
@@ -76,7 +80,10 @@ exports.updatePost=asyncHandler(async(req,res)=>{
 })
 
 
-//Get All Posts
+//------------------------------------------------------ Get All Posts  -----------------------------------------//
+//desc    Get All Posts
+//route   /api/posts
+//access  private
 exports.getAllPosts=asyncHandler(async(req,res)=>{
   const posts=await Post.find()
   .populate('owner','name profile.picture')
@@ -89,6 +96,10 @@ exports.getAllPosts=asyncHandler(async(req,res)=>{
       select: 'name profile.picture'
     }
   });
+
+  if (!post) {
+    return next(new ErrorResponse(`No posts found`, 404));
+  }
  
   res.status(200).json({
     success:true,
@@ -96,7 +107,10 @@ exports.getAllPosts=asyncHandler(async(req,res)=>{
   })
 })
 
-//Get Single Post
+//------------------------------------------------------ Get Single Post  -----------------------------------------//
+//desc    Get Single Post
+//route   /api/posts/:id
+//access  private
 exports.getPost=asyncHandler(async(req,res)=>{
        const post=await Post.findById(req.params.id)
        .populate('owner','name profile.picture')
@@ -110,6 +124,10 @@ exports.getPost=asyncHandler(async(req,res)=>{
         }
       });
 
+      if (!post) {
+        return next(new ErrorResponse(`Post not found with id of ${req.params.id}`, 404));
+      }
+
        res.status(200).json({
         success:true,
         data:post
@@ -117,10 +135,17 @@ exports.getPost=asyncHandler(async(req,res)=>{
 })
 
 
-//delete Post
+//------------------------------------------------------ Delete Post  -----------------------------------------//
+//desc    Delete Post
+//route   /api/posts/:id
+//access  private
 exports.deletePost=asyncHandler(async(req,res)=>{
 
-      await Post.findByIdAndDelete(req.params.id)  
+      const post = await Post.findByIdAndDelete(req.params.id)  
+
+      if (!post) {
+        return next(new ErrorResponse(`Post not found with id of ${req.params.id}`, 404));
+      }
 
       res.status(200).json({
         success:true,

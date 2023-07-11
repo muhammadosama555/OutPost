@@ -1,10 +1,10 @@
 const express= require('express')
 const { followUser, updateFollow, getAllFollows, getFollow, unfollowUser } = require('../controllers/followController')
-
+const { protect } = require('../middlewares/auth');
 
 const router=express.Router()
 
-
+router.use(protect); // Protect the routes below for authenticated users
 
 
 router.post('/',followUser)

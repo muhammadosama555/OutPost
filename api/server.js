@@ -30,6 +30,9 @@ const comments=require('./routes/comment.js')
 const follows=require('./routes/follow.js')
 const notifications=require('./routes/notification.js')
 const tags=require('./routes/tag.js')
+const media=require('./routes/media.js')
+const conversations=require('./routes/conversation.js')
+const messages=require('./routes/message.js')
 
 
 
@@ -43,6 +46,8 @@ app.use('/api/follows',follows)
 app.use('/api/notifications',notifications)
 app.use('/api/media',media)
 app.use('/api/tags',tags)
+app.use('/api/conversations',conversations)
+app.use('/api/messages',messages)
 
 //errorHandler
 app.use(errorHandler)

@@ -3,9 +3,12 @@ const ErrorResponse= require("../utils/errorResponse")
 const asyncHandler = require("../middlewares/asyncHandler");
 
 const Media = require('../models/Media');
-const User = require('../models/User');
 
-//create media
+
+//------------------------------------------------------ Add Media  -----------------------------------------//
+//desc    Add Media
+//route   /api/media
+//access  private
 exports.addMedia = asyncHandler(async(req,res)=>{
     const {type,url,ownerId}=req.body
 
@@ -23,7 +26,10 @@ exports.addMedia = asyncHandler(async(req,res)=>{
     })
 })
 
-
+//------------------------------------------------------ Update Media  -----------------------------------------//
+//desc    Update Media
+//route   /api/media/:id
+//access  private
 exports.updateMedia=asyncHandler(async(req,res)=>{
      const id=req.params.id
      const updateMedia=await Media.findByIdAndUpdate(id,req.body,{
@@ -31,14 +37,27 @@ exports.updateMedia=asyncHandler(async(req,res)=>{
         runValidators:true
      })
 
+     if (!updateMedia) {
+        return next(new ErrorResponse(`Media not found with id of ${id}`, 404));
+    }
+
      res.status(200).json({
         success:true,
         data:updateMedia
      })
 })
 
+//------------------------------------------------------ Get All Media  -----------------------------------------//
+//desc    Get All Media
+//route   /api/media
+//access  private
 exports.getAllMedia=asyncHandler(async(req,res)=>{
     const media=await Media.find().populate("owner")
+
+    if (!media) {
+        return next(new ErrorResponse(`No media files found`, 404));
+    }
+
     res.status(200).json({
         sucess:true,
         data:media
@@ -46,18 +65,33 @@ exports.getAllMedia=asyncHandler(async(req,res)=>{
 })
 
 
-//Get Single Media
+//------------------------------------------------------ Get Single Media  -----------------------------------------//
+//desc    Get Single Media
+//route   /api/media/:id
+//access  private
 exports.getSingleMedia=asyncHandler(async(req,res)=>{
     const media = await Media.findById(req.params.id)
+
+    if (!media) {
+        return next(new ErrorResponse(`Media not found with id of ${req.params.id}`, 404));
+    }
+
     res.status(200).json({
         success:true,
         data:media
     })
 })
 
-//Delete Media
+//------------------------------------------------------ Delete Media  -----------------------------------------//
+//desc    Delete Media
+//route   /api/media/:id
+//access  private
 exports.deleteMedia=asyncHandler(async(req,res)=>{
     const media = await Media.findByIdAndDelete(req.params.id)
+
+    if (!media) {
+        return next(new ErrorResponse(`Media not found with id of ${req.params.id}`, 404));
+    }
 
     res.status(200).json({
         success:true,
