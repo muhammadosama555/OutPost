@@ -28,8 +28,14 @@ exports.updateUser = async (req, res) => {
 //route   /api/users
 //access  private
 exports.getAllUser = async (req, res) => {
+  const { name } = req.query;
+  let query = {};
 
-    let users = await User.find();
+  // Check if a name is provided
+  if (name) {
+    query = { name: { $regex: name, $options: 'i' } };
+  }
+    let users = await User.find(query);
 
     if (!users) {
       return next(new ErrorResponse(`No users found`, 404));
