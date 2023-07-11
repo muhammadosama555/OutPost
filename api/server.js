@@ -29,6 +29,8 @@ const auth=require('./routes/auth.js')
 const comments=require('./routes/comment.js')
 const follows=require('./routes/follow.js')
 const notifications=require('./routes/notification.js')
+const media=require('./routes/media')
+const tags=require('./routes/tag')
 
 
 
