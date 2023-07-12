@@ -97,7 +97,7 @@ exports.getAllPosts=asyncHandler(async(req,res)=>{
     }
   });
 
-  if (!post) {
+  if (!posts) {
     return next(new ErrorResponse(`No posts found`, 404));
   }
  
