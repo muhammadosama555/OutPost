@@ -7,10 +7,15 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import Profile from './pages/Profile';
+
 import { useSelector } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SideBar from './components/SideBar';
+import Profile from './pages/Profile';
+import Messages from './pages/Messages';
+import UserDetails from './pages/UserDetails';
+import Settings from './pages/Settings';
 
 const queryClient = new QueryClient()
 
@@ -24,10 +29,16 @@ function App() {
     {currentUser ? (
           <>
     <Navbar />
+    <div className='flex justify-between pt-14 w-full'>
+    <SideBar/>
     <Routes>
     <Route path='/' element={<Home/>}/>
     <Route path='/profile' element={<Profile/>}/>
+    <Route path='/userDetails' element ={<UserDetails/>}></Route>
+    <Route path='/settings' element= {<Settings/>}></Route>
+    <Route path='/messages' element={<Messages/>}/>
     </Routes>
+    </div>
     <Footer />
     </>) :
     (
