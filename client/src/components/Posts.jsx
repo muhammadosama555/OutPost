@@ -1,16 +1,19 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Posts({ post }) {
   
   return (
-    <div className="mt-10">
-      <div className="post border-b pb-6 border-gray-300">
+    <div className="mt-10 flex justify-center">
+      <div className="post w-[520px] border-b pb-6 border-gray-300">
         <div className="head flex items-center justify-between">
           <div className="flex items-center">
             <div className="border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center">
               <div className="border border-gray-300 w-8 h-8 rounded-full"></div>
             </div>
-            <h2 className="UserName font-medium pl-2">Lorem Ipsum</h2>
+            <Link to="/userDetails">
+              <h2 className="UserName font-medium pl-2">Lorem Ipsum</h2>
+            </Link>
             <div className="time flex items-center pl-3 gap-1 pt-[1px]">
               <div className="h-1 w-1 rounded-full bg-gray-500"></div>
               <h2 className="text-gray-500">1d</h2>
@@ -33,8 +36,8 @@ export default function Posts({ post }) {
           </div>
         </div>
         <div className="body pt-4">
-          <div className="flex items-center justify-center">
-            <div className="image w-[500px] flex items-center justify-center bg-black">
+          <div className="flex items-center justify-center rounded-[4px] overflow-hidden">
+            <div className="image w-full flex items-center justify-center bg-black"          >
               <img className="h-[600px]" src={post.imageUrl} alt="" />
             </div>
           </div>

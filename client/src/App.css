@@ -32,6 +32,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -65,24 +66,27 @@
   color: #f8ce0b;
 }
 
-.shadow-bold:hover{
+.shadow-bold:hover {
   text-shadow: 1px 0 0 black;
 }
+
 p {
   font-family: 'poppins';
 }
 
 .outer-octagon {
-  width: 64px;
-  height: 64px;
-  background-color: rgb(255, 0, 76); /* Adjust the color as needed */
+  width: 74px;
+  height: 74px;
+  background-color: rgb(255, 0, 76);
+  /* Adjust the color as needed */
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  clip-path: polygon(26% 0%, 74% 0%, 100% 26%, 100% 74%, 74% 100%, 26% 100%, 0% 74%, 0% 26%);
-  border-radius: 22px;
+  clip-path: polygon(26% 0%, 74% 0%, 99% 26%, 99% 74%, 74% 100%, 26% 100%, 0% 74%, 0% 26%);
+  border-radius: 24px;
 }
+
 .inner-octagon {
   width: 94%;
   height: 94%;
@@ -92,8 +96,9 @@ p {
   align-items: center;
   background-color: white;
   clip-path: polygon(26% 0%, 74% 0%, 100% 26%, 100% 74%, 74% 100%, 26% 100%, 0% 74%, 0% 26%);
-  border-radius: 20px;
+  border-radius: 24px;
 }
+
 .inner-2-octagon {
   width: 94%;
   height: 94%;
@@ -116,3 +121,23 @@ p {
   transform: translateX(1.5rem);
 }
 
+.rotate-icon {
+  transition: transform 500ms ease-in-out;
+}
+
+.rotate-icon:hover {
+  transform: rotate(180deg);
+}
+
+.post-box {
+  align-items: stretch;
+  border: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 100%;
+  position: relative;
+  vertical-align: baseline;
+}
