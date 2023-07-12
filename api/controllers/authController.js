@@ -2,14 +2,16 @@ const User = require('../models/User');
 const ErrorResponse= require("../utils/errorResponse")
 const asyncHandler=require('../middlewares/asyncHandler')
 
+//------------------------------------------------------ Register user  -----------------------------------------//
+//desc    Register user
+//route   /api/auth/register
+//access  public
 exports.registerUser = asyncHandler( async (req, res,next) => {
-    const { name, email, password } = req.body;
-  
-  
+    const { username,firstName,lastName, email, password } = req.body;
   
       // create new user
       const user = new User({
-        name,
+        username,firstName,lastName,
         email,
         password,
       });
@@ -28,25 +30,25 @@ exports.registerUser = asyncHandler( async (req, res,next) => {
     
   });
   
-  //desc   login  user
-  //route   Post /api/v1/auth/login
-  //access  Public
-  
-  exports.loginUser = async (req,res,next)=>{
+//------------------------------------------------------ Login user  -----------------------------------------//
+//desc    Login user
+//route   /api/auth/login
+//access  public
+exports.loginUser = async (req,res,next)=>{
       const {email,password} =req.body
   
       //Validate email and password
       if(!email || !password){
-          return next(new errorResponse('Please provide correct email and password',404))
+          return next(new ErrorResponse('Please provide correct email and password',404))
       }
       const user=await User.findOne({email}).select('+password')
       if(!user){
-          return next(new errorResponse('User not found',404))
+          return next(new ErrorResponse('User not found',404))
       }
   
       const isMatch=await user.matchPassword(password)
       if(!isMatch){
-          return next(new errorResponse('Invalid password',401))
+          return next(new ErrorResponse('Invalid password',401))
       }
   
   
@@ -71,10 +73,15 @@ exports.registerUser = asyncHandler( async (req, res,next) => {
       })
   }
 
-  //desc    GET logout user
-//route   Post /api/v1/admin/logout
-//access  Private
+//------------------------------------------------------ Logout user  -----------------------------------------//
+//desc    Logout user
+//route   /api/auth/logout
+//access  private
 exports.logout = asyncHandler(async (req, res, next) => {
+  // Check if the user is logged in
+  if (!req.user) {
+    return next(new ErrorResponse('No user is currently logged in', 401));
+   }
     res.cookie("token", null, {
       expires: new Date(Date.now()),
       httpOnly: true,

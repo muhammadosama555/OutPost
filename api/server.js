@@ -24,9 +24,15 @@ app.use(cors());
 
 //Routes the files
 const users=require('./routes/user.js')
-const posts=require('./routes/posts.js')
+const posts=require('./routes/post.js')
 const auth=require('./routes/auth.js')
-const comment=require('./routes/comment.js')
+const comments=require('./routes/comment.js')
+const follows=require('./routes/follow.js')
+const notifications=require('./routes/notification.js')
+const tags=require('./routes/tag.js')
+const media=require('./routes/media.js')
+const conversations=require('./routes/conversation.js')
+const messages=require('./routes/message.js')
 
 
 
@@ -35,7 +41,13 @@ const comment=require('./routes/comment.js')
 app.use('/api/users',users)
 app.use('/api/posts',posts)
 app.use('/api/auth',auth)
-app.use('/api/comment',comment)
+app.use('/api/comments',comments)
+app.use('/api/follows',follows)
+app.use('/api/notifications',notifications)
+app.use('/api/media',media)
+app.use('/api/tags',tags)
+app.use('/api/conversations',conversations)
+app.use('/api/messages',messages)
 
 //errorHandler
 app.use(errorHandler)

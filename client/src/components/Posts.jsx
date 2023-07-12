@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export default function Posts({ post }) {
+
+  const fallbackImage = '/images/avatar.jpg';
   
   return (
     <div className="mt-10 flex justify-center">
@@ -9,7 +11,14 @@ export default function Posts({ post }) {
         <div className="head flex items-center justify-between">
           <div className="flex items-center">
             <div className="border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center">
-              <div className="border border-gray-300 w-8 h-8 rounded-full"></div>
+              <div className="border border-gray-300 w-8 h-8 rounded-full"
+              style={{
+                      backgroundImage: `url("${post.owner.profile?.picture}"), url("${fallbackImage}")`,
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover',
+                      backgroundRepeat: 'no-repeat',
+                    }}>
+              </div>
             </div>
             <Link to="/userDetails">
               <h2 className="UserName font-medium pl-2">Lorem Ipsum</h2>
@@ -139,7 +148,7 @@ export default function Posts({ post }) {
           </div>
           <div className="pt-3">
             <h2 className="text-sm">
-              <span className="text-sm font-medium">UserName </span>
+              <span className="text-sm font-medium">{post.owner.name} </span>
               {post.title}
             </h2>
           </div>
