@@ -72,12 +72,14 @@ export default function Profile() {
                                              <h3 className='font-normal'>following</h3>
                                         </div>
                                    </div>
+                                   {userDetails.data.data.profile ? 
                                    <div className="right w-1/3 pl-8">
                                         <div>
                                              <h3 className='font-medium text-lg pb-1'>Intro</h3>
                                              <h4 className='text-sm'>{userDetails.data.data.profile?.bio}</h4>
                                         </div>
-                                   </div>
+                                   </div>: null
+                              }
                               </div>
 
                               <div className='buttons flex justify-center gap-8'>
