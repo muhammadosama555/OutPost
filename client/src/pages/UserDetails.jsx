@@ -1,6 +1,6 @@
 import React from 'react'
 import { Edit, Apps, BookmarkBorder, AccountBoxOutlined } from '@mui/icons-material'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useGetUserDetails } from '../apiCalls/userApiCalls'
 import Loader from '../components/Loader'
@@ -10,16 +10,19 @@ import StarOutlinedIcon from '@mui/icons-material/StarOutlined';
 import StarOutlineOutlinedIcon from '@mui/icons-material/StarOutlineOutlined';
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined';
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined';
-export default function Profile() {
+
+export default function UserDetails() {
 
     const { currentUser } = useSelector(state => state.userSlice) || null
     console.log(currentUser)
-    const userId = currentUser.data._id
     const token = currentUser.token
+    const { userId } = useParams()
 
 
     const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
     console.log(userDetails?.data)
+
+    const fallbackImage = '/images/avatar.jpg';
 
     return (
         <>
@@ -31,7 +34,7 @@ export default function Profile() {
                                 style={{ backgroundImage: `url("/images/gb1.jpg")` }}
                             >
                                 <div className="profile absolute bg-cover bg-center bg-no-repeat mx-auto right-0 left-0 -bottom-36 z-10 h-56 w-56 border border-gray-50 rounded-full"
-                                    style={{ backgroundImage: `url("/images/profile.jpg")` }}
+                                   style={{  backgroundImage: `url("${userDetails.data.data.profile?.picture}"), url("${fallbackImage}")` }}
                                 >
 
                                 </div>
@@ -41,7 +44,7 @@ export default function Profile() {
                             <div className="left pl-20">
                                 <div className='flex flex-col gap-4'>
                                     <div>
-                                        <h2 className='font-medium text-xl tracking-wide'>{userDetails.data.data.name}</h2>
+                                        <h2 className='font-medium text-xl tracking-wide'>{userDetails.data.data.username}</h2>
                                     </div>
                                     <div className='flex items-center gap-2'>
                                         <button className='px-4 py-[6px] flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm rounded-lg'>
@@ -75,7 +78,7 @@ export default function Profile() {
                                 </div>
                                 <div className='flex flex-col'>
                                     <div className='flex gap-3 pt-3'>
-                                        <span className='font-medium'>{userDetails.data.data.followers.length}</span>
+                                        <span className='font-medium'>{userDetails.data.data?.posts.length}</span>
                                         <h3 className='font-normal'>Posts</h3>
                                     </div>
                                     <div className='flex gap-3'>
@@ -88,12 +91,14 @@ export default function Profile() {
                                     </div>
                                 </div>
                             </div>
+                            {userDetails.data.data.profile ? 
                             <div className="right w-1/3 pl-8">
                                 <div>
                                     <h3 className='font-medium text-lg pb-1'>Intro</h3>
-                                    <h4 className='text-sm'>{userDetails.data.data.profile.bio}</h4>
+                                    <h4 className='text-sm'>{userDetails.data.data.profile?.bio}</h4>
                                 </div>
-                            </div>
+                            </div> : null
+                              }
                         </div>
 
                         <div className='buttons flex justify-center gap-8'>
@@ -118,47 +123,22 @@ export default function Profile() {
                         </div>
 
                         <div className='py-20'>
-                            <div className='flex flex-col gap-[6px]'>
-                                <div className='flex items-stretch box-border flex-row flex-shrink-0'>
-                                    <div className='post-box mr-[6px] h-96 w-[32%] rounded-[4px] bg-cover bg-center bg-no-repeat'
-                                        style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                    </div>
-                                    <div className='post-box mr-[6px] h-96 w-[32%] rounded-[4px] bg-cover bg-center bg-no-repeat'
-                                        style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                    </div>
-                                    <div className='post-box mr-[6px] h-96 w-[32%] rounded-[4px] bg-cover bg-center bg-no-repeat'
-                                        style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                    </div>
-                                </div>
-                                <div className='flex items-stretch box-border flex-row flex-shrink-0'>
-                                    <div className='post-box mr-[6px] h-96 w-[32%] rounded-[4px] bg-cover bg-center bg-no-repeat'
-                                        style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                    </div>
-                                    <div className='post-box mr-[6px] h-96 w-[32%] rounded-[4px] bg-cover bg-center bg-no-repeat'
-                                        style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                    </div>
-                                    <div className='post-box mr-[6px] h-96 w-[32%] rounded-[4px] bg-cover bg-center bg-no-repeat'
-                                        style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                    </div>
-                                </div>
-                                <div className='flex items-stretch box-border flex-row flex-shrink-0'>
-                                    <div className='post-box mr-[6px] h-96 w-[32%] rounded-[4px] bg-cover bg-center bg-no-repeat'
-                                        style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                    </div>
-                                    <div className='post-box mr-[6px] h-96 w-[32%] rounded-[4px] bg-cover bg-center bg-no-repeat'
-                                    >
-                                    </div>
-                                    <div className='post-box mr-[6px] h-96 w-[32%] rounded-[4px] bg-cover bg-center bg-no-repeat'
-                                    >
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        {Array.from({ length: Math.ceil(userDetails.data.data?.posts.length / 3) }, (_, index) => (
+            <div className={`flex items-stretch box-border flex-row flex-shrink-0 ${index < Math.ceil(userDetails.data.data?.posts.length / 3) - 1 && 'mb-2'}`} key={index}>
+                {userDetails.data.data?.posts.slice(index * 3, (index + 1) * 3).map((post) => (
+                    <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
+                        style={{ backgroundImage: `url(${post.imageUrl})` }}
+                        key={post._id}>
+                    </div>
+                ))}
+            </div>
+        ))}
+    </div>
                     </div>
                 </div>
 
             )}
-            <div className='fixed inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
+            <div className='fixed hidden inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
                 <div className='more-options hidden flex items-center justify-between flex-col close-card bg-white absolute w-[360px] rounded-2xl shadow-lg overflow-hidden'>
                     <div className='flex flex-col w-full'>
                         <button className='py-3 border-t w-full font-medium text-red-600 hover:bg-slate-100'>Block</button>

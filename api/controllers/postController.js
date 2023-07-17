@@ -86,16 +86,18 @@ exports.updatePost=asyncHandler(async(req,res)=>{
 //access  private
 exports.getAllPosts=asyncHandler(async(req,res)=>{
   const posts=await Post.find()
-  .populate('owner','name profile.picture')
-  .populate('likes','name profile.picture')
+  .populate('owner','username profile.picture')
+  .populate('likes','username profile.picture')
   .populate('comments')
   .populate({
     path: 'comments',
     populate: {
       path: 'owner',
-      select: 'name profile.picture'
+      select: 'username profile.picture'
     }
-  });
+  })
+  .populate('media')
+  .populate('tags')
 
   if (!posts) {
     return next(new ErrorResponse(`No posts found`, 404));
@@ -113,16 +115,18 @@ exports.getAllPosts=asyncHandler(async(req,res)=>{
 //access  private
 exports.getPost=asyncHandler(async(req,res)=>{
        const post=await Post.findById(req.params.id)
-       .populate('owner','name profile.picture')
-       .populate('likes','name profile.picture')
+       .populate('owner','username profile.picture')
+       .populate('likes','username profile.picture')
        .populate('comments')
        .populate({
         path: 'comments',
         populate: {
           path: 'owner',
-          select: 'name profile.picture'
+          select: 'username profile.picture'
         }
-      });
+      })
+      .populate('media')
+      .populate('tags')
 
       if (!post) {
         return next(new ErrorResponse(`Post not found with id of ${req.params.id}`, 404));

@@ -4,7 +4,9 @@ import { useCreateUser } from '../apiCalls/userApiCalls';
 
 export default function Register() {
 
-  const nameInputElement = useRef();
+  const usernameInputElement = useRef();
+  const firstNameInputElement = useRef();
+  const lastNameInputElement = useRef();
   const emailInputElement = useRef();
   const passwordInputElement = useRef();
 
@@ -14,7 +16,9 @@ export default function Register() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = {
-      name: nameInputElement.current?.value,
+      username: usernameInputElement.current?.value,
+      firstName: firstNameInputElement.current?.value,
+      lastName: lastNameInputElement.current?.value,
       email: emailInputElement.current?.value,
       password: passwordInputElement.current?.value,
     };
@@ -50,9 +54,27 @@ export default function Register() {
                     <input
                      type="text"
                       className='outline-none w-full text-sm'
-                       name='name'
+                       name='firstName'
                        placeholder='micheal'
-                       ref={nameInputElement}
+                       ref={firstNameInputElement}
+                       />
+                  </div>
+                  <div className='w-full py-2 px-2 border border-gray-200 rounded-md'>
+                    <input
+                     type="text"
+                      className='outline-none w-full text-sm'
+                       name='lastName'
+                       placeholder='jackson'
+                       ref={lastNameInputElement}
+                       />
+                  </div>
+                  <div className='w-full py-2 px-2 border border-gray-200 rounded-md'>
+                    <input
+                     type="text"
+                      className='outline-none w-full text-sm'
+                       name='username'
+                       placeholder='micheal'
+                       ref={usernameInputElement}
                        />
                   </div>
                   <div className='w-full py-2 px-2 border border-gray-200 rounded-md'>

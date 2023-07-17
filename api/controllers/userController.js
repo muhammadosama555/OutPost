@@ -35,7 +35,21 @@ exports.getAllUser = async (req, res) => {
   if (name) {
     query = { name: { $regex: name, $options: 'i' } };
   }
-    let users = await User.find(query);
+    let users = await User.find(query)
+    .populate('followers following','username profile.picture')
+    .populate('posts')
+    .populate({
+      path: 'posts',
+      populate: {
+        path: 'comments',
+        model: 'Comment', // make sure to specify the model
+        populate: {
+          path: 'owner',
+          model: 'User', // specify the model here too
+          select: 'username profile.picture'
+        }
+      }
+    });
 
     if (!users) {
       return next(new ErrorResponse(`No users found`, 404));
@@ -55,6 +69,20 @@ exports.getAllUser = async (req, res) => {
 //access  private
 exports.getUser=asyncHandler(async(req,res)=>{
   const user= await User.findById(req.params.id)
+  .populate('followers following','username profile.picture')
+  .populate('posts')
+  .populate({
+    path: 'posts',
+    populate: {
+      path: 'comments',
+      model: 'Comment', // make sure to specify the model
+      populate: {
+        path: 'owner',
+        model: 'User', // specify the model here too
+        select: 'username profile.picture'
+      }
+    }
+  });
 
   if (!user) {
     return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 404));
