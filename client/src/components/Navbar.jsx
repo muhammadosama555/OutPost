@@ -71,7 +71,7 @@ export default function Navbar() {
             <div className='Profile'>
               <div className='w-8 h-8 bg-slate-300 rounded-full'
               style={{
-                  backgroundImage: `url("${userDetails.data.data.profile.picture}"), url("${fallbackImage}")`,
+                  backgroundImage: `url("${userDetails.data?.profile?.picture}"), url("${fallbackImage}")`,
                   backgroundPosition: 'center',
                   backgroundSize: 'cover',
                   backgroundRepeat: 'no-repeat',
