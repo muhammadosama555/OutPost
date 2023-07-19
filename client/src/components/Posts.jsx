@@ -16,7 +16,7 @@ export default function Posts({ post }) {
             <div className="border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center">
               <div className="border border-gray-300 w-8 h-8 rounded-full"
               style={{
-                      backgroundImage: `url("${post.owner.profile?.picture}"), url("${fallbackImage}")`,
+                      backgroundImage: `url("${post.owner?.profile?.picture}"), url("${fallbackImage}")`,
                       backgroundPosition: 'center',
                       backgroundSize: 'cover',
                       backgroundRepeat: 'no-repeat',

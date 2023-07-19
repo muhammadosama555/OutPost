@@ -5,6 +5,9 @@ const Post = require('../models/post');
 const User = require('../models/User');
 const Tag = require('../models/Tag');
 const asyncHandler = require("../middlewares/asyncHandler");
+const sharp = require("sharp");
+const cloudinary = require("../config/cloudinary.js");
+
 
 //------------------------------------------------------ Create Post  -----------------------------------------//
 //desc    Create Post
@@ -156,3 +159,41 @@ exports.deletePost=asyncHandler(async(req,res)=>{
         message: 'post deleted successfully'
       })
 })
+
+
+
+
+//Update user Image
+exports.updatePostImage = asyncHandler(async (req, res, next) => {
+  
+  if (!req.file) {
+    return next(new ErrorResponse("Please upload an image file", 400));
+  }
+  
+  const post = await Post.findById(req.params.id);
+ 
+  if (!post) {
+    return next(new ErrorResponse("User not found", 404));
+  }
+  const processedImage = await sharp(req.file.buffer)
+  .resize(500, 500)
+  .jpeg({ quality: 70 })
+  .toBuffer();
+  
+  // Convert the buffer to a data URI
+  const dataURI = `data:image/jpeg;base64,${processedImage.toString("base64")}`;
+  
+  const result = await cloudinary.uploader.upload(dataURI, {
+    resource_type: "image",
+    format: "jpg",
+    public_id: `${req.user.id}_${Date.now()}`,
+  });
+
+  post.imageUrl = result.secure_url;
+  const updatedUser = await post.save();
+
+  res.status(200).json({
+    success: true,
+    data: updatedUser
+  });
+});

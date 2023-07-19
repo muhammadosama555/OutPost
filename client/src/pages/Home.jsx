@@ -21,6 +21,7 @@ export default function Home() {
 
   const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
   const { isLoading: isPostsLoading, data: posts } = useGetPosts(token)
+  console.log(posts?.data)
 
   const fallbackImage = '/images/avatar.jpg';
 
@@ -29,7 +30,7 @@ export default function Home() {
         <div className='center-content'>
             <Status/>
        
-            {isPostsLoading ? <Loader /> :
+          {isPostsLoading ? <Loader /> :
               (
                 <>
                   {posts.data.data.map((post) => (
@@ -37,7 +38,7 @@ export default function Home() {
                   ))}
                 </>
               )
-            }
+            } 
      
         </div>
 
@@ -56,7 +57,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className=' right-side-bar pl-6 pr-6 pt-8 w-[400px] border-l h-full border-gray-200'>
+        <div className=' right-side-bar pl-6 pr-6 pt-8 w-[400px] border-l h-screen border-gray-200'>
           {isUserLoading ? <Loader /> : (
             <div className='profile relative flex items-center gap-4'>
               <div className='w-14 flex items-center justify-center'>
@@ -70,8 +71,8 @@ export default function Home() {
                 </div>
               </div>
               <div className='flex flex-col -space-y-1'>
-                <p className='text-sm font-bold tracking-wide'>{userDetails.data.data.name}</p>
-                <p className='text-lg text-[#7e7979] uppercase'>{userDetails.data.data.name}</p>
+                <p className='text-sm font-bold tracking-wide'>{userDetails.data.name}</p>
+                <p className='text-lg text-[#7e7979] uppercase'>{userDetails.data.name}</p>
               </div>
               <p className='absolute right-0 text-sm font-bold tracking-wide'>Switch</p>
             </div>

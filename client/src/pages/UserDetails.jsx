@@ -141,7 +141,7 @@ export default function UserDetails() {
             <div className='fixed hidden inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
                 <div className='more-options hidden flex items-center justify-between flex-col close-card bg-white absolute w-[360px] rounded-2xl shadow-lg overflow-hidden'>
                     <div className='flex flex-col w-full'>
-                        <button className='py-3 border-t w-full font-medium text-red-600 hover:bg-slate-100'>Block</button>
+                        <button className='py-3 w-full font-medium text-red-600 hover:bg-slate-100'>Block</button>
                         <button className='py-3 border-t w-full font-medium text-red-600 hover:bg-slate-100'>Restrict</button>
                         <button className='py-3 border-t w-full font-medium text-red-600 hover:bg-slate-100'>Report</button>
                         <button className='py-3 border-t w-full hover:bg-slate-100'>About this account</button>
