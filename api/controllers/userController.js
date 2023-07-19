@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const ErrorResponse= require("../utils/errorResponse")
 const asyncHandler=require('../middlewares/asyncHandler')
+const sharp = require("sharp");
+const cloudinary = require("../config/cloudinary.js");
 
 //------------------------------------------------------ Update User  -----------------------------------------//
 //desc    Update User
@@ -35,7 +37,21 @@ exports.getAllUser = async (req, res) => {
   if (name) {
     query = { name: { $regex: name, $options: 'i' } };
   }
-    let users = await User.find(query);
+    let users = await User.find(query)
+    .populate('followers following','username profile.picture')
+    .populate('posts')
+    .populate({
+      path: 'posts',
+      populate: {
+        path: 'comments',
+        model: 'Comment', // make sure to specify the model
+        populate: {
+          path: 'owner',
+          model: 'User', // specify the model here too
+          select: 'username profile.picture'
+        }
+      }
+    });
 
     if (!users) {
       return next(new ErrorResponse(`No users found`, 404));
@@ -55,6 +71,20 @@ exports.getAllUser = async (req, res) => {
 //access  private
 exports.getUser=asyncHandler(async(req,res)=>{
   const user= await User.findById(req.params.id)
+  .populate('followers following','username profile.picture')
+  .populate('posts')
+  .populate({
+    path: 'posts',
+    populate: {
+      path: 'comments',
+      model: 'Comment', // make sure to specify the model
+      populate: {
+        path: 'owner',
+        model: 'User', // specify the model here too
+        select: 'username profile.picture'
+      }
+    }
+  });
 
   if (!user) {
     return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 404));
@@ -125,6 +155,41 @@ exports.createProfile =  asyncHandler( async(req, res,next) => {
 })
 
 
+//Update user Image
+exports.updateUserImage = asyncHandler(async (req, res, next) => {
+  console.log(req.file);
+  if (!req.file) {
+    return next(new ErrorResponse("Please upload an image file", 400));
+  }
+  
+  const user = await User.findById(req.params.id);
+  console.log(user);
+  if (!user) {
+    return next(new ErrorResponse("User not found", 404));
+  }
+  const processedImage = await sharp(req.file.buffer)
+  .resize(500, 500)
+  .jpeg({ quality: 70 })
+  .toBuffer();
+  
+  // Convert the buffer to a data URI
+  const dataURI = `data:image/jpeg;base64,${processedImage.toString("base64")}`;
+  
+  const result = await cloudinary.uploader.upload(dataURI, {
+    resource_type: "image",
+    format: "jpg",
+    public_id: `${req.user.id}_${Date.now()}`,
+  });
+
+  user.profile.picture = result.secure_url;
+  const updatedUser = await user.save();
+
+  res.status(200).json({
+    success: true,
+    data: updatedUser
+  });
+});
+  
 
 
 

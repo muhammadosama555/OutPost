@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+const moment = require('moment');
 
 export default function Posts({ post }) {
 
@@ -20,12 +21,12 @@ export default function Posts({ post }) {
                     }}>
               </div>
             </div>
-            <Link to="/userDetails">
-              <h2 className="UserName font-medium pl-2">Lorem Ipsum</h2>
+            <Link to={`/userDetails/${post.owner._id}`}>
+              <h2 className="UserName font-medium pl-2">{post.owner.username}</h2>
             </Link>
             <div className="time flex items-center pl-3 gap-1 pt-[1px]">
               <div className="h-1 w-1 rounded-full bg-gray-500"></div>
-              <h2 className="text-gray-500">1d</h2>
+              <h2 className="text-gray-500">{moment(post.createdAt).fromNow()}</h2>
             </div>
           </div>
           <div className="more flex gap-1">
@@ -148,7 +149,7 @@ export default function Posts({ post }) {
           </div>
           <div className="pt-3">
             <h2 className="text-sm">
-              <span className="text-sm font-medium">{post.owner.name} </span>
+              <span className="text-sm font-medium">{post.owner.username} </span>
               {post.title}
             </h2>
           </div>

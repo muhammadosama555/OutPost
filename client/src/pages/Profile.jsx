@@ -18,6 +18,8 @@ export default function Profile() {
      const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
      console.log(userDetails?.data)
 
+     const fallbackImage = '/images/avatar.jpg';
+
      return (
           <>
                {isUserLoading ? <Loader /> : (
@@ -28,7 +30,7 @@ export default function Profile() {
                                    <div className='cover relative border rounded-b-lg bg-cover bg-center bg-no-repeat h-[430px] w-full border-gray-200'
                                         style={{ backgroundImage: `url("/images/gb1.jpg")` }}>
                                         <div className="profile absolute bg-cover bg-center bg-no-repeat mx-auto right-0 left-0 -bottom-36 z-10 h-56 w-56 border border-gray-50 rounded-full"
-                                             style={{ backgroundImage: `url("/images/profile.jpg")` }}>
+                                             style={{  backgroundImage: `url("${userDetails.data.data.profile?.picture}"), url("${fallbackImage}")` }}>
 
                                         </div>
                                    </div>
@@ -37,7 +39,7 @@ export default function Profile() {
                                    <div className="left pl-20">
                                         <div className='flex flex-col gap-4'>
                                              <div>
-                                                  <h2 className='font-medium text-xl tracking-wide'>{userDetails.data.data.name}</h2>
+                                                  <h2 className='font-medium text-xl tracking-wide'>{userDetails.data.data.username}</h2>
                                              </div>
                                              <div className='flex items-center gap-4'>
                                                   <button className='px-5 py-[6px] flex items-center gap-1 bg-gray-200 font-medium text-sm rounded-lg hover:bg-gray-300'>
@@ -70,12 +72,14 @@ export default function Profile() {
                                              <h3 className='font-normal'>following</h3>
                                         </div>
                                    </div>
+                                   {userDetails.data.data.profile ? 
                                    <div className="right w-1/3 pl-8">
                                         <div>
                                              <h3 className='font-medium text-lg pb-1'>Intro</h3>
-                                             <h4 className='text-sm'>{userDetails.data.data.profile.bio}</h4>
+                                             <h4 className='text-sm'>{userDetails.data.data.profile?.bio}</h4>
                                         </div>
-                                   </div>
+                                   </div>: null
+                              }
                               </div>
 
                               <div className='buttons flex justify-center gap-8'>
@@ -100,44 +104,17 @@ export default function Profile() {
                               </div>
 
                               <div className='py-20'>
-                                   <div className='flex flex-col gap-[6px]'>
-                                        <div className='flex items-stretch box-border flex-row flex-shrink-0'>
-                                             <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
-                                                  style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                             </div>
-                                             <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
-                                                  style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                             </div>
-                                             <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
-                                                  style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                             </div>
-                                        </div>
-                                        <div className='flex items-stretch box-border flex-row flex-shrink-0'>
-                                             <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
-                                                  style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                             </div>
-                                             <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
-                                                  style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                             </div>
-                                             <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
-                                                  style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                             </div>
-                                        </div>
-                                        <div className='flex items-stretch box-border flex-row flex-shrink-0'>
-                                             <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
-                                                  style={{ backgroundImage: `url("/images/profile.jpg")` }}>
-                                             </div>
-                                             <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
-                                             >
-                                             </div>
-                                             <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
-                                             >
-                                             </div>
-                                        </div>
-
-
-                                   </div>
-                              </div>
+        {Array.from({ length: Math.ceil(userDetails.data.data?.posts.length / 3) }, (_, index) => (
+            <div className={`flex items-stretch box-border flex-row flex-shrink-0 ${index < Math.ceil(userDetails.data.data?.posts.length / 3) - 1 && 'mb-2'}`} key={index}>
+                {userDetails.data.data?.posts.slice(index * 3, (index + 1) * 3).map((post) => (
+                    <div className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
+                        style={{ backgroundImage: `url(${post.imageUrl})` }}
+                        key={post._id}>
+                    </div>
+                ))}
+            </div>
+        ))}
+    </div>
                          </div>
                     </div>
                     <div className='fixed hidden inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>

@@ -3,6 +3,9 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const ErrorResponse= require("../utils/errorResponse")
 
 //------------------------------------------------------ Create Message  -----------------------------------------//
+//desc    Create Message
+//route   /api/messages
+//access  private
 exports.createMessage = asyncHandler(async (req, res, next) => {
   const { conversation, sender, text } = req.body;
 
@@ -17,6 +20,9 @@ exports.createMessage = asyncHandler(async (req, res, next) => {
 });
 
 //------------------------------------------------------ Update Message  -----------------------------------------//
+//desc    Update Message
+//route   /api/messages/:id
+//access  private
 exports.updateMessage = asyncHandler(async (req, res, next) => {
     let message = await Message.findById(req.params.id);
   
@@ -36,6 +42,9 @@ exports.updateMessage = asyncHandler(async (req, res, next) => {
   });
 
 //------------------------------------------------------ Get All Messages -----------------------------------------//
+//desc    Get All Messages
+//route   /api/messages
+//access  private
 exports.getAllMessages = asyncHandler(async (req, res, next) => {
   const messages = await Message.find()
     .populate('conversation','members')
@@ -52,6 +61,9 @@ exports.getAllMessages = asyncHandler(async (req, res, next) => {
 });
 
 //------------------------------------------------------ Get Single Message  -----------------------------------------//
+//desc    Get Single Message
+//route   /api/messages/:id
+//access  private
 exports.getMessage = asyncHandler(async (req, res, next) => {
   const message = await Message.findById(req.params.id)
     .populate('conversation','members')
@@ -68,6 +80,9 @@ exports.getMessage = asyncHandler(async (req, res, next) => {
 });
 
 //------------------------------------------------------ Delete Message  -----------------------------------------//
+//desc    Delete Message
+//route   /api/messages/:id
+//access  private
 exports.deleteMessage = asyncHandler(async (req, res, next) => {
   const message = await Message.findByIdAndDelete(req.params.id);
 
@@ -83,6 +98,9 @@ exports.deleteMessage = asyncHandler(async (req, res, next) => {
 
 
 //------------------------------------------------------ Get Messages for a Conversation  -----------------------------------------//
+//desc    Get Messages for a Conversation
+//route   /api/messages/conversation/:conversationId
+//access  private
 exports.getConversationMessages = asyncHandler(async (req, res, next) => {
   const messages = await Message.find({ conversation: req.params.conversationId })
     .populate('sender', 'username');

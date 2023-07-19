@@ -34,7 +34,7 @@ function App() {
     <Routes>
     <Route path='/' element={<Home/>}/>
     <Route path='/profile' element={<Profile/>}/>
-    <Route path='/userDetails' element ={<UserDetails/>}></Route>
+    <Route path='/userDetails/:userId' element ={<UserDetails/>}></Route>
     <Route path='/settings' element= {<Settings/>}></Route>
     <Route path='/messages' element={<Messages/>}/>
     </Routes>

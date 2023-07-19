@@ -63,7 +63,7 @@ export default function Home() {
               <div className='w-14 flex items-center justify-center'>
                 <div className='w-14 h-14 border border-gray-200  rounded-full'
                   style={{
-                    backgroundImage: `url("${userDetails.data?.profile?.picture}"), url("${fallbackImage}")`,
+                    backgroundImage: `url("${userDetails.data.data.profile?.picture}"), url("${fallbackImage}")`,
                     backgroundPosition: 'center',
                     backgroundSize: 'cover',
                     backgroundRepeat: 'no-repeat',
