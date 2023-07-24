@@ -15,7 +15,7 @@ const cloudinary = require("../config/cloudinary.js");
 //access  private
 exports.createPost = asyncHandler(async (req, res, next) => {
 
-  const { title, content, tags } = req.body;
+  const { title, content } = req.body;
 
   // Get the authorization header from the request
   const authHeader = req.headers.authorization;
@@ -56,7 +56,6 @@ exports.createPost = asyncHandler(async (req, res, next) => {
     content: content,
     imageUrl: imageUrl,
     owner: userId, // Set the owner field to the userId
-    tags,
   });
   
   // Save the new post to the database
