@@ -54,7 +54,19 @@ const userSchema = new Schema({
   followers: [{
     type: Schema.Types.ObjectId,
     ref: 'User'
-  }]
+  }],
+  sentNotifications: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Notification'
+    }
+  ],
+  receivedNotifications: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Notification'
+    }
+  ]
 }, { timestamps: true });
 
  //Encrypt password using bcrypt

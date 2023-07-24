@@ -1,7 +1,7 @@
 import React from 'react'
 import Posts from '../components/Posts'
 import { Link } from 'react-router-dom';
-import CreatePost from '../components/CreatePost'
+
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import { useSelector } from 'react-redux'
 import { useGetUserDetails } from '../apiCalls/userApiCalls'
@@ -42,20 +42,7 @@ export default function Home() {
      
         </div>
 
-        <div className='create-post hidden fixed inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
-          <div className='absolute right-6 top-3'><CloseOutlinedIcon style={{ fontSize: 32 }} /></div>
-          <CreatePost />
-          <div className='cancel-post  flex items-center justify-between flex-col close-card bg-white h-52 absolute w-[360px] rounded-2xl shadow-lg'>
-            <div className='flex flex-col justify-center text-center h-1/2 w-full'>
-              <h3 className='text-2xl'>Discard Post?</h3>
-              <h4 className='pt-1 text-gray-500'>If you leave your edits won't be saved.</h4>
-            </div>
-            <div className='flex flex-col w-full'>
-              <button className='py-3 border-t w-full font-medium text-red-600 hover:bg-slate-100'>Discard</button>
-              <button className='py-3 border-t w-full hover:bg-slate-100'>Cancel</button>
-            </div>
-          </div>
-        </div>
+        
 
         <div className=' right-side-bar pl-6 pr-6 pt-8 w-[400px] border-l h-screen border-gray-200'>
           {isUserLoading ? <Loader /> : (
@@ -71,8 +58,8 @@ export default function Home() {
                 </div>
               </div>
               <div className='flex flex-col -space-y-1'>
-                <p className='text-sm font-bold tracking-wide'>{userDetails.data.name}</p>
-                <p className='text-lg text-[#7e7979] uppercase'>{userDetails.data.name}</p>
+                <p className='text-sm font-bold tracking-wide'>{`${userDetails.data.data.firstName} ${userDetails.data.data.lastName}`}</p>
+                <p className='text-lg text-[#7e7979] uppercase'>{userDetails.data.data.username}</p>
               </div>
               <p className='absolute right-0 text-sm font-bold tracking-wide'>Switch</p>
             </div>

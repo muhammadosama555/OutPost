@@ -51,7 +51,8 @@ exports.getAllUser = async (req, res) => {
           select: 'username profile.picture'
         }
       }
-    });
+    })
+    .populate('sentNotifications receivedNotifications')
 
     if (!users) {
       return next(new ErrorResponse(`No users found`, 404));
@@ -84,7 +85,8 @@ exports.getUser=asyncHandler(async(req,res)=>{
         select: 'username profile.picture'
       }
     }
-  });
+  })
+  .populate('sentNotifications receivedNotifications')
 
   if (!user) {
     return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 404));

@@ -1,6 +1,7 @@
 const Notification = require('../models/Notification');
 const asyncHandler = require("../middlewares/asyncHandler");
 const ErrorResponse= require("../utils/errorResponse")
+const User = require('../models/User');
 
 //------------------------------------------------------ Create Notification  -----------------------------------------//
 //desc    Create Notification
@@ -19,11 +20,29 @@ exports.createNotification = asyncHandler(async (req, res, next) => {
 
   await notification.save();
 
+  // Find the sender and add the notification to their sent notifications list
+  const userSender = await User.findById(sender);
+  if (!userSender) {
+    return next(new ErrorResponse(`Sender not found with id of ${sender}`, 404));
+  }
+  userSender.sentNotifications.push(notification);
+  await userSender.save();
+
+  // Find the recipient and add the notification to their received notifications list
+  const userRecipient = await User.findById(recipient);
+  if (!userRecipient) {
+    return next(new ErrorResponse(`Recipient not found with id of ${recipient}`, 404));
+  }
+  userRecipient.receivedNotifications.push(notification);
+  await userRecipient.save();
+
   res.status(201).json({
     success: true,
     data: notification
   });
 });
+
+
 
 //------------------------------------------------------ Update Notification  -----------------------------------------//
 //desc    Update Notification

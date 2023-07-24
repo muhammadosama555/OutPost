@@ -14,10 +14,6 @@ const postSchema = new Schema({
     type: String,
     default: null,
   },
-  tags: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Tag'
-  }],
   media: [{
     type: Schema.Types.ObjectId,
     ref: 'Media'

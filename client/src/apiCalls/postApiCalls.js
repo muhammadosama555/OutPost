@@ -17,3 +17,24 @@ const getPosts = async (token) => {
   export const useGetPosts = (token) => {
     return useQuery(["posts",token], () => getPosts(token));
   };
+
+  // create post
+
+export const createPost = async (postData) => {
+  return axios.post(`${API_BASE_URL}/posts`, postData, {
+    headers: {
+      authorization: "Bearer " + postData.token,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const useCreatePost = () => {
+  const navigate = useNavigate();
+  return useMutation(createPost, {
+    onSuccess: (data) => {
+      navigate("/");
+      toast.success('Post is Created Sucessfully!');
+    },
+  });
+};
