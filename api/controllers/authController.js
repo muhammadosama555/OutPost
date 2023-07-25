@@ -78,10 +78,7 @@ exports.loginUser = async (req,res,next)=>{
 //route   /api/auth/logout
 //access  private
 exports.logout = asyncHandler(async (req, res, next) => {
-  // Check if the user is logged in
-  if (!req.user) {
-    return next(new ErrorResponse('No user is currently logged in', 401));
-   }
+  
     res.cookie("token", null, {
       expires: new Date(Date.now()),
       httpOnly: true,

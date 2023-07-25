@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 export default function Navbar() { 
 
-  const { currentUser } = useSelector(state => state.userSlice) || null
+  const { currentUser } = useSelector(state => state.userSlice)
   console.log(currentUser)
 
   const userId = currentUser.data._id
@@ -30,12 +30,8 @@ export default function Navbar() {
             <div className="logo">
               <h3 >OutPost</h3>
             </div>
-            <button onClick={handleLogout}>
-             {isLogoutLoading ? "...is Logging out" : "Logout"}
-              </button> 
             <div className="searchbar">
               <form>
-                <label htmlFor="default-search" className="mb-2 text-sm font-medium sr-only dark:text-white">Search</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg aria-label="Search" className="w-5 h-5 text-gray-600" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height={24} role="img" viewBox="0 0 24 24" width={24}><path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} /><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} x1="16.511" x2={22} y1="16.511" y2={22} /></svg>

@@ -8,7 +8,7 @@ const router=express.Router()
 
 router.use(protect); // Protect the routes below for authenticated users
 
-router.post('/',createPost)
+router.post('/', upload.single("image"), createPost)
 router.put('/:id',updatePost)
 router.put('/:id/updatePostImage',upload.single("image"),updatePostImage)
 router.get('/',getAllPosts)
