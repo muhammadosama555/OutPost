@@ -126,7 +126,7 @@ exports.deleteUser = async (req, res) => {
 //route   /api/users/:id/profile
 //access  private
 exports.createProfile =  asyncHandler( async(req, res,next) => {
-  const { profilePicture, bio, contact } = req.body;
+  const {  bio, contact } = req.body;
   const userId = req.params.id;
 
  
@@ -136,9 +136,7 @@ exports.createProfile =  asyncHandler( async(req, res,next) => {
       return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 404));
     }
 
-    if (profilePicture) {
-      user.profile.picture = profilePicture;
-    }
+    
 
     if (bio) {
       user.profile.bio = bio;
