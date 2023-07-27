@@ -89,3 +89,29 @@ exports.logout = asyncHandler(async (req, res, next) => {
       message: "User logged out",
     });
   });
+
+
+  //desc    Change Password
+//route   Post /api/v1/admin/change-password
+//access  private
+exports.changePassword = asyncHandler(async (req, res, next) => {
+  const { oldPassword, newPassword } = req.body;
+  const userId = req.user.id;
+
+  // Find the user by ID
+  const user = await User.findById(userId).select("+password");
+
+  // Check if the provided old password matches the user's current password
+  if (!(await user.matchPassword(oldPassword))) {
+    return next(new ErrorResponse('Invalid old password', 400));
+  }
+
+  // Set the new password and save the user
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Password updated successfully',
+  });
+});

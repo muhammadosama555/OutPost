@@ -17,7 +17,7 @@ router.put('/:id/profile',createProfile)
 
 
 
-module.exports=router
+module.exports=router;
 
 
 
