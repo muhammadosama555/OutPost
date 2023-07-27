@@ -21,6 +21,7 @@ const getPosts = async (token) => {
   // create post
 
 export const createPost = async (postData) => {
+  console.log(postData)
   return axios.post(`${API_BASE_URL}/posts`, postData, {
     headers: {
       authorization: "Bearer " + postData.token,
@@ -31,10 +32,32 @@ export const createPost = async (postData) => {
 
 export const useCreatePost = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   return useMutation(createPost, {
     onSuccess: (data) => {
       navigate("/");
       toast.success('Post is Created Sucessfully!');
+      queryClient.invalidateQueries("posts");
+    },
+  });
+};
+
+  // like post
+
+export const likePost = async (postData) => {
+  console.log(postData)
+  return axios.post(`${API_BASE_URL}/posts/${postData.postId}/like`, postData, {
+    headers: {
+      authorization: "Bearer " + postData.token,
+    },
+  });
+};
+
+export const useLikePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation(likePost, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("posts");
     },
   });
 };

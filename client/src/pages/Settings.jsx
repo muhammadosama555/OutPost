@@ -6,8 +6,14 @@ import WhatUSee from '../components/WhatUSee'
 import WhoCanSeeYourContent from '../components/WhoCanSeeYourContent'
 import PersonalDetails from '../components/PersonalDetails'
 import Security from '../components/Security'
+import { useLocation } from 'react-router-dom'
 
 export default function Settings() {
+
+   const location = useLocation()
+   const path = location.pathname
+   console.log(path)
+
     return (
         <>
             <div className='w-[80%]'>
@@ -25,13 +31,13 @@ export default function Settings() {
                             <button className='py-[10px] pl-6 text-left hover:bg-gray-50 border-l-4 border-gray-50 hover:border-l-4 hover:border-gray-200 hover:font-medium'><span className='text-sm'>Personal Details</span></button>
                         </div>
                         <div className="right w-[80%]">
-                            {/* <EditProfile></EditProfile> */}
+                            {path == "/settings/editProfile" ? <EditProfile/> : null}
                             {/* <EmailNoti></EmailNoti> */}
                             {/* <PushNoti></PushNoti> */}
                             {/* <WhatUSee></WhatUSee> */}
                             {/* <WhoCanSeeYourContent></WhoCanSeeYourContent> */}
                             {/* <PersonalDetails></PersonalDetails> */}
-                            <Security></Security>
+                            {/* <Security></Security> */}
                         </div>
                     </div>
                 </div>

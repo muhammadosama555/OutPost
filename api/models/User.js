@@ -55,18 +55,13 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   }],
-  sentNotifications: [
+  notifications: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Notification'
     }
   ],
-  receivedNotifications: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Notification'
-    }
-  ]
+  
 }, { timestamps: true });
 
  //Encrypt password using bcrypt

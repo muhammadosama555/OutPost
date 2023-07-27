@@ -2,19 +2,24 @@ import React, { useEffect, useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { Link } from "react-router-dom";
-import { useGetUserDetails } from "../apiCalls/userApiCalls";
+import { useGetUserDetails, useGetUsers, useReadAllNotifications } from "../apiCalls/userApiCalls";
 import Loader from "./Loader";
 import { useSelector } from "react-redux";
 import CreatePost from "./CreatePost";
+import Dialog from '@material-ui/core/Dialog';
+import moment from "moment";
 
 export default function SideBar() {
   const [openSearch, setOpenSearch] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const [openCreatePost, setOpenCreatePost] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
+  const [search, setSearch] = useState("");
+  const [notificationCount, setNotificationCount] = useState(0);
+ 
 
   const { currentUser } = useSelector((state) => state.userSlice);
-  console.log(currentUser);
+
 
   const userId = currentUser.data._id;
   const token = currentUser.token;
@@ -23,7 +28,24 @@ export default function SideBar() {
     userId,
     token
   );
-  console.log(userDetails?.data);
+  const { isLoading: isUsersLoading, data: users } = useGetUsers(token,search);
+
+
+ const {
+  mutate: readAllNotificationsMutate,
+} = useReadAllNotifications();
+
+const readNotificationsHandler = () => {
+  
+  console.log("called")
+  const data = {
+    token: token,
+  };
+  readAllNotificationsMutate(data);
+  
+ 
+  
+};
 
   const toggleSidebarHandler = () => {
     setToggleSidebar(!toggleSidebar);
@@ -38,10 +60,22 @@ export default function SideBar() {
   const openNotificationsHandler = () => {
     setOpenNotifications(!openNotifications);
     setOpenSearch(false);
+    if(notificationCount > 0) {
+      readNotificationsHandler();  
+    }
+    
   };
   const openCreatePostHandler = () => {
     setOpenCreatePost(!openCreatePost);
     setOpenSearch(false);
+    setOpenNotifications(false);
+  };
+  const closeCreatePostHandler = () => {
+    setOpenCreatePost(false);
+    setToggleSidebar(false)
+  };
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
   };
 
   useEffect(() => {
@@ -59,6 +93,33 @@ export default function SideBar() {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const countUnreadNotifications = (notifications) => {
+    return notifications.filter((notification) => !notification.isRead).length;
+  }
+
+  useEffect(() => {
+    if(userDetails && userDetails.data && userDetails.data.data && userDetails.data.data.notifications) {
+      setNotificationCount(countUnreadNotifications(userDetails.data.data.notifications));
+    }
+  }, [userDetails]);
+
+  const groupByPost = new Map();
+
+  userDetails?.data.data?.notifications.forEach(notification => {
+    if (notification.user.username !== currentUser.data.username) {
+      const postId = notification.post._id;
+      const group = groupByPost.get(postId) || { post: notification.post, users: new Set(), type: notification.type };
+      
+      group.users.add(notification.user.username);
+      groupByPost.set(postId, group);
+    }
+  });
+  
+
+const groupedNotifications = Array.from(groupByPost.values());
+
+console.log(groupedNotifications)
 
   const fallbackImage = "/images/avatar.jpg";
 
@@ -243,33 +304,37 @@ export default function SideBar() {
               </div>
             </Link>
             <div
-              onClick={() => {
-                !openNotifications
-                  ? setToggleSidebar(true)
-                  : setToggleSidebar(false);
-                openNotificationsHandler();
-              }}
-              className="Create flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
-            >
-              <div className="w-12 h-12 flex items-center justify-center">
-                <svg
-                  aria-label="Like"
-                  className="x1lliihq x1n2onr6"
-                  color="rgb(38, 38, 38)"
-                  fill="rgb(38, 38, 38)"
-                  height={24}
-                  role="img"
-                  viewBox="0 0 24 24"
-                  width={24}
-                >
-                  <title>Like</title>
-                  <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z" />
-                </svg>
-              </div>
-              {!toggleSidebar ? (
-                <p className="tracking-wide w-full">Notifications</p>
-              ) : null}
-            </div>
+  onClick={() => {
+    !openNotifications ? setToggleSidebar(true) : setToggleSidebar(false);
+    openNotificationsHandler();
+  }}
+  className="Create flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
+>
+  <div className="relative w-12 h-12 flex items-center justify-center">
+    <svg
+      aria-label="Like"
+      className="x1lliihq x1n2onr6"
+      color="rgb(38, 38, 38)"
+      fill="rgb(38, 38, 38)"
+      height={24}
+      role="img"
+      viewBox="0 0 24 24"
+      width={24}
+    >
+      <title>Like</title>
+      <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.260.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z" />
+    </svg>
+    {notificationCount > 0 && (
+      <div
+        className="absolute top-0 right-0 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+      >
+        {notificationCount > 20 ? '20+' : notificationCount}
+      </div>
+    )}
+  </div>
+  {!toggleSidebar ? <p className="tracking-wide w-full">Notifications</p> : null}
+</div>
+
             <div
               onClick={() => {
                 !openCreatePost
@@ -370,7 +435,7 @@ export default function SideBar() {
             </div>
           </div>
         </div>
-
+{/* -----------------------------------------------search model  ---------------------------------------------------------- */}
         <div
           className={`${
             openSearch ? "" : "hidden"
@@ -384,10 +449,12 @@ export default function SideBar() {
                   className="pl-4 pr-7 py-2 bg-gray-200 border w-full h-full rounded-md outline-none"
                   type="text"
                   placeholder="Search"
+                  value={search}
+                  onChange={handleSearchChange}
                 />
                 <div className="w-5 h-5 mr-2 rounded-full bg-[#b8b6b6] flex items-center justify-center cursor-pointer">
                   {" "}
-                  <CloseOutlinedIcon style={{ fontSize: 12 }} />
+                  <CloseOutlinedIcon style={{ fontSize: 12 }} onClick={()=>setSearch("")} />
                 </div>
               </div>
             </div>
@@ -395,11 +462,15 @@ export default function SideBar() {
                             <div className='flex justify-between'><h1>Recent</h1> <button>Clear all</button></div>
                         </div> */}
             <div className="pt-3 overflow-y-auto max-h-[500px]">
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
+
+              {isUserLoading ? <Loader/> :(
+                <>
+                {users?.data.users.map((user)=>(
+                <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
+                <div 
                   className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
                   style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
+                    backgroundImage: `url("${user.profile?.picture}"), url("${fallbackImage}")`,
                     backgroundPosition: "center",
                     backgroundSize: "cover",
                     backgroundRepeat: "no-repeat",
@@ -407,261 +478,26 @@ export default function SideBar() {
                 ></div>
                 <div className="flex flex-col">
                   <div className="name">
-                    <h2>Username</h2>
+                    <h2>{user.firstName} {user.lastName}</h2>
                   </div>
                   <div className="flex gap-1 text-sm text-gray-500">
                     <div className="status">
-                      <h2>Username •</h2>
+                      <h2>{user.username} •</h2>
                     </div>
-                    <div className="time">4.5M Followers</div>
+                    <div className="time">{user.followers.length} Followers</div>
                   </div>
                 </div>
               </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
-              <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
-                <div
-                  className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
-                  style={{
-                    backgroundImage: `url("/images/profile.jpg")`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                ></div>
-                <div className="flex flex-col">
-                  <div className="name">
-                    <h2>Username</h2>
-                  </div>
-                  <div className="flex gap-1 text-sm text-gray-500">
-                    <div className="status">
-                      <h2>Username •</h2>
-                    </div>
-                    <div className="time">4.5M Followers</div>
-                  </div>
-                </div>
-              </div>
+                  ))}
+              
+              </>
+              )}
+
+
             </div>
           </div>
         </div>
+{/* -----------------------------------------------notification model  ---------------------------------------------------------- */}
 
         <div
           className={`${
@@ -675,27 +511,31 @@ export default function SideBar() {
             <div className="overflow-y-auto max-h-[500px]">
               <div className=" border-b border-gray-300 pb-4">
                 <h2 className="py-3 px-4 font-bold text-lg">New</h2>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      <span className="font-medium">UserName </span>is on
-                      Instagram.
-                    </span>{" "}
-                    <span>
-                      <span className="font-medium">UserName2 </span>and 1 other
-                      follow them.
-                    </span>{" "}
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
+               {groupedNotifications.map((notificationGroup) => (
+  <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer">
+    <div>
+      <div className="w-12 h-12 rounded-full bg-gray-200"></div>
+    </div>
+    <div className="w-full pl-3 pr-2 tracking-tight text-sm">
+      <span>
+        {notificationGroup.users.size === 1 
+          ? `${Array.from(notificationGroup.users)[0]} commented on your post title.`
+          : `${Array.from(notificationGroup.users)[0]} and ${notificationGroup.users.size - 1}  others commented on your post title.`
+        }
+      </span>{" "}
+      <div>
+        <span className="time text-gray-500">{moment(notificationGroup.post.createdAt).fromNow()}</span>
+      </div>
+    </div>
+    <div className="">
+      <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
+        Follow
+      </button>
+    </div>
+  </div>
+))}
+
+               
               </div>
               <div className=" border-b border-gray-300 pb-4">
                 <h2 className="py-3 px-4 font-bold text-lg">This Month</h2>
@@ -892,12 +732,12 @@ export default function SideBar() {
             </div>
           </div>
         </div>
-
-        <div className="create-post  fixed inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen">
+        <Dialog open={openCreatePost} onClose={closeCreatePostHandler}>
+        <div className={` ${openCreatePost ? "" : "hidden"} create-post  fixed inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen`}>
           <div className="absolute right-6 top-3">
-            <CloseOutlinedIcon style={{ fontSize: 32 }} onClick={()=>console.log("clicked")}/>
+            <CloseOutlinedIcon style={{ fontSize: 32 }} onClick={closeCreatePostHandler} className="cursor-pointer"/>
           </div>
-          <CreatePost />
+          <CreatePost closeCreatePostHandler={closeCreatePostHandler} />
           <div className=" hidden cancel-post  flex items-center justify-between flex-col close-card bg-white h-52 absolute w-[360px] rounded-2xl shadow-lg">
             <div className="flex flex-col justify-center text-center h-1/2 w-full">
               <h3 className="text-2xl">Discard Post?</h3>
@@ -909,12 +749,13 @@ export default function SideBar() {
               <button className="py-3 border-t w-full font-medium text-red-600 hover:bg-slate-100">
                 Discard
               </button>
-              <button className="py-3 border-t w-full hover:bg-slate-100">
+              <button  className="py-3 border-t w-full hover:bg-slate-100">
                 Cancel
               </button>
             </div>
           </div>
         </div>
+        </Dialog>
       </div>
     </>
   );

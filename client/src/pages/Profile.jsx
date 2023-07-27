@@ -42,9 +42,11 @@ export default function Profile() {
                                                   <h2 className='font-medium text-xl tracking-wide'>{userDetails.data.data.username}</h2>
                                              </div>
                                              <div className='flex items-center gap-4'>
+                                                  <Link to="/settings/editProfile">
                                                   <button className='px-5 py-[6px] flex items-center gap-1 bg-gray-200 font-medium text-sm rounded-lg hover:bg-gray-300'>
                                                        Edit profile
                                                   </button>
+                                                  </Link>
                                                   <div>
                                                        <svg
                                                             aria-label="Options"
@@ -72,7 +74,7 @@ export default function Profile() {
                                              <h3 className='font-normal'>following</h3>
                                         </div>
                                    </div>
-                                   {userDetails.data.data.profile.bio ? 
+                                   {userDetails.data.data.profile?.bio ? 
                                    <div className="right w-1/3 pl-8">
                                         <div>
                                              <h3 className='font-medium text-lg pb-1'>Intro</h3>

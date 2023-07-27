@@ -21,7 +21,7 @@ export default function Home() {
 
   const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
   const { isLoading: isPostsLoading, data: posts } = useGetPosts(token)
-  console.log(posts?.data)
+ 
 
   const fallbackImage = '/images/avatar.jpg';
 

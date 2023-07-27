@@ -15,7 +15,7 @@ const cloudinary = require("../config/cloudinary.js");
 //access  private
 exports.createPost = asyncHandler(async (req, res, next) => {
 
-  const { title, content } = req.body;
+  const { content } = req.body;
 
   // Get the authorization header from the request
   const authHeader = req.headers.authorization;
@@ -52,7 +52,6 @@ exports.createPost = asyncHandler(async (req, res, next) => {
 
   // Create a new post object with the user ID and post data
   const post = new Post({
-    title: title,
     content: content,
     imageUrl: imageUrl,
     owner: userId, // Set the owner field to the userId
@@ -213,5 +212,52 @@ exports.updatePostImage = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: updatedUser
+  });
+});
+
+
+//------------------------------------------------------ Like Post  -----------------------------------------//
+//desc    Like Post
+//route   /api/posts/:postId/like
+//access  private
+exports.likePost = asyncHandler(async (req, res, next) => {
+  // Get the authorization header from the request
+  const authHeader = req.headers.authorization;
+  // If the authorization header doesn't exist, return an error
+  if (!authHeader) {
+    return next(new ErrorResponse('Authorization header missing', 401));
+  }
+  // Extract the token from the authorization header
+  const token = authHeader.split(' ')[1];
+  // Verify the token to get the user ID
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  
+  const userId = decodedToken.id;
+
+  // Find the post by ID
+  const postId = req.params.postId;
+  const post = await Post.findById(postId);
+
+  if (!post) {
+    return next(new ErrorResponse(`Post not found with id of ${postId}`, 404));
+  }
+
+  // Check if the user has already liked the post
+  const isLiked = post.likes.includes(userId);
+
+  // If the user has already liked the post, remove the like
+  if (isLiked) {
+    post.likes.pull(userId); // Remove the user ID from the "likes" array
+  } else {
+    // If the user hasn't liked the post, add the like
+    post.likes.push(userId); // Add the user ID to the "likes" array
+  }
+
+  // Save the updated post
+  const updatedPost = await post.save();
+
+  res.status(200).json({
+    success: true,
+    data: updatedPost,
   });
 });

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -7,11 +7,14 @@ import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 import ExpandLessOutlinedIcon from "@mui/icons-material/ExpandLessOutlined";
 import { useCreatePost } from "../apiCalls/postApiCalls";
 import { useSelector } from "react-redux";
+import Loader from "./Loader";
+import { useGetUserDetails } from "../apiCalls/userApiCalls";
 
-export default function CreatePost() {
+export default function CreatePost({closeCreatePostHandler}) {
+  
   const { currentUser } = useSelector((state) => state.userSlice);
-  console.log(currentUser);
 
+  const userId = currentUser.data._id;
   const token = currentUser.token;
 
   const [toggle, setToggle] = useState(false);
@@ -19,29 +22,44 @@ export default function CreatePost() {
   const [showImage, setShowImage] = useState(false);
   const [showPostDetails, setShowPostDetails] = useState(false);
 
-  const titleInputElement = useRef();
+  const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(
+    userId,
+    token
+  );
+
   const contentInputElement = useRef();
   const imageInputElement = useRef();
-  const tagsInputElement = useRef();
 
   const {
     mutate: createPostMutate,
     isLoading: isCreatePostLoading,
     isError: isCreatePostError,
     error: createPostError,
+    isSuccess: createPostIsSuccess
   } = useCreatePost();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = {
       token: token,
-      title: titleInputElement.current?.value,
       content: contentInputElement.current?.value,
       image: imageInputElement.current?.files[0],
-      tags: tagsInputElement.current?.value,
     };
     createPostMutate(data);
+   
+    
   };
+
+  useEffect(() => {
+    if (createPostIsSuccess) {
+      console.log(closeCreatePostHandler());
+      setShowImage(false);
+      setShowPostDetails(false);
+      contentInputElement.current.value = "";
+      imageInputElement.current.value = "";
+    }
+  }, [createPostIsSuccess]);
+
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -53,30 +71,33 @@ export default function CreatePost() {
 
   const handleNextClick = () => {
     setShowPostDetails(true);
-    console.log(setShowPostDetails)
+    console.log("next button clicked")
   };
 
   const handleBackClick = () => {
     setShowPostDetails(false);
+    console.log("back button clicked")
   };
+
+  const fallbackImage = "/images/avatar.jpg";
 
   return (
     <>
-      <div className="bg-gray-100 relative min-w-[9=800px] max-w-6xl h-[500px] rounded-xl border border-gray-200 overflow-hidden">
-        <div className="flex items-center justify-between px-4 border-b border-gray-300">
-          <div className="flex items-center justify-center w-4 h-full cursor-pointer">
-          <ArrowBackIosIcon style={{ fontSize: 20 }} onClick={handleBackClick} />
-          </div>
+      <div className="bg-gray-100 relative  max-w-6xl h-[450px] rounded-xl border border-gray-200 overflow-hidden">
+        <div className="flex items-center justify-between px-4 border-b border-gray-300 absolute w-full z-30">
+          <button className="flex items-center justify-center w-4 h-full" onClick={handleBackClick}>
+          {showImage &&  <ArrowBackIosIcon style={{ fontSize: 20 }}  /> }
+          </button>
           <h2 className="font-medium text-center py-2">Create a new post</h2>
           <h2 className="font-medium text-blue-400 hover:text-gray-800 hover:cursor-pointer">
-          <span className={`${showPostDetails ? 'hidden' : ''} block `} onClick={handleNextClick}>Next</span>
-          <span className={`${showPostDetails ? '' : 'hidden'} block `}>Share</span>
+          <span className={`${ showImage && !showPostDetails ? 'block' : 'hidden'}  `} onClick={handleNextClick}>Next</span>
+          <span className={`${showPostDetails ? 'block' : 'hidden'}  `} onClick={handleSubmit}>{isCreatePostLoading ? "Sharing" : "Share"}</span>
           </h2>
         </div>
 
         <div className=" flex h-[94.3%]">
           <div className=" h-full w-[900px] relative">
-            <div className="flex flex-col gap-3 justify-center items-center h-full -mt-10">
+            <div className="flex flex-col gap-3 justify-center items-center h-full">
               <div>
                 <svg
                   aria-label="Icon to represent media such as images or videos"
@@ -117,6 +138,8 @@ export default function CreatePost() {
                 accept="image/*"
                 style={{ display: "none" }}
                 onChange={handleImageUpload}
+                ref={imageInputElement}
+                name="image"
               />
             </div>
             <div
@@ -126,26 +149,29 @@ export default function CreatePost() {
               }}
             ></div>
           </div>
-          <div className={`transition-all duration-300 transform ${!showPostDetails && !showImage ? '-translate-x-full invisible' : 'translate-x-0 visible'} border-l w-2/5`}>
+          <div className={`transition-all duration-300 transform ${!showPostDetails ? '-translate-x-full invisible hidden' : 'translate-x-0 visible'}   mt-10 border-l w-2/5`}>
             <div className="">
-              <div className="profile flex items-center gap-4 pt-6 px-3">
+            {isUserLoading ? (
+              <Loader />
+            ) : (
+              <div className="profile flex items-center gap-4 pt-4 px-3">
                 <div className="w-12 flex items-center justify-center">
                   <div
                     className="w-10 h-10 border border-gray-200  rounded-full"
                     style={{
-                      backgroundImage: `url("/images/profile.jpg")`,
+                      backgroundImage: `url("${userDetails.data.data.profile?.picture}"), url("${fallbackImage}")`,
                       backgroundPosition: "center",
                       backgroundSize: "cover",
                       backgroundRepeat: "no-repeat",
                     }}
                   ></div>
                 </div>
-                <p className="tracking-wide">UserName</p>
-              </div>
+                <p className="tracking-wide"> {userDetails.data.data.username}</p>
+              </div>) }
               <div className="px-4 pt-1">
                 <textarea
-                  name="text"
-                  id=""
+                  name="content"
+                  ref = {contentInputElement}
                   className="w-full h-48 p-1 outline-none"
                 ></textarea>
               </div>
@@ -217,13 +243,19 @@ export default function CreatePost() {
                         Only you will see the total number of likes and views on
                         this post. You can change this later by going to the ···
                         menu at the top of the post. To hide like counts on
-                        other people's posts, go to your account settings.
+                        other people's posts, go to your account settingsvvvvvvvvv.
                       </h4>
+                      {isCreatePostError && (
+                  <div className='text-sm font-medium text-red-600 pt-2'>
+                    <p>{createPostError.response.data.error}</p>
+                  </div>
+                     )}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+        
           </div>
         </div>
       </div>

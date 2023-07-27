@@ -1,5 +1,5 @@
 const express= require('express')
-const { createPost, updatePost, getAllPosts, getPost, deletePost, updatePostImage } = require('../controllers/postController')
+const { createPost, updatePost, getAllPosts, getPost, deletePost, updatePostImage, likePost } = require('../controllers/postController')
 const { protect } = require('../middlewares/auth');
 const upload = require("../middlewares/multer");
 
@@ -14,6 +14,7 @@ router.put('/:id/updatePostImage',upload.single("image"),updatePostImage)
 router.get('/',getAllPosts)
 router.get('/:id',getPost)
 router.delete('/:id',deletePost)
+router.post('/:postId/like',likePost)
 
 
 module.exports=router

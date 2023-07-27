@@ -30,12 +30,12 @@ exports.updateUser = async (req, res) => {
 //route   /api/users
 //access  private
 exports.getAllUser = async (req, res) => {
-  const { name } = req.query;
+  const { search } = req.query;
   let query = {};
 
   // Check if a name is provided
-  if (name) {
-    query = { name: { $regex: name, $options: 'i' } };
+  if (search) {
+    query = { username: { $regex: search, $options: 'i' } };
   }
     let users = await User.find(query)
     .populate('followers following','username profile.picture')
@@ -52,7 +52,14 @@ exports.getAllUser = async (req, res) => {
         }
       }
     })
-    .populate('sentNotifications receivedNotifications')
+    .populate('notifications')
+    .populate({
+      path: 'notifications',
+      populate: {
+        path: 'user',
+        select: 'username profile.picture'
+      }
+    });
 
     if (!users) {
       return next(new ErrorResponse(`No users found`, 404));
@@ -86,7 +93,21 @@ exports.getUser=asyncHandler(async(req,res)=>{
       }
     }
   })
-  .populate('sentNotifications receivedNotifications')
+  .populate('notifications')
+  .populate({
+    path: 'notifications',
+    model: 'Notification', // make sure to specify the model
+    populate:[ {
+      path: 'user',
+      model: 'User', // specify the model here too
+      select: 'username profile.picture'
+    },
+    {
+      path: 'post',
+      model: 'Post', // specify the Post model
+      select: 'content' // select the post content
+    }]
+  });
 
   if (!user) {
     return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 404));
@@ -126,7 +147,7 @@ exports.deleteUser = async (req, res) => {
 //route   /api/users/:id/profile
 //access  private
 exports.createProfile =  asyncHandler( async(req, res,next) => {
-  const { profilePicture, bio, contact } = req.body;
+  const { bio, contact } = req.body;
   const userId = req.params.id;
 
  
@@ -134,10 +155,6 @@ exports.createProfile =  asyncHandler( async(req, res,next) => {
 
     if (!user) {
       return next(new ErrorResponse(`User not found with id of ${req.params.id}`, 404));
-    }
-
-    if (profilePicture) {
-      user.profile.picture = profilePicture;
     }
 
     if (bio) {
@@ -151,7 +168,7 @@ exports.createProfile =  asyncHandler( async(req, res,next) => {
     const updatedUser = await user.save();
     res.status(200).json({
       success:true,
-      user:user
+      user:updatedUser
     })
 
 })

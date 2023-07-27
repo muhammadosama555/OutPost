@@ -1,10 +1,62 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { ThumbUpOutlined, SendOutlined } from '@mui/icons-material'
 import { Link } from "react-router-dom";
+import { useCreateComment } from "../apiCalls/commentApiCalls";
+import { useSelector } from "react-redux";
+import { useLikePost } from "../apiCalls/postApiCalls";
 const moment = require('moment');
 
 
+
 export default function Posts({ post }) {
+
+  const { currentUser } = useSelector((state) => state.userSlice);
+
+  const token = currentUser.token;
+
+  const isCurrentUserLiked = () => {
+    return post.likes.some((like) => like._id === currentUser.data._id);
+  };
+
+
+  const textInputElement = useRef();
+
+  const {
+    mutate: createCommentMutate,
+    isError: isCreateCommentError,
+    error: createCommentError,
+    isSuccess: createCommentIsSuccess,
+  } = useCreateComment();
+  const {
+    mutate: likePostMutate,
+  } = useLikePost();
+  
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = {
+      token: token,
+      text: textInputElement.current?.value,
+      postId: post._id
+    };
+    createCommentMutate(data);
+   
+  };
+  const likeSubmitHandler = (event) => {
+    event.preventDefault();
+    const data = {
+      token: token,
+      postId: post._id
+    };
+    likePostMutate(data);
+   
+  };
+
+  useEffect(() => {
+    if (createCommentIsSuccess) {
+      textInputElement.current.value = "";
+    }
+  }, [createCommentIsSuccess]);
 
   const fallbackImage = '/images/avatar.jpg';
   
@@ -55,12 +107,12 @@ export default function Posts({ post }) {
           </div>
           <div className="actions pt-4 flex justify-between items-center">
             <div className="flex gap-3">
-              <div className="like">
+              <div onClick={likeSubmitHandler} className="like">
                 <svg
                   aria-label="Like"
                   className="x1lliihq x1n2onr6"
-                  color="rgb(38, 38, 38)"
-                  fill="rgb(38, 38, 38)"
+                  color={isCurrentUserLiked() ? "rgb(255, 0, 0)" : "rgb(38, 38, 38)"}
+                  fill={isCurrentUserLiked() ? "rgb(255, 0, 0)" : "rgb(38, 38, 38)"}
                   height={24}
                   role="img"
                   viewBox="0 0 24 24"
@@ -152,7 +204,7 @@ export default function Posts({ post }) {
           <div className="pt-3">
             <h2 className="text-sm">
               <span className="text-sm font-medium">{post.owner.username} </span>
-              {post.title}
+              {post.content}
             </h2>
           </div>
           <div className="pt-5">
@@ -165,35 +217,43 @@ export default function Posts({ post }) {
           </div>
           <div>
 
-          <div className="pt-2 flex items-center justify-between">
-            <input
-              type="text"
-              className="text-sm outline-none placeholder-gray-400"
-              placeholder="Add a comment ..."
-            />
-            <svg
-              aria-label="Emoji"
-              className="w-4 h-4 mr-1"
-              color="rgb(115, 115, 115)"
-              fill="rgb(115, 115, 115)"
-              height={13}
-              role="img"
-              viewBox="0 0 24 24"
-              width={13}
-            >
-              <title>Emoji</title>
-              <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" />
-            </svg>
-            <SendOutlined/>
-          </div>
+ <div className="pt-2 flex items-center justify-between">
+  <svg
+    aria-label="Emoji"
+    className="w-4 h-4 mr-1"
+    color="rgb(115, 115, 115)"
+    fill="rgb(115, 115, 115)"
+    height={13}
+    role="img"
+    viewBox="0 0 24 24"
+    width={13}
+  >
+    <title>Emoji</title>
+    <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" />
+  </svg>
+  <input
+    type="text"
+    className="text-sm outline-none placeholder-gray-400 flex-grow mx-2"
+    placeholder="Add a comment ..."
+    name="text"
+    ref={textInputElement}
+  />
+  <SendOutlined onClick={handleSubmit} className="cursor-pointer"/>
+  {isCreateCommentError && (
+                  <div className='text-sm font-medium text-red-600 pt-2'>
+                    <p>{createCommentError.response.data.error}</p>
+                  </div>
+                )}
+</div>
+
             {post.comments ?
             <>
-{post.comments.map((comment) => (
+{post.comments.slice(Math.max(post.comments.length - 3, 0)).map((comment) => (
     <div key={comment._id} className="comment mt-6 flex items-start">
       <div className="user-image border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center mr-4">
         <div className="border border-gray-300 w-8 h-8 rounded-full"
         style={{
-                backgroundImage: `url("${comment.owner.profile.picture}"), url("${fallbackImage}")`,
+                backgroundImage: `url("${comment.owner.profile?.picture}"), url("${fallbackImage}")`,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',

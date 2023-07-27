@@ -42,6 +42,21 @@ return useMutation(logout,{
 })
 }
 
+// get all users
+
+const getUsers = async ( token, search = "") => {
+  console.log(search)
+  return await axios.get(`${API_BASE_URL}/users?search=${search}`, {
+    headers: {
+      authorization: "Bearer " + token,
+    },
+  });
+};
+
+export const useGetUsers = (token,search) => {
+  return useQuery(["users", token,search], () => getUsers( token,search));
+};
+
 // get user details
 
 const getUserDetails = async (userId, token) => {
@@ -68,6 +83,75 @@ export const useCreateUser = () => {
     onSuccess: (data) => {
       navigate("/");
       toast.success('User created Successfully!');
+    },
+  });
+};
+
+// Edit profile
+
+export const updateProfile = async (userData) => {
+  console.log(userData)
+  return axios.put(`${API_BASE_URL}/users/${userData.userId}/profile`, userData, {
+    headers: {
+      authorization: "Bearer " + userData.token,
+    },
+  });
+};
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+  return useMutation(updateProfile, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("user");
+      toast.success('User profile updated Successfully!');
+    },
+  });
+};
+
+// update user image
+
+export const updateUserImage = async (userData) => {
+  return axios.put(
+    `${API_BASE_URL}/users/${userData.userId}/updateUserImage`,
+    userData,
+    {
+      headers: {
+        authorization: "Bearer " + userData.token,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
+
+export const useUpdateUserImage = () => {
+  const queryClient = useQueryClient();
+  return useMutation(updateUserImage, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("user");
+      toast.success('User image uploaded Successfully!');
+    },
+  });
+};
+
+// mark all notifications as read
+
+export const readAllNotifications = async (userData) => {
+  return axios.put(
+    `${API_BASE_URL}/notifications/mark-read`,userData,
+    {
+      headers: {
+        authorization: "Bearer " + userData.token,
+      },
+    }
+  );
+};
+
+export const useReadAllNotifications = () => {
+  const queryClient = useQueryClient();
+  return useMutation(readAllNotifications, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("user");
+      toast.success('all notifications readed Successfully!');
     },
   });
 };

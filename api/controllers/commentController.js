@@ -5,6 +5,8 @@ const Post = require('../models/post');
 const asyncHandler = require("../middlewares/asyncHandler");
 
 const Comment = require('../models/Comment');
+const Notification = require('../models/Notification');
+const User = require('../models/User');
 
 //------------------------------------------------------ Create Comment  ------------------------------------------//
 //desc    Create Comment
@@ -42,6 +44,23 @@ exports.createComment = async (req, res) => {
 
     // Save the new comment to the database
     await comment.save();
+
+    // Create a new notification
+  const notification = new Notification({
+    user: userId, // The owner of the post will receive the notification
+    type: 'comment',
+    post: post._id,
+  });
+
+  // Save the notification to the database
+  await notification.save();
+
+  // Find the owner of the post
+  const user = await User.findById(post.owner);
+
+    // Push the new notification into the user notifications array
+    user.notifications.push(notification._id);
+    await user.save();
 
     // Add the new comment to the post's comments array
     post.comments.push(comment._id);
