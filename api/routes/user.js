@@ -6,7 +6,7 @@ const upload = require("../middlewares/multer");
 
 const router=express.Router()
 
-router.use(protect); // Protect the routes below for authenticated users
+// router.use(protect); // Protect the routes below for authenticated users
 
 router.get('/',getAllUser)
 router.get('/:id',getUser)

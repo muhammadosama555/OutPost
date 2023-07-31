@@ -4,7 +4,8 @@ const asyncHandler = require("../middlewares/asyncHandler");
 
 const Media = require('../models/Media');
 const Post = require('../models/post');
-
+const sharp = require("sharp");
+const cloudinary = require("../config/cloudinary.js");
 
 //------------------------------------------------------ Add Media  -----------------------------------------//
 //desc    Add Media
@@ -32,12 +33,30 @@ exports.addMedia = asyncHandler(async(req,res,next)=>{
     if (!post) {
         return next(new ErrorResponse('Post not found', 404));
     }
+    
+let imageurl;
+  if (req.file) {
+    const processedImage = await sharp(req.file.buffer)
+      .resize(500, 500)
+      .jpeg({ quality: 70 })
+      .toBuffer();
 
+    // Convert the buffer to a data URI
+    const dataURI = `data:image/jpeg;base64,${processedImage.toString("base64")}`;
+    
+    const result = await cloudinary.uploader.upload(dataURI, {
+      resource_type: "image",
+      format: "jpg",
+      public_id: `${userId}_${Date.now()}`,
+    });
+
+    imageurl = result.secure_url;
+  }
     // Create a new media
     const media = new Media({
-        type,
-        url,
-        owner:userId
+        type:type,
+        url:imageurl,
+        postId:postId
     })
 
     await media.save()
