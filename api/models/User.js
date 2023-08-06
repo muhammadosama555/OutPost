@@ -105,6 +105,18 @@ userSchema.methods.getResetPasswordToken=function(){
 
   return resetToken
 }
+  // Update the getResetPasswordToken method
+  userSchema.methods.getResetPasswordToken = function() {
+    // Generate the 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  
+    // Set the OTP and its expiration time
+    this.resetPasswordToken = otp;
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+  
+    // Return the generated OTP
+    return otp;
+  };
 
 const User = mongoose.model('User', userSchema);
 
