@@ -48,7 +48,7 @@ exports.updateMessage = asyncHandler(async (req, res, next) => {
 exports.getAllMessages = asyncHandler(async (req, res, next) => {
   const messages = await Message.find()
     .populate('conversation','members')
-    .populate('sender','username');
+    .populate('sender','username profile.picture');
 
   if (!messages) {
     return next(new ErrorResponse(`No messages found`, 404));
@@ -67,7 +67,7 @@ exports.getAllMessages = asyncHandler(async (req, res, next) => {
 exports.getMessage = asyncHandler(async (req, res, next) => {
   const message = await Message.findById(req.params.id)
     .populate('conversation','members')
-    .populate('sender','username');
+    .populate('sender','username profile.picture');
 
   if (!message) {
     return next(new ErrorResponse(`Message not found with id of ${req.params.id}`, 404));

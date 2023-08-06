@@ -9,6 +9,7 @@ import CreatePost from "./CreatePost";
 import Dialog from '@material-ui/core/Dialog';
 import moment from "moment";
 
+
 export default function SideBar() {
   const [openSearch, setOpenSearch] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
@@ -24,7 +25,7 @@ export default function SideBar() {
   const userId = currentUser.data._id;
   const token = currentUser.token;
 
-  const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(
+  const { isLoading: isUserLoading, data: userDetails, isFetching } = useGetUserDetails(
     userId,
     token
   );
@@ -94,32 +95,83 @@ const readNotificationsHandler = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const countUnreadNotifications = (notifications) => {
-    return notifications.filter((notification) => !notification.isRead).length;
-  }
-
+  const countUnreadNotificationsFromOthers = (notifications, userId) => {
+    return notifications.filter(
+      (notification) =>
+        !notification.isRead && notification.userId !== userId
+    ).length;
+  };
+  
   useEffect(() => {
-    if(userDetails && userDetails.data && userDetails.data.data && userDetails.data.data.notifications) {
-      setNotificationCount(countUnreadNotifications(userDetails.data.data.notifications));
+    if (userDetails && userDetails.data && userDetails.data.data && userDetails.data.data.notifications) {
+      setNotificationCount(
+        countUnreadNotificationsFromOthers(userDetails.data.data.notifications,userId)
+      );
     }
-  }, [userDetails]);
-
-  const groupByPost = new Map();
-
-  userDetails?.data.data?.notifications.forEach(notification => {
-    if (notification.user.username !== currentUser.data.username) {
-      const postId = notification.post._id;
-      const group = groupByPost.get(postId) || { post: notification.post, users: new Set(), type: notification.type };
-      
-      group.users.add(notification.user.username);
-      groupByPost.set(postId, group);
-    }
-  });
+  }, [userDetails, userId]);
   
 
-const groupedNotifications = Array.from(groupByPost.values());
+// Initialize the groupedNotifications Map
+const groupedNotifications = new Map();
 
-console.log(groupedNotifications)
+userDetails?.data.data?.notifications.forEach(notification => {
+  if (notification.senderUser.username !== currentUser.data.username) {
+    const postId = notification.post?._id;
+    const senderUsername = notification.senderUser.username;
+    const senderUserProfilePicture = notification.senderUser.profile?.picture;
+
+    const userObject = {
+      username: senderUsername,
+      profilePicture: senderUserProfilePicture,
+    };
+
+    // Create a unique identifier for each group based on the notification type and postId (if available)
+    let identifier;
+    if (notification.type === "like" && postId) {
+      identifier = `post_${postId}_like`;
+    } else if (notification.type === "like" && !postId) {
+      identifier = `like_without_post_${senderUsername}`;
+    } else if (notification.type === "comment" && postId) {
+      identifier = `post_${postId}_comment`;
+    } else if (notification.type === "follow") {
+      identifier = `non_post_follow_${senderUsername}`;
+    } else {
+      identifier = `other_${Math.random().toString(36).substr(2, 5)}`;
+    }
+
+    if (!groupedNotifications.has(identifier)) {
+      groupedNotifications.set(identifier, {
+        post:
+          notification.type === "like" && postId
+            ? notification.post
+            : notification.type === "comment"
+            ? notification.post
+            : null,
+        users: new Set(),
+        type: notification.type,
+        createdAt: notification.createdAt
+      });
+    }
+
+    // Add the user object to the users Set
+    groupedNotifications.get(identifier).users.add(userObject);
+  }
+});
+
+// Convert the Map values to an array and reverse to show the most recent notifications first
+const notificationsArray = Array.from(groupedNotifications.values()).reverse();
+
+console.log(notificationsArray);
+
+const time = notificationsArray.map((notificationGroup)=>(
+               moment(notificationGroup.createdAt).fromNow()
+            ))
+console.log(time)
+
+
+
+
+
 
   const fallbackImage = "/images/avatar.jpg";
 
@@ -324,11 +376,11 @@ console.log(groupedNotifications)
       <title>Like</title>
       <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.260.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z" />
     </svg>
-    {notificationCount > 0 && (
+    {!isFetching && notificationCount > 0 && (
       <div
         className="absolute top-0 right-0 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
       >
-        {notificationCount > 20 ? '20+' : notificationCount}
+        {!isFetching && notificationCount > 20 ? '20+' : notificationCount}
       </div>
     )}
   </div>
@@ -508,23 +560,66 @@ console.log(groupedNotifications)
             <div className="pt-5">
               <h2 className="text-2xl px-4 font-medium">Notifications</h2>
             </div>
+
             <div className="overflow-y-auto max-h-[500px]">
+            {!time.includes("month,year") ?
+             
               <div className=" border-b border-gray-300 pb-4">
                 <h2 className="py-3 px-4 font-bold text-lg">New</h2>
-               {groupedNotifications.map((notificationGroup) => (
-  <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer">
-    <div>
-      <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-    </div>
-    <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-      <span>
-        {notificationGroup.users.size === 1 
-          ? `${Array.from(notificationGroup.users)[0]} commented on your post title.`
-          : `${Array.from(notificationGroup.users)[0]} and ${notificationGroup.users.size - 1}  others commented on your post title.`
-        }
+               
+              
+                {notificationsArray.map((notificationGroup) => (
+          <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer" key={notificationGroup.identifier}>
+            <div>
+              <div
+                className="w-12 h-12 rounded-full bg-gray-200"
+                style={{
+                  backgroundImage: `url("${Array.from(notificationGroup.users)[notificationGroup.users.size - 1]?.profilePicture}"), url("${fallbackImage}")`,
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            </div>
+            <div className="w-full pl-3 pr-2 tracking-tight text-sm">
+              <span>
+                {notificationGroup.type === 'like' ? (
+                  notificationGroup.users.size === 1 ? (
+                    `${Array.from(notificationGroup.users)[0]?.username} liked your post ${notificationGroup.post.content}.`
+                  ) : (
+                    `${Array.from(notificationGroup.users)[notificationGroup.users.size - 1]?.username} and ${
+                      notificationGroup.users.size - 1
+                    } others liked your post ${notificationGroup.post.content}.`
+                  )
+                ) : notificationGroup.type === 'comment' ? (
+                  (() => {
+                    const usersArray = Array.from(notificationGroup.users);
+                    const currentUser = usersArray[usersArray.length - 1];
+                    const otherUsersCount = usersArray.length - 1;
+
+                    const uniqueUsers = new Set(usersArray.map(user => user.username));
+                    const uniqueUsersCount = uniqueUsers.size;
+
+                    let commentText = '';
+                    if (uniqueUsersCount === 1) {
+                      commentText = `${Array.from(uniqueUsers)[0]} commented on your post ${notificationGroup.post.content}.`;
+                    } else {
+                      const lastCommenter = Array.from(uniqueUsers)[uniqueUsersCount - 1];
+                      const othersCommentCount = uniqueUsersCount - 1;
+                      commentText = `${lastCommenter} and ${othersCommentCount} other${othersCommentCount > 1 ? 's' : ''} commented on your post ${notificationGroup.post.content}.`;
+                    }
+
+                    return commentText;
+                  })()
+                ) : notificationGroup.type === 'follow' ? (
+                  `${Array.from(notificationGroup.users)[notificationGroup.users.size - 1]?.username} started following you.`
+                ) : (
+                  ''
+                )}
+
       </span>{" "}
       <div>
-        <span className="time text-gray-500">{moment(notificationGroup.post.createdAt).fromNow()}</span>
+        <span className="time text-gray-500">{moment(notificationGroup.createdAt).fromNow()}</span>
       </div>
     </div>
     <div className="">
@@ -534,201 +629,148 @@ console.log(groupedNotifications)
     </div>
   </div>
 ))}
-
-               
+              
+              
               </div>
+             
+              :  time === "1 month ago" ?
               <div className=" border-b border-gray-300 pb-4">
-                <h2 className="py-3 px-4 font-bold text-lg">This Month</h2>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer ">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      <span className="font-medium">UserName </span>is on
-                      Instagram.
-                    </span>{" "}
-                    <span>
-                      <span className="font-medium">UserName2 </span>and 1 other
-                      follow them.
-                    </span>{" "}
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer ">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      <span className="font-medium">UserName </span>is on
-                      Instagram.{" "}
-                    </span>
-                    <span>
-                      <span className="font-medium">UserName2 </span>and 1 other
-                      follow them.{" "}
-                    </span>
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer ">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      Follow <span className="font-medium">UserName1, </span>{" "}
-                      <span className="font-medium">Username2 </span> and others
-                      you know to see their photos and videos.{" "}
-                    </span>
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="hidden">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer ">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      <span className="font-medium">UserName </span>is on
-                      Instagram.
-                    </span>{" "}
-                    <span>
-                      <span className="font-medium">UserName2 </span>and 1 other
-                      follow them.
-                    </span>{" "}
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
-              </div>
+                <h2 className="py-3 px-4 font-bold text-lg">Last Month</h2>
+               
+             
+                {notificationsArray.map((notificationGroup) => (
+          <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer" key={notificationGroup.identifier}>
+            <div>
+              <div
+                className="w-12 h-12 rounded-full bg-gray-200"
+                style={{
+                  backgroundImage: `url("${Array.from(notificationGroup.users)[notificationGroup.users.size - 1]?.profilePicture}"), url("${fallbackImage}")`,
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            </div>
+            <div className="w-full pl-3 pr-2 tracking-tight text-sm">
+              <span>
+                {notificationGroup.type === 'like' ? (
+                  notificationGroup.users.size === 1 ? (
+                    `${Array.from(notificationGroup.users)[0]?.username} liked your post ${notificationGroup.post.content}.`
+                  ) : (
+                    `${Array.from(notificationGroup.users)[notificationGroup.users.size - 1]?.username} and ${
+                      notificationGroup.users.size - 1
+                    } others liked your post ${notificationGroup.post.content}.`
+                  )
+                ) : notificationGroup.type === 'comment' ? (
+                  (() => {
+                    const usersArray = Array.from(notificationGroup.users);
+                    const currentUser = usersArray[usersArray.length - 1];
+                    const otherUsersCount = usersArray.length - 1;
+
+                    const uniqueUsers = new Set(usersArray.map(user => user.username));
+                    const uniqueUsersCount = uniqueUsers.size;
+
+                    let commentText = '';
+                    if (uniqueUsersCount === 1) {
+                      commentText = `${Array.from(uniqueUsers)[0]} commented on your post ${notificationGroup.post.content}.`;
+                    } else {
+                      const lastCommenter = Array.from(uniqueUsers)[uniqueUsersCount - 1];
+                      const othersCommentCount = uniqueUsersCount - 1;
+                      commentText = `${lastCommenter} and ${othersCommentCount} other${othersCommentCount > 1 ? 's' : ''} commented on your post ${notificationGroup.post.content}.`;
+                    }
+
+                    return commentText;
+                  })()
+                ) : notificationGroup.type === 'follow' ? (
+                  `${Array.from(notificationGroup.users)[notificationGroup.users.size - 1]?.username} started following you.`
+                ) : (
+                  ''
+                )}
+
+      </span>{" "}
+      <div>
+        <span className="time text-gray-500">{moment(notificationGroup.createdAt).fromNow()}</span>
+      </div>
+    </div>
+    <div className="">
+      <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
+        Follow
+      </button>
+    </div>
+  </div>
+))}
+               
+             
+              </div> :
+
+
               <div className=" border-b border-gray-300 pb-4">
                 <h2 className="py-3 px-4 font-bold text-lg">Earlier</h2>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      <span className="font-medium">UserName </span>is on
-                      Instagram.
-                    </span>{" "}
-                    <span>
-                      <span className="font-medium">UserName2 </span>and 1 other
-                      follow them.
-                    </span>{" "}
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      <span className="font-medium">UserName </span>is on
-                      Instagram.
-                    </span>{" "}
-                    <span>
-                      <span className="font-medium">UserName2 </span>and 1 other
-                      follow them.
-                    </span>{" "}
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      <span className="font-medium">UserName </span>is on
-                      Instagram.
-                    </span>{" "}
-                    <span>
-                      <span className="font-medium">UserName2 </span>and 1 other
-                      follow them.
-                    </span>{" "}
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      <span className="font-medium">UserName </span>is on
-                      Instagram.
-                    </span>{" "}
-                    <span>
-                      <span className="font-medium">UserName2 </span>and 1 other
-                      follow them.
-                    </span>{" "}
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
-                <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer">
-                  <div>
-                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="w-full pl-3 pr-2 tracking-tight text-sm">
-                    <span>
-                      <span className="font-medium">UserName </span>is on
-                      Instagram.
-                    </span>{" "}
-                    <span>
-                      <span className="font-medium">UserName2 </span>and 1 other
-                      follow them.
-                    </span>{" "}
-                    <span className="time text-gray-500">2d</span>
-                  </div>
-                  <div className="">
-                    <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                      Follow
-                    </button>
-                  </div>
-                </div>
+                
+                {notificationsArray.map((notificationGroup) => (
+          <div className="notification flex items-center py-[6px] px-4 hover:bg-gray-50 cursor-pointer" key={notificationGroup.identifier}>
+            <div>
+              <div
+                className="w-12 h-12 rounded-full bg-gray-200"
+                style={{
+                  backgroundImage: `url("${Array.from(notificationGroup.users)[notificationGroup.users.size - 1]?.profilePicture}"), url("${fallbackImage}")`,
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            </div>
+            <div className="w-full pl-3 pr-2 tracking-tight text-sm">
+              <span>
+                {notificationGroup.type === 'like' ? (
+                  notificationGroup.users.size === 1 ? (
+                    `${Array.from(notificationGroup.users)[0]?.username} liked your post ${notificationGroup.post.content}.`
+                  ) : (
+                    `${Array.from(notificationGroup.users)[notificationGroup.users.size - 1]?.username} and ${
+                      notificationGroup.users.size - 1
+                    } others liked your post ${notificationGroup.post.content}.`
+                  )
+                ) : notificationGroup.type === 'comment' ? (
+                  (() => {
+                    const usersArray = Array.from(notificationGroup.users);
+                    const currentUser = usersArray[usersArray.length - 1];
+                    const otherUsersCount = usersArray.length - 1;
+
+                    const uniqueUsers = new Set(usersArray.map(user => user.username));
+                    const uniqueUsersCount = uniqueUsers.size;
+
+                    let commentText = '';
+                    if (uniqueUsersCount === 1) {
+                      commentText = `${Array.from(uniqueUsers)[0]} commented on your post ${notificationGroup.post.content}.`;
+                    } else {
+                      const lastCommenter = Array.from(uniqueUsers)[uniqueUsersCount - 1];
+                      const othersCommentCount = uniqueUsersCount - 1;
+                      commentText = `${lastCommenter} and ${othersCommentCount} other${othersCommentCount > 1 ? 's' : ''} commented on your post ${notificationGroup.post.content}.`;
+                    }
+
+                    return commentText;
+                  })()
+                ) : notificationGroup.type === 'follow' ? (
+                  `${Array.from(notificationGroup.users)[notificationGroup.users.size - 1]?.username} started following you.`
+                ) : (
+                  ''
+                )}
+
+      </span>{" "}
+      <div>
+        <span className="time text-gray-500">{moment(notificationGroup.createdAt).fromNow()}</span>
+      </div>
+    </div>
+    <div className="">
+      <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
+        Follow
+      </button>
+    </div>
+  </div>
+))}
+               
               </div>
+              }
             </div>
           </div>
         </div>

@@ -9,21 +9,22 @@ const jwt = require('jsonwebtoken');
 // route   POST /api/notifications
 // access  private
 exports.createNotification = asyncHandler(async (req, res, next) => {
-  const { type, user, postId } = req.body;
+  const { type, senderUser, receiverUser, postId } = req.body;
 
   const notification = new Notification({
     type,
-    user,
+    senderUser,
+    receiverUser,
     postId,
     isRead: false, // By default, the notification is marked as unread
   });
 
   await notification.save();
 
-  // Find the user and add the notification to their notifications list
-  const userToUpdate = await User.findById(user);
+  // Find the receiverUser and add the notification to their notifications list
+  const userToUpdate = await User.findById(receiverUser);
   if (!userToUpdate) {
-    return next(new ErrorResponse(`User not found with id of ${user}`, 404));
+    return next(new ErrorResponse(`User not found with id of ${receiverUser}`, 404));
   }
   userToUpdate.notifications.push(notification._id);
   await userToUpdate.save();
@@ -137,7 +138,7 @@ exports.markAllNotificationsAsRead = asyncHandler(async (req, res) => {
 
   // Update all the user's notifications to be read
   await Notification.updateMany(
-    { user: userId, isRead: false },
+    { receiverUser: userId, isRead: false },
     { isRead: true }
   );
 

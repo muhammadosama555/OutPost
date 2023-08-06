@@ -14,42 +14,43 @@ const User = require('../models/User');
 //access  private
 exports.createComment = async (req, res) => {
 
-    const { text, media, postId } = req.body;
+  const { text, media, postId } = req.body;
 
-    // Get the authorization header from the request
-    const authHeader = req.headers.authorization;
-    // If the authorization header doesn't exist, return an error
-    if (!authHeader) {
-        return next(new ErrorResponse('Authorization header missing', 401));
-      }
-    // Extract the token from the authorization header
-    const token = authHeader.split(' ')[1];
-    // Verify the token to get the user ID
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decodedToken.id;
+  // Get the authorization header from the request
+  const authHeader = req.headers.authorization;
+  // If the authorization header doesn't exist, return an error
+  if (!authHeader) {
+      return next(new ErrorResponse('Authorization header missing', 401));
+  }
+  // Extract the token from the authorization header
+  const token = authHeader.split(' ')[1];
+  // Verify the token to get the user ID
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decodedToken.id;
 
-    // Find the post on which the comment is being made
-    const post = await Post.findById(postId);
-    if (!post) {
-        return next(new ErrorResponse('Post not found', 404));
-      }
+  // Find the post on which the comment is being made
+  const post = await Post.findById(postId);
+  if (!post) {
+      return next(new ErrorResponse('Post not found', 404));
+  }
 
-    // Create a new comment object with the user ID and comment data
-    const comment = new Comment({
+  // Create a new comment object with the user ID and comment data
+  const comment = new Comment({
       text,
       media,
       owner: userId,
       post: postId
-    });
+  });
 
-    // Save the new comment to the database
-    await comment.save();
+  // Save the new comment to the database
+  await comment.save();
 
-    // Create a new notification
+  // Create a new notification
   const notification = new Notification({
-    user: userId, // The owner of the post will receive the notification
-    type: 'comment',
-    post: post._id,
+      senderUser: userId, 
+      receiverUser: post.owner, // The owner of the post will receive the notification
+      type: 'comment',
+      post: post._id,
   });
 
   // Save the notification to the database
@@ -58,17 +59,16 @@ exports.createComment = async (req, res) => {
   // Find the owner of the post
   const user = await User.findById(post.owner);
 
-    // Push the new notification into the user notifications array
-    user.notifications.push(notification._id);
-    await user.save();
+  // Push the new notification into the user notifications array
+  user.notifications.push(notification._id);
+  await user.save();
 
-    // Add the new comment to the post's comments array
-    post.comments.push(comment._id);
-    await post.save();
+  // Add the new comment to the post's comments array
+  post.comments.push(comment._id);
+  await post.save();
 
-    // Return the new comment as the response
-    res.status(201).json(comment);
- 
+  // Return the new comment as the response
+  res.status(201).json(comment);
 };
 
 //------------------------------------------------------ Update Comment  -----------------------------------------//

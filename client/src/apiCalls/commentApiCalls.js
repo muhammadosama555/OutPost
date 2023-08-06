@@ -21,7 +21,6 @@ export const useCreateComment = () => {
   const queryClient = useQueryClient();
   return useMutation(createComment, {
     onSuccess: (data) => {
-      toast.success('Comment is Posted Sucessfully!');
       queryClient.invalidateQueries("posts");
     },
   });

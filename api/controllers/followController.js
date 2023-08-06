@@ -4,6 +4,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 
 const Follower = require('../models/Follow');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 //------------------------------------------------------ Follow User  -----------------------------------------//
 //desc    Follow User
@@ -15,6 +16,21 @@ exports.followUser = asyncHandler(async (req, res) => {
     const followerRelation = new Follower({ follower: followerId, following: followingId });
 
     await followerRelation.save();
+
+     // Create a new notification
+     const notification = new Notification({
+      senderUser: followerId,
+      receiverUser: followingId,
+      type: 'follow',
+    });
+
+    // Save the notification to the database
+    await notification.save();
+
+    // Push the new notification into the user notifications array
+    const followingUser = await User.findById(followingId);
+    followingUser.notifications.push(notification._id);
+    await followingUser.save();
 
      // Update the User documents
      await User.findByIdAndUpdate(followerId, { $push: { following: followingId } });

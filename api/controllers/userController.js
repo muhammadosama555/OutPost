@@ -55,10 +55,21 @@ exports.getAllUser = async (req, res) => {
     .populate('notifications')
     .populate({
       path: 'notifications',
-      populate: {
-        path: 'user',
-        select: 'username profile.picture'
-      }
+      model: 'Notification', // make sure to specify the model
+      populate:[ 
+        {
+          path: 'senderUser',
+          select: 'username profile.picture'
+        },
+        {
+          path: 'receiverUser',
+          select: 'username profile.picture'
+        },
+      {
+        path: 'post',
+        model: 'Post', // specify the Post model
+        select: 'content' // select the post content
+      }]
     });
 
     if (!users) {
@@ -97,11 +108,15 @@ exports.getUser=asyncHandler(async(req,res)=>{
   .populate({
     path: 'notifications',
     model: 'Notification', // make sure to specify the model
-    populate:[ {
-      path: 'user',
-      model: 'User', // specify the model here too
-      select: 'username profile.picture'
-    },
+    populate:[ 
+      {
+        path: 'senderUser',
+        select: 'username profile.picture'
+      },
+      {
+        path: 'receiverUser',
+        select: 'username profile.picture'
+      },
     {
       path: 'post',
       model: 'Post', // specify the Post model

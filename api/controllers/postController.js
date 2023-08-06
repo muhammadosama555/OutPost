@@ -7,6 +7,7 @@ const Tag = require('../models/Tag');
 const asyncHandler = require("../middlewares/asyncHandler");
 const sharp = require("sharp");
 const cloudinary = require("../config/cloudinary.js");
+const Notification = require('../models/Notification');
 
 
 //------------------------------------------------------ Create Post  -----------------------------------------//
@@ -245,12 +246,42 @@ exports.likePost = asyncHandler(async (req, res, next) => {
   // Check if the user has already liked the post
   const isLiked = post.likes.includes(userId);
 
-  // If the user has already liked the post, remove the like
+  // Find the owner of the post
+  const user = await User.findById(post.owner);
+
   if (isLiked) {
+    // If the user has already liked the post, remove the like
     post.likes.pull(userId); // Remove the user ID from the "likes" array
+    
+    // Remove notification
+    const notification = await Notification.findOne({post: postId, senderUser: userId, type: "like"});
+    if(notification){
+      // Delete notification from database
+      await Notification.findByIdAndDelete(notification._id);
+
+      // Remove the notification from the user notifications array
+      user.notifications.pull(notification._id);
+      await user.save();
+    }
+
   } else {
     // If the user hasn't liked the post, add the like
     post.likes.push(userId); // Add the user ID to the "likes" array
+
+    // Create a new notification
+    const notification = new Notification({
+      senderUser: userId, 
+      receiverUser: post.owner,
+      type: 'like',
+      post: post._id,
+    });
+
+    // Save the notification to the database
+    await notification.save();
+
+    // Push the new notification into the user notifications array
+    user.notifications.push(notification._id);
+    await user.save();
   }
 
   // Save the updated post
