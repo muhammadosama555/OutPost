@@ -141,3 +141,6 @@ p {
   position: relative;
   vertical-align: baseline;
 }
+.custom-dialog{
+  border-radius: 20px;
+}
