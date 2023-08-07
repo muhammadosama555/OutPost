@@ -25,23 +25,16 @@ export default function Navbar() {
   return (
     <>
       <nav className='border-b fixed w-full z-20 bg-white border-gray-300'>
-        <div className="desktop flex justify-between py-2 px-10">
-          <div className='flex justify-self-start items-center gap-3'>
+        <div className="desktop grid grid-flow-col justify-between items-center py-4 px-10">
+          <div className='flex justify-self-start items-center gap-3 w-44'>
             <div className="logo">
-              <h3 >OutPost</h3>
+              <h3 className='cursor-pointer'>OutPost</h3>
             </div>
-            <div className="searchbar">
-              <form>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg aria-label="Search" className="w-5 h-5 text-gray-600" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height={24} role="img" viewBox="0 0 24 24" width={24}><path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} /><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} x1="16.511" x2={22} y1="16.511" y2={22} /></svg>
-                  </div>
-                  <input type="search" id="default-search" className="block w-full p-3 pl-10 text-sm rounded-full text-gray-900 outline-none bg-gray-50" placeholder="Search for Outpost..." required />
-                </div>
-              </form>
+            <div className='LOG-OUT_Button'>
+              <button className='px-4 py-2 bg-red-400 hover:bg-red-500  rounded-lg text-white font-medium'>Log Out</button>
             </div>
           </div>
-          <div className='menu flex items-center w-full justify-center px-28 fixed pt-2 right-0 left-0 gap-16'>
+          <div className='menu flex items-center w-full gap-16'>
             <Link to="/" className='Home'>
               <svg viewBox="0 0 28 28" className="x1lliihq x1k90msu x2h7rmj x1qfuztq xcza8v6" fill="currentColor" height="28" width="28"><path d="M17.5 23.979 21.25 23.979C21.386 23.979 21.5 23.864 21.5 23.729L21.5 13.979C21.5 13.427 21.949 12.979 22.5 12.979L24.33 12.979 14.017 4.046 3.672 12.979 5.5 12.979C6.052 12.979 6.5 13.427 6.5 13.979L6.5 23.729C6.5 23.864 6.615 23.979 6.75 23.979L10.5 23.979 10.5 17.729C10.5 17.04 11.061 16.479 11.75 16.479L16.25 16.479C16.939 16.479 17.5 17.04 17.5 17.729L17.5 23.979ZM21.25 25.479 17 25.479C16.448 25.479 16 25.031 16 24.479L16 18.327C16 18.135 15.844 17.979 15.652 17.979L12.348 17.979C12.156 17.979 12 18.135 12 18.327L12 24.479C12 25.031 11.552 25.479 11 25.479L6.75 25.479C5.784 25.479 5 24.695 5 23.729L5 14.479 3.069 14.479C2.567 14.479 2.079 14.215 1.868 13.759 1.63 13.245 1.757 12.658 2.175 12.29L13.001 2.912C13.248 2.675 13.608 2.527 13.989 2.521 14.392 2.527 14.753 2.675 15.027 2.937L25.821 12.286C25.823 12.288 25.824 12.289 25.825 12.29 26.244 12.658 26.371 13.245 26.133 13.759 25.921 14.215 25.434 14.479 24.931 14.479L23 14.479 23 23.729C23 24.695 22.217 25.479 21.25 25.479Z"></path></svg>
             </Link>
@@ -55,7 +48,7 @@ export default function Navbar() {
               <svg fill="currentColor" viewBox="0 0 24 24" width="1em" height="1em" className="w-7 h-7"><g fillRule="evenodd" transform="translate(-444 -204)"><g><path fillRule="nonzero" d="M98.5 5.75v4a.75.75 0 1 0 1.5 0v-4a.75.75 0 1 0-1.5 0z" transform="translate(351.5 208.5)"></path><path fillRule="nonzero" d="M97.25 8.5h4a.75.75 0 1 0 0-1.5h-4a.75.75 0 1 0 0 1.5z" transform="translate(351.5 208.5)"></path><path fillRule="nonzero" d="M109.5 14.5h-10a7 7 0 0 1 0-14h10a7 7 0 0 1 0 14zm0-1.5a5.5 5.5 0 0 0 0-11h-10a5.5 5.5 0 0 0 0 11h10z" transform="translate(351.5 208.5)"></path><path d="M109 9.25a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0m3-3a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0" transform="translate(351.5 208.5)"></path></g></g></svg>
             </div>
           </div>
-          <div className='right-nav-button flex gap-5 items-center'>
+          <div className='right-nav-button flex justify-end gap-5 items-center w-44'>
             <div className='Messages'>
               <svg aria-label="Messenger" className="w-7 h-7" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Messenger</title><path d="M12.003 2.001a9.705 9.705 0 1 1 0 19.4 10.876 10.876 0 0 1-2.895-.384.798.798 0 0 0-.533.04l-1.984.876a.801.801 0 0 1-1.123-.708l-.054-1.78a.806.806 0 0 0-.27-.569 9.49 9.49 0 0 1-3.14-7.175 9.65 9.65 0 0 1 10-9.7Z" fill="none" stroke="currentColor" strokeMiterlimit="10" strokeWidth="1.739"></path><path d="M17.79 10.132a.659.659 0 0 0-.962-.873l-2.556 2.05a.63.63 0 0 1-.758.002L11.06 9.47a1.576 1.576 0 0 0-2.277.42l-2.567 3.98a.659.659 0 0 0 .961.875l2.556-2.049a.63.63 0 0 1 .759-.002l2.452 1.84a1.576 1.576 0 0 0 2.278-.42Z" fillRule="evenodd"></path></svg>
             </div>

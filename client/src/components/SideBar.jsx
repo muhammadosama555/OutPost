@@ -178,10 +178,7 @@ export default function SideBar() {
   return (
     <>
       <div className="left-side-bar w-[20%] ">
-        <div
-          className={`fixed left-0 top-12 pt-10 ${toggleSidebar ? "w-20" : "w-[20%]"
-            }   h-full border-r border-gray-200`}
-        >
+        <div className={`fixed left-0 top-12 pt-10 ${toggleSidebar ? "w-20" : "w-[20%]"} h-full border-r border-gray-200`}>
           <div className="space-y-2">
             {isUserLoading ? (
               <Loader />
@@ -444,27 +441,11 @@ export default function SideBar() {
             </div>
             <div
               onClick={toggleSidebarHandler}
-              className="Create flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
-            >
+              className="Create flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out">
               <div className="w-12 h-12 flex items-center justify-center">
-                <svg
-                  aria-label="Saved"
-                  className="w-6 h-6"
-                  color="rgb(0, 0, 0)"
-                  fill="rgb(0, 0, 0)"
-                  height={18}
-                  role="img"
-                  viewBox="0 0 24 24"
-                  width={18}
-                >
+                <svg aria-label="Saved" className="w-6 h-6" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height={18} role="img" viewBox="0 0 24 24" width={18}>
                   <title>Saved</title>
-                  <polygon
-                    fill="none"
-                    points="20 21 12 13.44 4 21 4 3 20 3 20 21"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
+                  <polygon fill="none" points="20 21 12 13.44 4 21 4 3 20 3 20 21" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   />
                 </svg>
               </div>
@@ -473,8 +454,8 @@ export default function SideBar() {
               ) : null}
             </div>
           </div>
-          <div onClick={toggleSidebarHandler} className="relative h-[50%]">
-            <div className="absolute bottom-6 w-full">
+          <div onClick={toggleSidebarHandler} className="MORE_OPTION fixed bottom-0 w-[20%] mb-4">
+            <div className="w-full">
               <div className="Create flex items-center gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out">
                 <div className="w-12 h-12 flex items-center justify-center">
                   <MenuIcon style={{ fontSize: 32 }} />
