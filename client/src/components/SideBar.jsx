@@ -495,7 +495,7 @@ const userSearchHistory = searchHistories[userId] || [];
           className={`${openSearch ? "" : "hidden"
             } search-panel pl-[78px] w-[420px] bg-white h-screen`}
         >
-          <div className="fixed z-20 ml-[2px] mt-[5px] bg-white w-[342px] border-r h-screen">
+          <div className="fixed z-20 ml-[5px] mt-[1px] bg-white w-[342px] border-r h-screen">
             <div className="border-b py-5">
               <h2 className="text-2xl px-5 font-medium">Search</h2>
               <div className="searchbar flex items-center  bg-slate-200 rounded-md mt-8 mx-3">
