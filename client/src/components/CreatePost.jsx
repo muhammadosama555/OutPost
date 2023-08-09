@@ -71,12 +71,10 @@ export default function CreatePost({closeCreatePostHandler}) {
 
   const handleNextClick = () => {
     setShowPostDetails(true);
-    console.log("next button clicked")
   };
 
   const handleBackClick = () => {
     setShowPostDetails(false);
-    console.log("back button clicked")
   };
 
   const fallbackImage = "/images/avatar.jpg";
