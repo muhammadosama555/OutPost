@@ -44,7 +44,7 @@ export default function Messages() {
 
   const { mutate: createMessageMutate, isSuccess: createMessageIsSuccess } = useCreateMessage();
   const { mutate: createConversationMutate, isSuccess: createConversationIsSuccess } = useCreateConversation();
-  console.log(conversation?.data)
+
 
 
   const handleSearchChange = (e) => {

@@ -34,7 +34,6 @@ export default function EditProfile() {
           contact: contactInputElement.current?.value,
           userId: userId
         };
-        console.log(data)
         updateProfileMutate(data);
        
       };

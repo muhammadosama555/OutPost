@@ -7,14 +7,12 @@ import { useSelector } from 'react-redux';
 export default function Navbar() { 
 
   const { currentUser } = useSelector(state => state.userSlice)
-  console.log(currentUser)
 
   const userId = currentUser.data._id
   const token = currentUser.token
 
   const { mutate: logoutMutate, isLoading: isLogoutLoading } = useLogout();
   const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
-  console.log(userDetails?.data)
 
   const handleLogout = () => {
     logoutMutate()

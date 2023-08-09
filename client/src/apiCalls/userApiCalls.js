@@ -45,7 +45,6 @@ return useMutation(logout,{
 // get all users
 
 const getUsers = async ( token, search = "") => {
-  console.log(search)
   return await axios.get(`${API_BASE_URL}/users?search=${search}`, {
     headers: {
       authorization: "Bearer " + token,
@@ -90,7 +89,6 @@ export const useCreateUser = () => {
 // Edit profile
 
 export const updateProfile = async (userData) => {
-  console.log(userData)
   return axios.put(`${API_BASE_URL}/users/${userData.userId}/profile`, userData, {
     headers: {
       authorization: "Bearer " + userData.token,

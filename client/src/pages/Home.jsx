@@ -12,10 +12,10 @@ import "../App.css";
 export default function Home() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { currentUser } = useSelector(state => state.userSlice) || null
-  console.log(currentUser)
+
   const userId = currentUser.data._id
   const token = currentUser.token
-  console.log(userId, token)
+
 
 
   const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)

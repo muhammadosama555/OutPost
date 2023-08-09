@@ -45,7 +45,6 @@ export default function SideBar() {
 
   const readNotificationsHandler = () => {
 
-    console.log("called")
     const data = {
       token: token,
     };
@@ -99,7 +98,6 @@ const userSearchHistory = searchHistories[userId] || [];
     }
 
     navigate(`/userDetails/${user._id}`);
-    console.log(userSearchHistory); // Log the user's search history
   };
 
   useEffect(() => {
@@ -189,10 +187,6 @@ const userSearchHistory = searchHistories[userId] || [];
   const time = notificationsArray.map((notificationGroup) => (
     moment(notificationGroup.createdAt).fromNow()
   ))
-
-
-
-
 
 
 
