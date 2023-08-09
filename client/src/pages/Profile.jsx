@@ -39,13 +39,13 @@ export default function Profile() {
                                                   <div>
                                                        <h2 className='font-medium text-xl tracking-wide'>{userDetails.data.data.username}</h2>
                                                   </div>
-                                                  <div className='flex items-center gap-4'>
+                                                  <div className='flex items-center gap-2'>
                                                        <Link to="/settings/editProfile">
                                                             <button className='px-5 py-[6px] flex items-center gap-1 bg-gray-200 font-medium text-sm rounded-lg hover:bg-gray-300'>
                                                                  Edit profile
                                                             </button>
                                                        </Link>
-                                                       <div>
+                                                       <div className='cursor-pointer px-1'>
                                                             <svg
                                                                  aria-label="Options"
                                                                  className="x1lliihq x1n2onr6"

@@ -8,7 +8,7 @@ const moment = require('moment');
 
 
 
-export default function Posts({ post }) {
+export default function Posts({ post, handleOpenDialog }) {
 
   const { currentUser } = useSelector((state) => state.userSlice);
 
@@ -30,7 +30,7 @@ export default function Posts({ post }) {
   const {
     mutate: likePostMutate,
   } = useLikePost();
-  
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -40,7 +40,7 @@ export default function Posts({ post }) {
       postId: post._id
     };
     createCommentMutate(data);
-   
+
   };
   const likeSubmitHandler = (event) => {
     event.preventDefault();
@@ -49,7 +49,7 @@ export default function Posts({ post }) {
       postId: post._id
     };
     likePostMutate(data);
-   
+
   };
 
   useEffect(() => {
@@ -59,20 +59,20 @@ export default function Posts({ post }) {
   }, [createCommentIsSuccess]);
 
   const fallbackImage = '/images/avatar.jpg';
-  
+
   return (
     <div className="mt-10 flex justify-center">
       <div className="post w-[520px] border-b pb-6 border-gray-300">
         <div className="head flex items-center justify-between">
           <div className="flex items-center">
             <div className="border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center">
-              <div className="border border-gray-300 w-8 h-8 rounded-full"
-              style={{
-                      backgroundImage: `url("${post.owner?.profile?.picture}"), url("${fallbackImage}")`,
-                      backgroundPosition: 'center',
-                      backgroundSize: 'cover',
-                      backgroundRepeat: 'no-repeat',
-                    }}>
+              <div className=" cursor-pointer border border-gray-300 w-8 h-8 rounded-full"
+                style={{
+                  backgroundImage: `url("${post.owner?.profile?.picture}"), url("${fallbackImage}")`,
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
+                }}>
               </div>
             </div>
             <Link to={`/userDetails/${post.owner._id}`}>
@@ -100,8 +100,8 @@ export default function Posts({ post }) {
           </div>
         </div>
         <div className="body pt-4">
-          <div className="flex items-center justify-center rounded-[4px] overflow-hidden">
-            <div className="image w-full flex items-center justify-center bg-black"          >
+          <div className="flex items-center cursor-pointer justify-center rounded-[4px] overflow-hidden">
+            <div onClick={handleOpenDialog} className="image w-full flex items-center justify-center bg-black"          >
               <img className="h-[600px]" src={post.imageUrl} alt="" />
             </div>
           </div>
@@ -217,73 +217,73 @@ export default function Posts({ post }) {
           </div>
           <div>
 
- <div className="pt-2 flex items-center justify-between">
-  <svg
-    aria-label="Emoji"
-    className="w-4 h-4 mr-1"
-    color="rgb(115, 115, 115)"
-    fill="rgb(115, 115, 115)"
-    height={13}
-    role="img"
-    viewBox="0 0 24 24"
-    width={13}
-  >
-    <title>Emoji</title>
-    <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" />
-  </svg>
-  <input
-    type="text"
-    className="text-sm outline-none placeholder-gray-400 flex-grow mx-2"
-    placeholder="Add a comment ..."
-    name="text"
-    ref={textInputElement}
-  />
-  <SendOutlined onClick={handleSubmit} className="cursor-pointer"/>
-  {isCreateCommentError && (
-                  <div className='text-sm font-medium text-red-600 pt-2'>
-                    <p>{createCommentError.response.data.error}</p>
-                  </div>
-                )}
-</div>
+            <div className="pt-2 flex items-center justify-between">
+              <svg
+                aria-label="Emoji"
+                className="w-4 h-4 mr-1"
+                color="rgb(115, 115, 115)"
+                fill="rgb(115, 115, 115)"
+                height={13}
+                role="img"
+                viewBox="0 0 24 24"
+                width={13}
+              >
+                <title>Emoji</title>
+                <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" />
+              </svg>
+              <input
+                type="text"
+                className="text-sm outline-none placeholder-gray-400 flex-grow mx-2"
+                placeholder="Add a comment ..."
+                name="text"
+                ref={textInputElement}
+              />
+              <SendOutlined onClick={handleSubmit} className="cursor-pointer" />
+              {isCreateCommentError && (
+                <div className='text-sm font-medium text-red-600 pt-2'>
+                  <p>{createCommentError.response.data.error}</p>
+                </div>
+              )}
+            </div>
 
             {post.comments ?
-            <>
-{post.comments.slice(Math.max(post.comments.length - 3, 0)).map((comment) => (
-    <div key={comment._id} className="comment mt-6 flex items-start">
-      <div className="user-image border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center mr-4">
-        <div className="border border-gray-300 w-8 h-8 rounded-full"
-        style={{
-                backgroundImage: `url("${comment.owner.profile?.picture}"), url("${fallbackImage}")`,
-                backgroundPosition: 'center',
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-              }}>
-        </div>
-      </div>
-      <div className="comment-content">
-        <div className="head">
-          <Link to={`/userDetails/${comment.owner._id}`}>
-            <h4 className="UserName font-medium">{comment.owner.username} <span className="text-gray-500 font-normal text-xs">{moment(comment.createdAt).fromNow()}</span></h4>
+              <>
+                {post.comments.slice(Math.max(post.comments.length - 3, 0)).map((comment) => (
+                  <div key={comment._id} className="comment mt-6 flex items-start">
+                    <div className="user-image border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center mr-4">
+                      <div className="border border-gray-300 w-8 h-8 rounded-full"
+                        style={{
+                          backgroundImage: `url("${comment.owner.profile?.picture}"), url("${fallbackImage}")`,
+                          backgroundPosition: 'center',
+                          backgroundSize: 'cover',
+                          backgroundRepeat: 'no-repeat',
+                        }}>
+                      </div>
+                    </div>
+                    <div className="comment-content">
+                      <div className="head">
+                        <Link to={`/userDetails/${comment.owner._id}`}>
+                          <h4 className="UserName font-medium">{comment.owner.username} <span className="text-gray-500 font-normal text-xs">{moment(comment.createdAt).fromNow()}</span></h4>
 
-          </Link>
-        </div>
-        <div className="body pt-2">
-          <p className="comment-text text-sm">{comment.text}</p>
-        </div>
-        <div className="actions pt-2 flex gap-2">
-          <div className="like">
-            <span> <ThumbUpOutlined/> {comment.likes.length}</span>
+                        </Link>
+                      </div>
+                      <div className="body pt-2">
+                        <p className="comment-text text-sm">{comment.text}</p>
+                      </div>
+                      <div className="actions pt-2 flex gap-2">
+                        <div className="like">
+                          <span> <ThumbUpOutlined /> {comment.likes.length}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </> : null}
+
+
+
           </div>
-        </div>
-      </div>
-    </div>
-))}
-</> : null }
 
-
-
-</div>
-         
         </div>
       </div>
     </div>
