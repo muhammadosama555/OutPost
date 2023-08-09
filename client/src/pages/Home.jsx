@@ -476,30 +476,27 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="border-t flex items-center px-4 py-3">
-                <div className="w-6 h-6 mr-1 cursor-pointer">
-                  <svg
-                    aria-label="Emoji"
-                    className="w-full h-full"
-                    color="rgb(115, 115, 115)"
-                    fill="rgb(115, 115, 115)"
-                    role="img"
-                    viewBox="0 0 24 24"
-                    width={32}
-                  >
-                    <title>Emoji</title>
-                    <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" />
-                  </svg>
+              <form action="">
+                <div className="border-t flex items-center px-4 py-3">
+                  <div className="w-6 h-6 mr-1 cursor-pointer">
+                    <svg
+                      aria-label="Emoji"
+                      className="w-full h-full"
+                      color="rgb(115, 115, 115)"
+                      fill="rgb(115, 115, 115)"
+                      role="img"
+                      viewBox="0 0 24 24"
+                      width={32}
+                    >
+                      <title>Emoji</title>
+                      <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" />
+                    </svg>
+                  </div>
+                  <input className="text-sm h-5 outline-none bg-transparent flex-grow mx-2" aria-label="Add a comment..." placeholder="Add a comment..."/>
+
+                  <button className="text-blue-400 hover:text-blue-800 font-medium">Post</button>
                 </div>
-                <textarea className="text-sm outline-none bg-transparent flex-grow mx-2" aria-label="Add a comment..." placeholder="Add a comment..." autoComplete='off' id="" cols="30" rows="10"></textarea>
-                <textarea
-                  type="text"
-                  className="text-sm outline-none bg-transparent flex-grow mx-2"
-                  placeholder="Add a comment ..."
-                  name="text"
-                />
-                <button className="text-blue-400 hover:text-blue-800 font-medium">Post</button>
-              </div>
+              </form>
 
 
 
