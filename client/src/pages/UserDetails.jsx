@@ -91,7 +91,7 @@ export default function UserDetails() {
                                     </div>
                                 </div>
                             </div>
-                            {userDetails.data.data.profile.bio ? 
+                            {userDetails.data.data.profile?.bio ? 
                             <div className="right w-1/3 pl-8">
                                 <div>
                                     <h3 className='font-medium text-lg pb-1'>Intro</h3>

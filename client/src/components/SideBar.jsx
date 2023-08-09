@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGetUserDetails, useGetUsers, useReadAllNotifications } from "../apiCalls/userApiCalls";
 import Loader from "./Loader";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CreatePost from "./CreatePost";
 import Dialog from '@material-ui/core/Dialog';
 import moment from "moment";
+import { addSearchHistory } from "../redux/reducers/searchReducers";
 
 
 export default function SideBar() {
@@ -18,7 +19,11 @@ export default function SideBar() {
   const [search, setSearch] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
 
+  const navigate = useNavigate()
+  const dispatch = useDispatch();
 
+  const { searchHistories } = useSelector((state) => state.searchSlice);
+ 
   const { currentUser } = useSelector((state) => state.userSlice);
 
 
@@ -35,6 +40,8 @@ export default function SideBar() {
   const {
     mutate: readAllNotificationsMutate,
   } = useReadAllNotifications();
+
+ 
 
   const readNotificationsHandler = () => {
 
@@ -77,6 +84,22 @@ export default function SideBar() {
   };
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
+  };
+
+// Get the user's specific search history
+const userSearchHistory = searchHistories[userId] || [];
+
+  const handleUserClick = (user) => {
+    const isUserInSearchHistory = userSearchHistory.some(
+      (historyUser) => historyUser._id === user._id
+    );
+
+    if (!isUserInSearchHistory) {
+      dispatch(addSearchHistory({ userId, entry: user }));
+    }
+
+    navigate(`/userDetails/${user._id}`);
+    console.log(userSearchHistory); // Log the user's search history
   };
 
   useEffect(() => {
@@ -161,12 +184,12 @@ export default function SideBar() {
   // Convert the Map values to an array and reverse to show the most recent notifications first
   const notificationsArray = Array.from(groupedNotifications.values()).reverse();
 
-  console.log(notificationsArray);
+
 
   const time = notificationsArray.map((notificationGroup) => (
     moment(notificationGroup.createdAt).fromNow()
   ))
-  console.log(time)
+
 
 
 
@@ -494,9 +517,39 @@ export default function SideBar() {
                         </div> */}
             <div className="pt-3 overflow-y-auto max-h-[500px]">
 
-              {isUserLoading ? <Loader /> : (
-                <>
-                  {users?.data.users.map((user) => (
+              {isUsersLoading ? <Loader /> : (
+                <> 
+                {openSearch && search?.length > 0 ?
+                 (<>
+                  {users?.data?.users.map((user) => (
+                    <div onClick={() => handleUserClick(user)} key={user._id} className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
+                      <div
+                        className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
+                        style={{
+                          backgroundImage: `url("${user.profile?.picture}"), url("${fallbackImage}")`,
+                          backgroundPosition: "center",
+                          backgroundSize: "cover",
+                          backgroundRepeat: "no-repeat",
+                        }}
+                      ></div>
+                      <div className="flex flex-col">
+                        <div className="name">
+                          <h2>{user.firstName} {user.lastName}</h2>
+                        </div>
+                        <div className="flex gap-1 text-sm text-gray-500">
+                          <div className="status">
+                            <h2>{user.username} •</h2>
+                          </div>
+                          <div className="time">{user.followers.length} Followers</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))} 
+                  </>) : null
+                }
+                {openSearch && search?.length === 0 ?
+                 (<>
+                  {userSearchHistory?.map((user) => (
                     <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
                       <div
                         className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
@@ -519,7 +572,9 @@ export default function SideBar() {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  ))} 
+                  </>) : null
+                }
 
                 </>
               )}

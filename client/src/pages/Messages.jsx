@@ -4,13 +4,14 @@ import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useGetConversation, useGetConversations } from '../apiCalls/conversationApiCalls';
+import { useCreateConversation, useGetConversation, useGetConversations } from '../apiCalls/conversationApiCalls';
 import Loader from '../components/Loader';
 import { useCreateMessage, useGetConversationsMessages } from '../apiCalls/messageApiCalls';
 import io from "socket.io-client";
 import { useQueryClient } from "react-query";
 import Dialog from '@material-ui/core/Dialog';
 import "../App.css";
+import { useGetUsers } from '../apiCalls/userApiCalls';
 
 const socket = io("http://localhost:5000");
 console.log("Socket connection established.");
@@ -22,12 +23,14 @@ export default function Messages() {
   const textInputElement = useRef();
   const [conversationId, setConversationId] = useState(null)
   const [openChat, setOpenChat] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState([]);
 
   const { currentUser } = useSelector(state => state.userSlice) || null
   const userId = currentUser.data._id
   const token = currentUser.token
 
-
+  const { isLoading: isUsersLoading, data: users } = useGetUsers(token, search);
   const { isLoading: isConversationsLoading, data: conversations } = useGetConversations(token)
   const { data: conversation } = useGetConversation(conversationId, token)
   const { isLoading: isConversationMessagesLoading, data: conversationMessages } = useGetConversationsMessages(
@@ -40,7 +43,40 @@ export default function Messages() {
 
 
   const { mutate: createMessageMutate, isSuccess: createMessageIsSuccess } = useCreateMessage();
+  const { mutate: createConversationMutate, isSuccess: createConversationIsSuccess } = useCreateConversation();
   console.log(conversation?.data)
+
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const selectMembersHandler = (user) => {
+    // Check if the user is already selected
+    if (!selectedMembers.some((selectedUser) => selectedUser._id === user._id)) {
+      setSelectedMembers((prevSelectedMembers) => [...prevSelectedMembers, user]);
+    }
+    setSearch("")
+  };
+  
+
+  const removeMembersHandler = (userToRemove) => {
+    setSelectedMembers((prevSelectedMembers) =>
+      prevSelectedMembers.filter((user) => user._id !== userToRemove._id)
+    );
+  };
+  
+  const createConversationHandler = () => {
+    // Extract _id values from selected members and create an array of memberIds
+  const memberIds = selectedMembers.map(member => member._id);
+    const data = {
+      token: token,
+      members: memberIds
+    };
+    createConversationMutate(data);
+  }
+
+
 
   // Listen for incoming messages from the server
   useEffect(() => {
@@ -87,7 +123,12 @@ export default function Messages() {
     if (createMessageIsSuccess) {
       textInputElement.current.value = "";
     }
-  }, [createMessageIsSuccess]);
+    if (createConversationIsSuccess) {
+      setOpenChat(false)
+      setSelectedMembers([])
+      
+    }
+  }, [createMessageIsSuccess,createConversationIsSuccess]);
 
   const conversationHandler = (id) => {
     setConversationId(id);
@@ -106,6 +147,7 @@ export default function Messages() {
 
   const closeCreateChat = () => {
     setOpenChat(false)
+    setSearch("")
   }
 
 
@@ -248,13 +290,13 @@ export default function Messages() {
                               {message.sender._id !== currentUser.data._id ? ( // Check if the sender is the current user
                                 <div className="user-1 flex items-end space-x-2">
                                   <img className="h-9 w-9 bg-gray-300 rounded-full" />
-                                  <div className="bg-blue-500 rounded-3xl px-4 py-2 text-white max-w-xs">
+                                  <div className="bg-gray-200 rounded-3xl px-4 py-2 text-gray-800 max-w-xs" >
                                     <p>{message.text}</p>
                                   </div>
                                 </div>
                               ) : (
                                 <div className="user-2 flex items-end justify-end">
-                                  <div className="bg-gray-200 rounded-3xl px-4 py-2 text-gray-800 max-w-xs" >
+                                 <div className="bg-blue-500 rounded-3xl px-4 py-2 text-white max-w-xs">
                                     <p>{message.text}</p>
                                   </div>
                                 </div>
@@ -306,7 +348,7 @@ export default function Messages() {
               <div className="title flex items-center">
                 <h1 className='font-bold'>New Message</h1>
               </div>
-              <div className='cursor-pointer'>
+              <div onClick={closeCreateChat} className='cursor-pointer'>
                 <svg aria-label="Close" className="" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="24" role="img" viewBox="0 0 24 24" width="24"
                 >
                   <title>Close</title>
@@ -316,9 +358,15 @@ export default function Messages() {
             </div>
             <div className='flex items-center flex-wrap gap-3 py-2 px-2 border-b'>
               <span className='font-bold'>To: </span>
-              <div className='userName-Card flex items-center font-medium text-blue-500 bg-blue-100 rounded-full hover:cursor-pointer'>
-                <span className='pl-4 pr-1 py-[2px] hover:text-gray-600'>UserName</span>
-                <span>
+              
+              {isUsersLoading ? <Loader /> : (
+                <> 
+                {openChat  ?
+                 (<>
+                  {selectedMembers?.map((member) => (
+              <div key={member._id} className='userName-Card flex items-center font-medium text-blue-500 bg-blue-100 rounded-full hover:cursor-pointer'>
+                <span className='pl-4 pr-1 py-[2px] hover:text-gray-600'>{member.username}</span>
+                <span onClick={()=>removeMembersHandler(member)}>
                   <svg
                     aria-label="Close"
                     className="mr-3"
@@ -334,19 +382,37 @@ export default function Messages() {
                   </svg>
                 </span>
               </div>
+                ))} 
+                </>) : null
+              }
+   
+              </>
+            )}
 
               <div className="input flex-grow flex items-center">
-                <input type="text" name="" id="" className='flex-grow pr-3 w-0 outline-none min-w-[100px]' />
+                <input
+                 type="text"
+                 className='flex-grow pr-3 w-0 outline-none min-w-[100px]'
+                 placeholder="Search"
+                 value={search}
+                 onChange={handleSearchChange}
+                  />
               </div>
             </div>
             <div className="body pt-3 flex-grow overflow-y-auto max-h-[70%]">
-              <div className="default hidden px-6"><span>No accounts found.</span></div>
-              <div className="profile-Card">
+            {search?.length === 0 && <div className="default  px-6"><span>No accounts found.</span></div>}
+
+              {isUsersLoading ? <Loader /> : (
+                <> 
+                {openChat && search?.length > 0 ?
+                 (<>
+                  {users?.data?.users.map((user) => (
+              <div onClick={() => selectMembersHandler(user)} key={user._id} className="profile-Card">
                 <div className='cursor-pointer px-5 py-2 hover:bg-gray-100 transition duration-300 ease-in-out flex justify-between items-center'>
                   <div className='flex items-center gap-2'>
                     <div className='img w-12 h-12 bg-gray-400 rounded-full '
                       style={{
-                        backgroundImage: ` url("${fallbackImage}")`,
+                        backgroundImage: `url("${user.profile?.picture}"), url("${fallbackImage}")`,
                         backgroundPosition: 'center',
                         backgroundSize: 'cover',
                         backgroundRepeat: 'no-repeat',
@@ -355,10 +421,10 @@ export default function Messages() {
                     </div>
                     <div className='flex flex-col'>
                       <div className='name'>
-                        <h2 className='leading-5' >Full Name</h2>
+                        <h2 className='leading-5' >{user.firstName} {user.lastName}</h2>
                       </div>
                       <div className='text-sm text-gray-500'>
-                        <span className='leading-1'>UserName</span>
+                        <span className='leading-1'>{user.username}</span>
                       </div>
                     </div>
                   </div>
@@ -367,164 +433,22 @@ export default function Messages() {
                   </div>
                 </div>
               </div>
-              <div className="profile-Card">
-                <div className='cursor-pointer px-5 py-2 hover:bg-gray-100 transition duration-300 ease-in-out flex justify-between items-center'>
-                  <div className='flex items-center gap-2'>
-                    <div className='img w-12 h-12 bg-gray-400 rounded-full '
-                      style={{
-                        backgroundImage: ` url("${fallbackImage}")`,
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover',
-                        backgroundRepeat: 'no-repeat',
-                      }}>
+             ))} 
+             </>) : null
+           }
 
-                    </div>
-                    <div className='flex flex-col'>
-                      <div className='name'>
-                        <h2 className='leading-5' >Full Name</h2>
-                      </div>
-                      <div className='text-sm text-gray-500'>
-                        <span className='leading-1'>UserName</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mr-2 flex items-center justify-center h-6 w-6 border-2 border-gray-500 rounded-full">
+           </>
+         )}
 
-                  </div>
-                </div>
-              </div>
-              <div className="profile-Card">
-                <div className='cursor-pointer px-5 py-2 hover:bg-gray-100 transition duration-300 ease-in-out flex justify-between items-center'>
-                  <div className='flex items-center gap-2'>
-                    <div className='img w-12 h-12 bg-gray-400 rounded-full '
-                      style={{
-                        backgroundImage: ` url("${fallbackImage}")`,
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover',
-                        backgroundRepeat: 'no-repeat',
-                      }}>
 
-                    </div>
-                    <div className='flex flex-col'>
-                      <div className='name'>
-                        <h2 className='leading-5' >Full Name</h2>
-                      </div>
-                      <div className='text-sm text-gray-500'>
-                        <span className='leading-1'>UserName</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mr-2 flex items-center justify-center h-6 w-6 border-2 border-gray-500 rounded-full">
-
-                  </div>
-                </div>
-              </div>
-              <div className="profile-Card">
-                <div className='cursor-pointer px-5 py-2 hover:bg-gray-100 transition duration-300 ease-in-out flex justify-between items-center'>
-                  <div className='flex items-center gap-2'>
-                    <div className='img w-12 h-12 bg-gray-400 rounded-full '
-                      style={{
-                        backgroundImage: ` url("${fallbackImage}")`,
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover',
-                        backgroundRepeat: 'no-repeat',
-                      }}>
-
-                    </div>
-                    <div className='flex flex-col'>
-                      <div className='name'>
-                        <h2 className='leading-5' >Full Name</h2>
-                      </div>
-                      <div className='text-sm text-gray-500'>
-                        <span className='leading-1'>UserName</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mr-2 flex items-center justify-center h-6 w-6 border-2 border-gray-500 rounded-full">
-
-                  </div>
-                </div>
-              </div>
-              <div className="profile-Card">
-                <div className='cursor-pointer px-5 py-2 hover:bg-gray-100 transition duration-300 ease-in-out flex justify-between items-center'>
-                  <div className='flex items-center gap-2'>
-                    <div className='img w-12 h-12 bg-gray-400 rounded-full '
-                      style={{
-                        backgroundImage: ` url("${fallbackImage}")`,
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover',
-                        backgroundRepeat: 'no-repeat',
-                      }}>
-
-                    </div>
-                    <div className='flex flex-col'>
-                      <div className='name'>
-                        <h2 className='leading-5' >Full Name</h2>
-                      </div>
-                      <div className='text-sm text-gray-500'>
-                        <span className='leading-1'>UserName</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mr-2 flex items-center justify-center h-6 w-6 border-2 border-gray-500 rounded-full">
-
-                  </div>
-                </div>
-              </div>
-              <div className="profile-Card">
-                <div className='cursor-pointer px-5 py-2 hover:bg-gray-100 transition duration-300 ease-in-out flex justify-between items-center'>
-                  <div className='flex items-center gap-2'>
-                    <div className='img w-12 h-12 bg-gray-400 rounded-full '
-                      style={{
-                        backgroundImage: ` url("${fallbackImage}")`,
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover',
-                        backgroundRepeat: 'no-repeat',
-                      }}>
-
-                    </div>
-                    <div className='flex flex-col'>
-                      <div className='name'>
-                        <h2 className='leading-5' >Full Name</h2>
-                      </div>
-                      <div className='text-sm text-gray-500'>
-                        <span className='leading-1'>UserName</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mr-2 flex items-center justify-center h-6 w-6 border-2 border-gray-500 rounded-full">
-
-                  </div>
-                </div>
-              </div>
-              <div className="profile-Card">
-                <div className='cursor-pointer px-5 py-2 hover:bg-gray-100 transition duration-300 ease-in-out flex justify-between items-center'>
-                  <div className='flex items-center gap-2'>
-                    <div className='img w-12 h-12 bg-gray-400 rounded-full '
-                      style={{
-                        backgroundImage: ` url("${fallbackImage}")`,
-                        backgroundPosition: 'center',
-                        backgroundSize: 'cover',
-                        backgroundRepeat: 'no-repeat',
-                      }}>
-
-                    </div>
-                    <div className='flex flex-col'>
-                      <div className='name'>
-                        <h2 className='leading-5' >Full Name</h2>
-                      </div>
-                      <div className='text-sm text-gray-500'>
-                        <span className='leading-1'>UserName</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mr-2 flex items-center justify-center h-6 w-6 border-2 border-gray-500 rounded-full">
-
-                  </div>
-                </div>
-              </div>
+           
+            
+             
+             
+             
+             
             </div>
-            <div className="button absolute bottom-0  w-full bg-white py-3 px-4">
+            <div onClick={createConversationHandler} className="button absolute bottom-0  w-full bg-white py-3 px-4">
               <button className='bg-blue-500 hover:bg-blue-600 text-white py-3 w-full rounded-lg'>Chat</button>
             </div>
           </div>

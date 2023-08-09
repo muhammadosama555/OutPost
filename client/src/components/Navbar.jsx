@@ -31,7 +31,7 @@ export default function Navbar() {
               <h3 className='cursor-pointer'>OutPost</h3>
             </div>
             <div className='LOG-OUT_Button'>
-              <button className='px-4 py-2 bg-red-400 hover:bg-red-500  rounded-lg text-white font-medium'>Log Out</button>
+              <button onClick={handleLogout} className='px-4 py-2 bg-red-400 hover:bg-red-500  rounded-lg text-white font-medium'>{isLogoutLoading ? "...Is Logging Out" : "Log Out"}</button>
             </div>
           </div>
           <div className='menu flex items-center w-full gap-16'>
