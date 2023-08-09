@@ -18,6 +18,25 @@ const getPosts = async (token) => {
     return useQuery(["posts",token], () => getPosts(token));
   };
 
+// get post details
+
+const getPostDetails = async (postId,token) => {
+    return axios.get(`${API_BASE_URL}/posts/${postId}`, {
+      headers: {
+        authorization: "Bearer " + token,
+      },
+    });
+  };
+  
+  export const useGetPostDetails = (postId,token) => {
+    return useQuery(["post",postId,token], () => {
+      // Only call the API when conversationId is not null
+      if (postId !== null) {
+        return getPostDetails(postId, token);
+      }
+    });
+  };
+
   // create post
 
 export const createPost = async (postData) => {
@@ -57,7 +76,8 @@ export const useLikePost = () => {
   const queryClient = useQueryClient();
   return useMutation(likePost, {
     onSuccess: (data) => {
-      queryClient.invalidateQueries("posts");
+      queryClient.invalidateQueries("post");
+      queryClient.invalidateQueries("posts"); 
     },
   });
 };
