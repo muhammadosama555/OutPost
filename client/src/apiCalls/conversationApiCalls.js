@@ -33,3 +33,24 @@ const getConversation = async (conversationId,token) => {
         return getConversation(conversationId, token);
       }});
   };
+
+   // create conversation
+
+export const createConversation = async (conversationData) => {
+  console.log(conversationData)
+  return axios.post(`${API_BASE_URL}/conversations`, conversationData, {
+    headers: {
+      authorization: "Bearer " + conversationData.token,
+    },
+  });
+};
+
+export const useCreateConversation = () => {
+  const queryClient = useQueryClient();
+  return useMutation(createConversation, {
+    onSuccess: (data) => {
+      toast.success('Conversation is Created Sucessfully!');
+      queryClient.invalidateQueries("conversations");
+    },
+  });
+};

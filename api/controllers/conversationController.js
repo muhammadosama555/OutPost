@@ -10,15 +10,44 @@ const jwt = require('jsonwebtoken');
 exports.createConversation = asyncHandler(async (req, res, next) => {
   const { members } = req.body;
 
+  const authHeader = req.headers.authorization;
+  // If the authorization header doesn't exist, return an error
+  if (!authHeader) {
+    return next(new ErrorResponse('Authorization header missing', 401));
+  }
+  // Extract the token from the authorization header
+  const token = authHeader.split(' ')[1];
+  // Verify the token to get the user ID
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const currentUserID = decodedToken.id;
+
+  // Include the current user as one of the members
+  members.push(currentUserID);
+
+  // Check if a conversation with the same members already exists
+  const existingConversation = await Conversation.findOne({
+    members: { $all: members },
+  });
+
+  if (existingConversation) {
+    // If conversation exists, return it without creating a new one
+    return res.status(200).json({
+      success: true,
+      data: existingConversation,
+    });
+  }
+
+  // If conversation doesn't exist, create a new one
   const conversation = new Conversation({ members });
 
   await conversation.save();
 
   res.status(201).json({
     success: true,
-    data: conversation
+    data: conversation,
   });
 });
+
 
 //------------------------------------------------------ Update Conversation  -----------------------------------------//
 //desc    Update Conversation
