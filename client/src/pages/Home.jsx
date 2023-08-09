@@ -261,9 +261,17 @@ export default function Home() {
       </div>
 
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh' }, }}>
-        <div className="flex bg-amber-100 w-[65vw] h-[85vh] relative">
-          <div className='left bg-blue-100 h-[100%] w-[65%]'>
+        <div className="flex w-[65vw] h-[85vh] relative">
+          <div className='left h-[100%] w-[65%]'>
+            <div className='h-full'
+              style={{
+                backgroundImage: `url("${fallbackImage}")`,
+                backgroundPosition: 'center',
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+              }}>
 
+            </div>
           </div>
           <div className='right bg-yellow-100 w-[35%]'>
             <div className="header flex items-center justify-between py-3 px-4 border-b">
@@ -538,7 +546,7 @@ export default function Home() {
                       <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" />
                     </svg>
                   </div>
-                  <input className="text-sm h-5 outline-none bg-transparent flex-grow mx-2" aria-label="Add a comment..." placeholder="Add a comment..."/>
+                  <input className="text-sm h-5 outline-none bg-transparent flex-grow mx-2" aria-label="Add a comment..." placeholder="Add a comment..." />
 
                   <button className="text-blue-400 hover:text-blue-800 font-medium">Post</button>
                 </div>
