@@ -151,12 +151,13 @@ p {
 }
 
 .like .svg-icon {
-  transition: fill 0.2s;  /* Add a smooth transition effect */
+  transition: fill 0.2s; 
 }
 
 .like:hover .svg-icon {
-  fill: rgb(115, 115, 115) /* Change to your desired hover color */
+  fill: rgb(115, 115, 115);
 }
+
 
 .comment .svg-icon path{
   transition: stroke 0.2s;  /* Add a smooth transition effect */
@@ -196,4 +197,12 @@ p {
 /* Change color on hover */
 .comment-like:hover svg {
   fill: rgb(115, 115, 115) /* Change to your desired hover color */
+}
+
+.more .svg-icon {
+  transition: fill 0.2s ease; /* Change the color as desired */
+}
+.more:hover .svg-icon {
+  
+  fill: rgb(115, 115, 115); /* Change the color as desired */
 }

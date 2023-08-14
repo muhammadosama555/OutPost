@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Edit, Apps, BookmarkBorder, AccountBoxOutlined } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
@@ -8,6 +8,25 @@ import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
 
 
 export default function Profile() {
+
+
+     
+     const [showDialog, setShowDialog] = useState(false);
+
+     const openDialog = () => {
+          setShowDialog(true);
+     };
+
+     const closeDialog = () => {
+          setShowDialog(false);
+     };
+
+     const handleOutsideClick = (e) => {
+          if (e.target === e.currentTarget) {
+               closeDialog();
+          }
+     };
+
 
      const { currentUser } = useSelector(state => state.userSlice) || null
      const userId = currentUser.data._id
@@ -45,7 +64,7 @@ export default function Profile() {
                                                                  Edit profile
                                                             </button>
                                                        </Link>
-                                                       <div className='cursor-pointer px-1'>
+                                                       <div className='cursor-pointer px-1' onClick={openDialog}>
                                                             <svg
                                                                  aria-label="Options"
                                                                  className="x1lliihq x1n2onr6"
@@ -117,21 +136,28 @@ export default function Profile() {
                                    </div>
                               </div>
                          </div>
-                         <div className='fixed hidden inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
-                              <div className='settings  flex items-center justify-between flex-col close-card bg-white absolute w-[360px] rounded-2xl shadow-lg overflow-hidden'>
-                                   <div className='flex flex-col w-full'>
-                                        <button className='py-3 border-t w-full hover:bg-slate-100'>Apps and Websites</button>
-                                        <button className='py-3 border-t w-full hover:bg-slate-100'>QR Code</button>
-                                        <button className='py-3 border-t w-full hover:bg-slate-100'>Notifications</button>
-                                        <Link to="/settings"><button className='py-3 border-t w-full hover:bg-slate-100'>Settings and Privacy</button></Link>
-                                        <button className='py-3 border-t w-full hover:bg-slate-100'>Supervision</button>
-                                        <button className='py-3 border-t w-full hover:bg-slate-100'>Logout</button>
-                                        <button className='py-3 border-t w-full hover:bg-slate-100'>Cancel</button>
+
+                         {showDialog && (
+                              <div className='fixed inset-0 z-40 flex items-center justify-center w-screen h-screen' onClick={handleOutsideClick}>
+                                   <div className='modal-container'>
+                                        <div className='modal-content settings flex items-center justify-between flex-col close-card bg-white w-[360px] rounded-2xl shadow-lg overflow-hidden'>
+
+                                             <button className='py-3 w-full hover:bg-slate-100'>Apps and Websites</button>
+                                             <button className='py-3 border-t w-full hover:bg-slate-100'>QR Code</button>
+                                             <button className='py-3 border-t w-full hover:bg-slate-100'>Notifications</button>
+                                             <Link className='w-full' to="/settings"><button className='py-3 border-t w-full hover:bg-slate-100'>Settings and Privacy</button></Link>
+                                             <button className='py-3 border-t w-full hover:bg-slate-100'>Supervision</button>
+                                             <button className='py-3 border-t w-full hover:bg-slate-100'>Logout</button>
+                                             <button onClick={closeDialog} className='py-3 border-t w-full hover:bg-slate-100'>Cancel</button>
+                                        </div>
                                    </div>
                               </div>
-                         </div>
+                         )}
+
+
                     </>
-               )}
+               )
+               }
 
           </>
      )

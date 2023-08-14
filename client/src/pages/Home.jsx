@@ -43,7 +43,7 @@ export default function Home() {
       </div>
 
 
-      <div className=' right-side-bar pl-6 pr-6 pt-8 w-[400px] border-l h-screen border-gray-200'>
+      <div className=' right-side-bar pl-6 pr-4 pt-8 w-[400px]'>
         {isUserLoading ? <Loader /> : (
           <div className='profile relative flex items-center gap-4'>
             <div className='w-14 flex items-center justify-center'>
@@ -294,7 +294,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="more cursor-pointer color flex gap-1">
+              <div className="more cursor-pointer flex gap-1">
                 <svg
                   className='svg-icon'
                   aria-label="More options"

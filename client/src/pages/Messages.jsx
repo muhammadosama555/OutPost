@@ -159,8 +159,8 @@ export default function Messages() {
       <div className='w-[80%]'>
         <div className="flex flex-col h-screen bg-white">
           <div className="flex flex-1 overflow-y-auto">
-            <div className="w-[30%]  bg-white left border-r border-gray-200">
-              <div className='fixed w-[24%]'>
+            <div className="w-[25%]  bg-white left border-r border-gray-200">
+              <div className='fixed w-[20%]'>
                 <div className="py-2">
                   <div className='flex px-4 justify-between items-center pt-6'>
                     <div className='flex gap-1 items-center'>
