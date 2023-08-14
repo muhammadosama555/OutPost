@@ -105,13 +105,13 @@ export default function Posts({ post, handleOpenDialog }) {
         </div>
         <div className="body pt-4">
           <div className="flex items-center cursor-pointer justify-center rounded-[4px] overflow-hidden">
-            <div onClick={handleOpenDialog} className="image w-full flex items-center justify-center bg-black"          >
+            <div onClick={()=>handleOpenDialog(post._id)} className="image w-full flex items-center justify-center bg-black"          >
               <img className="h-[600px]" src={post.imageUrl} alt="" />
             </div>
           </div>
           <div className="actions pt-4 flex justify-between items-center">
-            <div className="flex items-center gap-3 ">
-              <div onClick={likeSubmitHandler} className="like cursor-pointer p-1">
+            <div className="flex gap-3">
+              <div onClick={likeSubmitHandler} className="like cursor-pointer">
                 <svg
                   aria-label="Like"
                   className="svg-icon"

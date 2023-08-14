@@ -22,6 +22,7 @@ export const useCreateComment = () => {
   return useMutation(createComment, {
     onSuccess: (data) => {
       queryClient.invalidateQueries("posts");
+      queryClient.invalidateQueries("post");
     },
   });
 };
