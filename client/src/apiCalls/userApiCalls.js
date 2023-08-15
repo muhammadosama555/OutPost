@@ -154,3 +154,20 @@ export const useReadAllNotifications = () => {
   });
 };
 
+// foreman to change password
+
+export const changePassword = async (userData) => {
+  return axios.post(`${API_BASE_URL}/auth/change-password`, userData, {
+    headers: {
+      authorization: "Bearer " + userData.token,
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation(changePassword, {
+    onSuccess: (data) => {
+      toast.success('password changed Successfully!');
+    },
+  });
+};

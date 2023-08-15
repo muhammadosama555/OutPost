@@ -367,7 +367,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className='comment-section space-y-3 pt-3 pb-4 ' style={{ maxHeight: 'calc(80vh - 156px)', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'transparent transparent' }}>
+            <div className='comment-section space-y-3 pt-3 pb-4 overflow-y-auto scrollbar-none' style={{ maxHeight: 'calc(80vh - 156px)', scrollbarWidth: 'thin', scrollbarColor: 'transparent transparent' }}>
               <div className='post-desc flex gap-3 mx-4'>
                 <div className="img flex-shrink-0 w-8 h-8 bg-gray-400 rounded-full"
                   style={{

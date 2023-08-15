@@ -34,15 +34,16 @@ export default function Settings() {
                             <button className='py-[10px] pl-6 text-left hover:bg-gray-50 border-l-4 border-gray-50 hover:border-l-4 hover:border-gray-200 hover:font-medium'><span className='text-sm'>What you see</span></button>
                             <button className='py-[10px] pl-6 text-left hover:bg-gray-50 border-l-4 border-gray-50 hover:border-l-4 hover:border-gray-200 hover:font-medium'><span className='text-sm'>Who can see your content</span></button>
                             <button className='py-[10px] pl-6 text-left hover:bg-gray-50 border-l-4 border-gray-50 hover:border-l-4 hover:border-gray-200 hover:font-medium'><span className='text-sm'>Personal Details</span></button>
+                            <button onClick={() => handleButtonClick('/settings/security')} className='py-[10px] pl-6 text-left hover:bg-gray-50 border-l-4 border-gray-50 hover:border-l-4 hover:border-gray-200 hover:font-medium'><span className='text-sm'>Security</span></button>
                         </div>
                         <div className="right w-[80%]">
-                            {path == "/settings/editProfile" ? <EditProfile/> : null}
+                            {path === "/settings/editProfile" || path === "/settings" ? <EditProfile/> : null}
                             {/* <EmailNoti></EmailNoti> */}
                             {/* <PushNoti></PushNoti> */}
                             {/* <WhatUSee></WhatUSee> */}
                             {/* <WhoCanSeeYourContent></WhoCanSeeYourContent> */}
                             {/* <PersonalDetails></PersonalDetails> */}
-                            {/* <Security></Security> */}
+                            {path === "/settings/security"  ? <Security/> : null}
                         </div>
                     </div>
                 </div>

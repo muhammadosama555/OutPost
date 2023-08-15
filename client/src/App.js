@@ -3,11 +3,11 @@ import "./App.css";
 import { QueryClientProvider,QueryClient } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import {BrowserRouter,Routes,Route} from "react-router-dom";
+import { ScrollToTop } from "./hooks/ScrollToTop";
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Register from './pages/Register';
 import Login from './pages/Login';
-
 import { useSelector } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -26,6 +26,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
     <BrowserRouter>
+    <ScrollToTop />
     {currentUser ? (
           <>
     <Navbar />
@@ -36,6 +37,7 @@ function App() {
     <Route path='/profile' element={<Profile/>}/>
     <Route path='/userDetails/:userId' element ={<UserDetails/>}></Route>
     <Route path='/settings/editProfile' element= {<Settings/>}></Route>
+    <Route path='/settings/security' element= {<Settings/>}></Route>
     <Route path='/settings' element= {<Settings/>}></Route>
     <Route path='/messages' element={<Messages/>}/>
     </Routes>

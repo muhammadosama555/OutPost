@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { Link, useNavigate } from "react-router-dom";
-import { useGetUserDetails, useGetUsers, useReadAllNotifications } from "../apiCalls/userApiCalls";
+import { useGetUserDetails, useGetUsers, useLogout, useReadAllNotifications } from "../apiCalls/userApiCalls";
 import Loader from "./Loader";
 import { useDispatch, useSelector } from "react-redux";
 import CreatePost from "./CreatePost";
 import Dialog from '@material-ui/core/Dialog';
 import moment from "moment";
 import { addSearchHistory } from "../redux/reducers/searchReducers";
+import useOutsideClick from "../hooks/useOutsideClick";
 
 export default function SideBar() {
   const [openSearch, setOpenSearch] = useState(false);
@@ -17,33 +18,12 @@ export default function SideBar() {
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const [search, setSearch] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
-
-
-
-
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const searchRef = useRef(null);
+  const notificationRef = useRef(null);
 
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
-    if (toggleSidebar) {
-      toggleSidebarHandler();
-    }
-  };
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setShowDropdown(false);
-    }
-  };
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-
-
+  
 
   const navigate = useNavigate()
   const dispatch = useDispatch();
@@ -61,13 +41,29 @@ export default function SideBar() {
     token
   );
   const { isLoading: isUsersLoading, data: users } = useGetUsers(token, search);
-
-
   const {
     mutate: readAllNotificationsMutate,
   } = useReadAllNotifications();
+  const { mutate: logoutMutate, isLoading: isLogoutLoading } = useLogout();
 
 
+  useOutsideClick(dropdownRef, () => {
+    if (showDropdown) setShowDropdown(false);
+  });
+  
+  useOutsideClick(searchRef, () => {
+    if (openSearch) setOpenSearch(false);
+  });
+  
+  useOutsideClick(notificationRef, () => {
+    if (openNotifications) setOpenNotifications(false);
+  });
+  
+
+
+  const handleLogout = () => {
+    logoutMutate()
+  };
 
   const readNotificationsHandler = () => {
 
@@ -109,6 +105,15 @@ export default function SideBar() {
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+    if (toggleSidebar) {
+      toggleSidebarHandler();
+    }
+  };
+
+  
 
   // Get the user's specific search history
   const userSearchHistory = searchHistories[userId] || [];
@@ -250,7 +255,7 @@ export default function SideBar() {
               </Link>
             )}
 
-            <div
+            <div ref={searchRef}
               onClick={() => {
                 !openSearch ? setToggleSidebar(true) : setToggleSidebar(false);
                 openSearchHandler();
@@ -359,7 +364,7 @@ export default function SideBar() {
               ) : null}
             </div>
             <Link to="/messages">
-              <div
+              <div 
 
                 className="Messages flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
               >
@@ -393,7 +398,7 @@ export default function SideBar() {
                 ) : null}
               </div>
             </Link>
-            <div
+            <div ref={notificationRef}
               onClick={() => {
                 !openNotifications ? setToggleSidebar(true) : setToggleSidebar(false);
                 openNotificationsHandler();
@@ -492,7 +497,7 @@ export default function SideBar() {
             </div>
           </div>
           <div className={`MORE_OPTION fixed bottom-0 ${toggleSidebar ? 'w-20' : 'w-[20%]'} mb-4`}>
-            <div className="w-full relative" ref={dropdownRef}>
+            <div ref={dropdownRef} className="w-full relative" >
               <div
                 className="Create flex items-center gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
                 onClick={toggleDropdown}
@@ -506,16 +511,16 @@ export default function SideBar() {
 
               </div>
               {showDropdown && (
-                <div className="absolute bottom-14 left-3 w-[75%] bg-white shadow-lg border rounded-2xl">
+                <div  className="absolute bottom-14 left-3 w-[75%] bg-white shadow-lg border rounded-2xl">
                   <div className="top p-2">
-                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                    <Link to="/settings" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
                       <svg aria-label="Options" className="x1lliihq x1n2onr6" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="20" role="img" viewBox="0 0 24 24" width="20">
                         <title>Options</title>
                         <circle cx="12" cy="12" fill="none" r="8.635" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></circle>
                         <path d="M14.232 3.656a1.269 1.269 0 0 1-.796-.66L12.93 2h-1.86l-.505.996a1.269 1.269 0 0 1-.796.66m-.001 16.688a1.269 1.269 0 0 1 .796.66l.505.996h1.862l.505-.996a1.269 1.269 0 0 1 .796-.66M3.656 9.768a1.269 1.269 0 0 1-.66.796L2 11.07v1.862l.996.505a1.269 1.269 0 0 1 .66.796m16.688-.001a1.269 1.269 0 0 1 .66-.796L22 12.93v-1.86l-.996-.505a1.269 1.269 0 0 1-.66-.796M7.678 4.522a1.269 1.269 0 0 1-1.03.096l-1.06-.348L4.27 5.587l.348 1.062a1.269 1.269 0 0 1-.096 1.03m11.8 11.799a1.269 1.269 0 0 1 1.03-.096l1.06.348 1.318-1.317-.348-1.062a1.269 1.269 0 0 1 .096-1.03m-14.956.001a1.269 1.269 0 0 1 .096 1.03l-.348 1.06 1.317 1.318 1.062-.348a1.269 1.269 0 0 1 1.03.096m11.799-11.8a1.269 1.269 0 0 1-.096-1.03l.348-1.06-1.317-1.318-1.062.348a1.269 1.269 0 0 1-1.03-.096" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2"></path>
                       </svg>
                       <p className="text-sm">Settings</p>
-                    </div>
+                    </Link>
                     <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
                       <svg aria-label="Your activity" class="x1lliihq x1n2onr6" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="18" role="img" viewBox="0 0 24 24" width="18"><title>Your activity</title><path d="M12 1.505a10.5 10.5 0 1 1-7.424 17.924" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><polyline fill="none" points="8.893 15.108 12 12 12.012 12.012 12.012 5.793" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline><circle cx="7.24" cy="2.651" r="1.125"></circle><circle cx="3.515" cy="5.83" r="1.125"></circle><circle cx="1.636" cy="10.353" r="1.125"></circle><circle cx="2.01" cy="15.235" r="1.125"></circle></svg>
                       <p className="text-sm">Your activity</p>
@@ -535,8 +540,8 @@ export default function SideBar() {
                       <p className="text-sm">Switch accounts</p>
                     </div>
                     <hr className="my-2" />
-                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
-                      <p className="text-sm">Log out</p>
+                    <div onClick={handleLogout} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                      <p className="text-sm">{isLogoutLoading ? "Loging out" : "Log out"}</p>
                     </div>
                   </div>
                 </div>
@@ -545,7 +550,7 @@ export default function SideBar() {
           </div>
         </div>
         {/* -----------------------------------------------search model  ---------------------------------------------------------- */}
-        <div
+        <div ref={searchRef}
           className={`${openSearch ? "" : "hidden"
             } search-panel pl-[78px] w-[420px] bg-white h-screen`}
         >
@@ -639,7 +644,7 @@ export default function SideBar() {
         </div>
         {/* -----------------------------------------------notification model  ---------------------------------------------------------- */}
 
-        <div
+        <div ref={notificationRef}
           className={`${openNotifications ? "" : "hidden"
             } noti-panel pl-[78px] w-[420px] bg-white h-screen`}
         >

@@ -26,8 +26,6 @@ export default function Posts({ post, handleOpenDialog }) {
 
   const {
     mutate: createCommentMutate,
-    isError: isCreateCommentError,
-    error: createCommentError,
     isSuccess: createCommentIsSuccess,
   } = useCreateComment();
   const {
@@ -133,7 +131,7 @@ export default function Posts({ post, handleOpenDialog }) {
                 </svg>
               </div>
 
-              <div className="comment cursor-pointer">
+              <div onClick={()=>handleOpenDialog(post._id)} className="comment cursor-pointer">
                 <svg
                   aria-label="Comment"
                   className="svg-icon"
@@ -222,7 +220,7 @@ export default function Posts({ post, handleOpenDialog }) {
             <span className="text-sm text-gray-500">more</span>
           </div>
           <div className="pt-1">
-            <span className="text-sm text-gray-500">
+            <span onClick={()=>handleOpenDialog(post._id)} className="cursor-pointer text-sm text-gray-500">
               View all {post.comments.length} comments
             </span>
           </div>
@@ -252,25 +250,21 @@ export default function Posts({ post, handleOpenDialog }) {
                 ref={textInputElement}
                 onInput={() => { }}
               />
-              {textInputElement.current?.value.trim().length > 0 && (
+         
                 <button
                   onClick={handleSubmit}
                   className="cursor-pointer text-blue-400 hover:text-blue-600 font-semibold rounded pr-2"
                 >
                   Post
                 </button>
-              )}
-              {isCreateCommentError && (
-                <div className='text-sm font-medium text-red-600 pt-2'>
-                  <p>{createCommentError.response.data.error}</p>
-                </div>
-              )}
+           
+              
 
             </div>
 
             {post.comments ?
               <>
-                {post.comments.slice(Math.max(post.comments.length - 3, 0)).map((comment) => (
+                {post.comments.slice(Math.max(post.comments.length - 3, 0)).reverse().map((comment) => (
                   <div key={comment._id} className="comment mt-6 flex items-start">
                     <div className="user-image border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center mr-4">
                       <div className="border border-gray-300 w-8 h-8 rounded-full"
