@@ -223,8 +223,7 @@ export default function Messages() {
               <>
                 <div className="flex-1 right  flex flex-col justify-between pb-4">
                   <div className='flex-1 overflow-y-auto'>
-                    <div className='header flex fixed bg-white justify-between w-[56%] border-b border-gray-200 py-3 px-4'>
-
+                    <div className='header flex fixed bg-white justify-between w-[60%] border-b border-gray-200 py-3 px-4'>
                       <div className="flex items-center gap-3">
                         <div className="img w-11 h-11 bg-gray-400 rounded-full"
                           style={{
