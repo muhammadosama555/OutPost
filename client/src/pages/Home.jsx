@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Posts from '../components/Posts'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import { useSelector } from 'react-redux'
-import { useGetUserDetails } from '../apiCalls/userApiCalls'
+import { useGetUserDetails, useGetUsers } from '../apiCalls/userApiCalls'
 import Loader from '../components/Loader'
 import { useGetPostDetails, useGetPosts, useLikePost } from '../apiCalls/postApiCalls'
 import Status from '../components/Status';
@@ -11,10 +11,11 @@ import Dialog from '@material-ui/core/Dialog';
 import "../App.css";
 import { useCreateComment } from '../apiCalls/commentApiCalls';
 import moment from 'moment';
+import { useFollowUser, useUnFollowUser } from '../apiCalls/followApiCalls';
 
 export default function Home() {
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [openPostDetails, setOpenPostDetails] = useState(false);
   const [postId, setPostId] = useState(null);
   const { currentUser } = useSelector(state => state.userSlice) || null
   const textInputElement = useRef();
@@ -25,6 +26,8 @@ export default function Home() {
 
 
   const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
+  const { isLoading: isUsersLoading, data: users } = useGetUsers(token);
+  console.log(userDetails?.data)
   const { isLoading: isPostLoading, data: postDetails } = useGetPostDetails(postId, token)
   const { isLoading: isPostsLoading, data: posts } = useGetPosts(token)
   const {
@@ -36,6 +39,10 @@ export default function Home() {
   const {
     mutate: likePostMutate,
   } = useLikePost();
+  const {
+    mutate: followUserMutate,
+  } = useFollowUser();
+ 
 
 
   const isCurrentUserLiked = () => {
@@ -64,18 +71,45 @@ export default function Home() {
 
   };
 
+  const followUserHandler = (id) => {
+
+    const data = {
+      token: token,
+      followingId: id
+    };
+    followUserMutate(data);
+
+  };
+
   useEffect(() => {
     if (createCommentIsSuccess) {
       textInputElement.current.value = "";
     }
   }, [createCommentIsSuccess]);
 
-  console.log(postDetails?.data)
+  
 
-  const handleOpenDialog = (id) => {
-    setIsDialogOpen(true);
+  const openPostDetailsHandler = (id) => {
+    setOpenPostDetails(true);
     setPostId(id)
   };
+
+  const closePostDetailsHandler = () => {
+    setOpenPostDetails(false);
+  };
+
+
+  const filteredUsers = users?.data?.users.filter(
+    (user) =>
+      user.username !== userDetails?.data?.data?.username &&
+      !userDetails?.data?.data?.following.some(followingUser => followingUser.username === user.username)
+  );
+  
+
+    
+      console.log(filteredUsers)
+
+
 
   const fallbackImage = '/images/avatar.jpg';
 
@@ -88,12 +122,11 @@ export default function Home() {
           (
             <>
               {posts.data.data.map((post) => (
-                <Posts key={post._id} post={post} handleOpenDialog={handleOpenDialog} />
+                <Posts key={post._id} post={post} openPostDetailsHandler={openPostDetailsHandler} />
               ))}
             </>
           )
         }
-
       </div>
 
 
@@ -114,7 +147,7 @@ export default function Home() {
               <p className='text-sm font-bold tracking-wide'>{`${userDetails.data.data.firstName} ${userDetails.data.data.lastName}`}</p>
               <p className='text-lg text-[#7e7979] uppercase'>{userDetails.data.data.username}</p>
             </div>
-            <p className='absolute right-0 text-sm font-bold tracking-wide'>Switch</p>
+           
           </div>
         )}
 
@@ -123,62 +156,40 @@ export default function Home() {
             <p className='font-bold text-[#9b9696] tracking-wide'>Suggestions For You</p>
             <p className='absolute  text-gray-900 hover:text-gray-400 hover:cursor-pointer right-0 text-sm font-bold tracking-wide'>See All</p>
           </div>
-          <div className='profile relative flex items-center gap-4'>
-            <div className='w-10 flex items-center justify-center'>
-              <div className='w-10 h-10 rounded-full'
-                style={{
-                  backgroundImage: `url("/images/profile.jpg")`,
-                  backgroundPosition: 'center',
-                  backgroundSize: 'cover',
-                  backgroundRepeat: 'no-repeat',
-                }}>
+
+          {isUsersLoading ? <Loader/> : (
+            <>
+             {filteredUsers.map((user)=>
+              <div key={user._id} className='profile relative flex items-center gap-4'>
+              <div className='w-10 flex items-center justify-center'>
+                <div className='w-10 h-10 rounded-full'
+                  style={{
+                    backgroundImage:`url("${user?.profile?.picture}"), url("${fallbackImage}")`,
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                  }}>
+                </div>
               </div>
-            </div>
-            <div className='flex flex-col'>
-              <p className='text-sm font-bold tracking-wide'>UserName</p>
-              <p className='text-xs text-[#7e7979] '>Followed by theorignals +6 more</p>
-            </div>
-            <p className='absolute right-0 text-blue-400 hover:text-gray-600 hover:cursor-pointer text-sm font-bold tracking-wide'>Follow</p>
-          </div>
-          <div className='profile relative flex items-center gap-4'>
-            <div className='w-10 flex items-center justify-center'>
-              <div className='w-10 h-10 rounded-full'
-                style={{
-                  backgroundImage: `url("/images/profile.jpg")`,
-                  backgroundPosition: 'center',
-                  backgroundSize: 'cover',
-                  backgroundRepeat: 'no-repeat',
-                }}>
+              <div className='flex flex-col'>
+                <p className='text-sm font-bold tracking-wide'>{user.username}</p>
+                {user.followers.length > 0 ? 
+                <p className='text-xs text-[#7e7979] '>Followed by {user?.followers[user?.followers.length-1].username} {user?.followers.length > 1 ? <span>+{user?.followers.length} more</span> : null}</p>
+                  : null }
               </div>
+              <p onClick={()=>followUserHandler(user._id)} className='absolute right-0 text-blue-400 hover:text-gray-600 hover:cursor-pointer text-sm font-bold tracking-wide'>Follow</p>
             </div>
-            <div className='flex flex-col'>
-              <p className='text-sm font-bold tracking-wide'>UserName</p>
-              <p className='text-xs text-[#7e7979] '>Followed by devilish +3 more</p>
-            </div>
-            <p className='absolute text-blue-400 hover:text-gray-600 hover:cursor-pointer right-0 text-sm font-bold tracking-wide'>Follow</p>
-          </div>
-          <div className='profile relative flex items-center gap-4'>
-            <div className='w-10 flex items-center justify-center'>
-              <div className='w-10 h-10 rounded-full'
-                style={{
-                  backgroundImage: `url("/images/profile.jpg")`,
-                  backgroundPosition: 'center',
-                  backgroundSize: 'cover',
-                  backgroundRepeat: 'no-repeat',
-                }}>
-              </div>
-            </div>
-            <div className='flex flex-col'>
-              <p className='text-sm font-bold tracking-wide'>UserName</p>
-              <p className='text-xs text-[#7e7979] '>suggested for you</p>
-            </div>
-            <p className='absolute  text-blue-400 hover:text-gray-600 hover:cursor-pointer right-0 text-sm font-bold tracking-wide'>Follow</p>
-          </div>
+             )}
+            </>
+          )}
+         
+         
+         
         </div>
 
         <hr className='mt-4' />
 
-        <div className='Contacts relative flex flex-col pt-4'>
+        {/* <div className='Contacts relative flex flex-col pt-4'>
           <div className='flex pb-4'>
             <p className='font-bold text-[#9b9696] tracking-wide'>Contacts</p>
             <p className='absolute  text-gray-900 hover:text-gray-400 hover:cursor-pointer right-0 text-sm font-bold tracking-wide'>See All</p>
@@ -311,10 +322,10 @@ export default function Home() {
               <p className='text-sm font-bold tracking-wide'>UserName</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
-      <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh' }, }}>
+      <Dialog open={openPostDetails} onClose={closePostDetailsHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh' }, }}>
         {isPostLoading ? <Loader/> :
         <div className="flex w-[65vw] h-[85vh] relative">
           <div className='left h-[100%] w-[65%]'>

@@ -5,40 +5,52 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const Follower = require('../models/Follow');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const jwt = require('jsonwebtoken');
 
 //------------------------------------------------------ Follow User  -----------------------------------------//
 //desc    Follow User
 //route   /api/follows
 //access  private
+
 exports.followUser = asyncHandler(async (req, res) => {
+  const { followingId } = req.body;
 
-    const { followerId, followingId } = req.body;
-    const followerRelation = new Follower({ follower: followerId, following: followingId });
+  const authHeader = req.headers.authorization;
+  // If the authorization header doesn't exist, return an error
+  if (!authHeader) {
+    return next(new ErrorResponse('Authorization header missing', 401));
+  }
+  // Extract the token from the authorization header
+  const token = authHeader.split(' ')[1];
+  // Verify the token to get the user ID
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const followerId = decodedToken.id;
 
-    await followerRelation.save();
+  const followerRelation = new Follower({ follower: followerId, following: followingId });
 
-     // Create a new notification
-     const notification = new Notification({
-      senderUser: followerId,
-      receiverUser: followingId,
-      type: 'follow',
-    });
+  await followerRelation.save();
 
-    // Save the notification to the database
-    await notification.save();
+  // Create a new notification
+  const notification = new Notification({
+    senderUser: followerId,
+    receiverUser: followingId,
+    type: 'follow',
+  });
 
-    // Push the new notification into the user notifications array
-    const followingUser = await User.findById(followingId);
-    followingUser.notifications.push(notification._id);
-    await followingUser.save();
+  // Save the notification to the database
+  await notification.save();
 
-     // Update the User documents
-     await User.findByIdAndUpdate(followerId, { $push: { following: followingId } });
-     await User.findByIdAndUpdate(followingId, { $push: { followers: followerId } });
+  // Push the new notification into the user notifications array
+  const followingUser = await User.findById(followingId);
+  followingUser.notifications.push(notification._id);
+  await followingUser.save();
 
-    res.status(201).json(followerRelation);
- 
-})
+  // Update the User documents
+  await User.findByIdAndUpdate(followerId, { $push: { following: followingId } });
+  await User.findByIdAndUpdate(followingId, { $push: { followers: followerId } });
+
+  res.status(201).json(followerRelation);
+});
 
 //------------------------------------------------------ Update Follow  -----------------------------------------//
 //desc    Update Follow
@@ -96,11 +108,11 @@ exports.getFollow = asyncHandler(async (req, res) => {
   }
 })
 
-//------------------------------------------------------ unFollow User  -----------------------------------------//
-//desc    unFollow User
+//------------------------------------------------------ delete follow  -----------------------------------------//
+//desc    delete follow
 //route   /api/follows/:id
 //access  private
-exports.unfollowUser = asyncHandler(async (req, res) => {
+exports.deleteFollow = asyncHandler(async (req, res) => {
 
     const follower = await Follower.findById(req.params.id);
 
@@ -117,4 +129,36 @@ exports.unfollowUser = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, message: 'Follower relation deleted successfully' });
   
 })
+
+//------------------------------------------------------ Unfollow User  -----------------------------------------//
+//desc    Unfollow User
+//route   /api/follows/unfollow/:followingId
+//access  private
+exports.unfollowUser = asyncHandler(async (req, res, next) => {
+  const { followingId } = req.params;
+
+  const authHeader = req.headers.authorization;
+  // If the authorization header doesn't exist, return an error
+  if (!authHeader) {
+    return next(new ErrorResponse('Authorization header missing', 401));
+  }
+  // Extract the token from the authorization header
+  const token = authHeader.split(' ')[1];
+  // Verify the token to get the user ID
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const followerId = decodedToken.id;
+
+  // Remove the follower and following relationship in User documents
+  await User.findByIdAndUpdate(followerId, { $pull: { following: followingId } });
+  await User.findByIdAndUpdate(followingId, { $pull: { followers: followerId } });
+
+  // Find and remove the follow relationship
+  const followRelationship = await Follower.findOneAndDelete({ follower: followerId, following: followingId });
+
+  if (!followRelationship) {
+    return res.status(404).json({ success: false, message: 'Follow relationship not found' });
+  }
+
+  res.status(200).json({ success: true, message: 'Unfollowed successfully' });
+});
 

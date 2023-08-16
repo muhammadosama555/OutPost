@@ -12,6 +12,7 @@ import { addSearchHistory } from "../redux/reducers/searchReducers";
 import useOutsideClick from "../hooks/useOutsideClick";
 
 export default function SideBar() {
+  
   const [openSearch, setOpenSearch] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const [openCreatePost, setOpenCreatePost] = useState(false);
@@ -255,7 +256,7 @@ export default function SideBar() {
               </Link>
             )}
 
-            <div ref={searchRef}
+            <div 
               onClick={() => {
                 !openSearch ? setToggleSidebar(true) : setToggleSidebar(false);
                 openSearchHandler();
@@ -398,7 +399,7 @@ export default function SideBar() {
                 ) : null}
               </div>
             </Link>
-            <div ref={notificationRef}
+            <div 
               onClick={() => {
                 !openNotifications ? setToggleSidebar(true) : setToggleSidebar(false);
                 openNotificationsHandler();
@@ -609,7 +610,7 @@ export default function SideBar() {
                   {openSearch && search?.length === 0 ?
                     (<>
                       {userSearchHistory?.map((user) => (
-                        <div className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
+                        <div onClick={() => handleUserClick(user)} key={user._id} className="card px-5 py-[10px] hover:bg-gray-100 flex items-center gap-3 cursor-pointer">
                           <div
                             className="img w-12 h-12 bg-gray-400 rounded-full ring-[2px] ring-red-300 ring-offset-[2px]"
                             style={{
@@ -713,11 +714,7 @@ export default function SideBar() {
                           <span className="time text-gray-500">{moment(notificationGroup.createdAt).fromNow()}</span>
                         </div>
                       </div>
-                      <div className="">
-                        <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                          Follow
-                        </button>
-                      </div>
+                  
                     </div>
                   ))}
 
@@ -782,11 +779,7 @@ export default function SideBar() {
                             <span className="time text-gray-500">{moment(notificationGroup.createdAt).fromNow()}</span>
                           </div>
                         </div>
-                        <div className="">
-                          <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                            Follow
-                          </button>
-                        </div>
+                        
                       </div>
                     ))}
 
@@ -850,11 +843,7 @@ export default function SideBar() {
                             <span className="time text-gray-500">{moment(notificationGroup.createdAt).fromNow()}</span>
                           </div>
                         </div>
-                        <div className="">
-                          <button className="text-white bg-blue-500 hover:bg-blue-600 px-5 py-[6px] text-sm rounded-lg font-medium">
-                            Follow
-                          </button>
-                        </div>
+                       
                       </div>
                     ))}
 

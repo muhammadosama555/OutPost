@@ -11,7 +11,7 @@ const moment = require('moment');
 
 
 
-export default function Posts({ post, handleOpenDialog }) {
+export default function Posts({ post, openPostDetailsHandler }) {
 
   const { currentUser } = useSelector((state) => state.userSlice);
 
@@ -103,7 +103,7 @@ export default function Posts({ post, handleOpenDialog }) {
         </div>
         <div className="body pt-4">
           <div className="flex items-center cursor-pointer justify-center rounded-[4px] overflow-hidden">
-            <div onClick={()=>handleOpenDialog(post._id)} className="image w-full flex items-center justify-center bg-black"          >
+            <div onClick={()=>openPostDetailsHandler(post._id)} className="image w-full flex items-center justify-center bg-black"          >
               <img className="h-[600px]" src={post.imageUrl} alt="" />
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function Posts({ post, handleOpenDialog }) {
                 </svg>
               </div>
 
-              <div onClick={()=>handleOpenDialog(post._id)} className="comment cursor-pointer">
+              <div onClick={()=>openPostDetailsHandler(post._id)} className="comment cursor-pointer">
                 <svg
                   aria-label="Comment"
                   className="svg-icon"
@@ -220,7 +220,7 @@ export default function Posts({ post, handleOpenDialog }) {
             <span className="text-sm text-gray-500">more</span>
           </div>
           <div className="pt-1">
-            <span onClick={()=>handleOpenDialog(post._id)} className="cursor-pointer text-sm text-gray-500">
+            <span onClick={()=>openPostDetailsHandler(post._id)} className="cursor-pointer text-sm text-gray-500">
               View all {post.comments.length} comments
             </span>
           </div>
