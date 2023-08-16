@@ -16,6 +16,7 @@ import Profile from './pages/Profile';
 import Messages from './pages/Messages';
 import UserDetails from './pages/UserDetails';
 import Settings from './pages/Settings';
+import ForgetPassword from './pages/ForgetPassword';
 
 const queryClient = new QueryClient()
 
@@ -49,6 +50,7 @@ function App() {
       <Routes>
     <Route path='/' element={<Login/>}/>
     <Route path='/register' element={<Register/>}/>
+    <Route path='/forgetPassword' element={<ForgetPassword/>}/>
     </Routes>
       </>
     )
