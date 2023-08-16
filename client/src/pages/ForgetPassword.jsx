@@ -25,7 +25,8 @@ export default function ForgetPassword() {
 
   return (
     <>
-      <div className=' flex items-center justify-center w-screen h-screen'>
+      <div className='LOGO w-full absolute border-b py-4 text-center'><span className='font-medium text-xl'>OutPost</span></div>
+      <div className='flex items-center justify-center w-screen h-screen'>
         <div className='h-3/5 w-1/4  flex login-shadow'>
           <div className="border border-t border-l border-b border-gray-200 w-full flex flex-col  justify-between items-center">
             <div className='flex flex-col items-center justify-center h-full'>
