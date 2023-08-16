@@ -406,7 +406,7 @@ export default function Messages() {
                 <> 
                 {openChat && search?.length > 0 ?
                  (<>
-                  {users?.data?.users.map((user) => (
+                  {users?.data?.users.filter(user => user._id !== currentUser.data._id).map((user) => (
               <div onClick={() => selectMembersHandler(user)} key={user._id} className="profile-Card">
                 <div className='cursor-pointer px-5 py-2 hover:bg-gray-100 transition duration-300 ease-in-out flex justify-between items-center'>
                   <div className='flex items-center gap-2'>
