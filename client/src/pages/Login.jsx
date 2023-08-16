@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { useLogin } from '../apiCalls/userApiCalls';
-
+import { Link } from 'react-router-dom';
 export default function Login() {
 
   const emailInputElement = useRef();
@@ -26,7 +26,7 @@ export default function Login() {
   return (
     <>
       <div className=' flex items-center justify-center w-screen h-screen'>
-        <div className='h-3/5 w-3/6 border border-gray-200 flex login-shadow'>
+        <div className='h-3/5 w-3/6  flex login-shadow'>
           <div className="left w-1/2">
             <div className="imgage h-full w-full"
               style={{
@@ -39,7 +39,7 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="right w-1/2">
+          <div className="right border border-t border-l border-b border-gray-200 w-1/2">
             <div className='flex flex-col items-center justify-center h-full w-full'>
               <h2 className="logo font-medium text-4xl text-gray-700">OutPost</h2>
               <h2 className='text-2xl font-medium text-gray-700 pt-3 pb-6'>Login</h2>
@@ -81,6 +81,7 @@ export default function Login() {
                   </div>
                 )}
               </form>
+              <Link to={"/ForgetPassword"}><button className=' mt-5 p-1 hover:underline underline-offset-2 textright text-blue-900'>Forgot Password</button></Link>
             </div>
           </div>
         </div>
