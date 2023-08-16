@@ -1,32 +1,44 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Edit, Apps, BookmarkBorder, AccountBoxOutlined } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useGetUserDetails } from '../apiCalls/userApiCalls'
 import Loader from '../components/Loader'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
+import useOutsideClick from "../hooks/useOutsideClick";
 
 
 export default function Profile() {
 
 
      
-     const [showDialog, setShowDialog] = useState(false);
+     const [showSettings, setshowSettings] = useState(false);
+     const settingRef = useRef(null);
 
-     const openDialog = () => {
-          setShowDialog(true);
+
+
+     const openSettingsHandler = () => {
+          setshowSettings(true);
      };
 
-     const closeDialog = () => {
-          setShowDialog(false);
+     const closeSettingsHandler = () => {
+          setshowSettings(false);
      };
 
      const handleOutsideClick = (e) => {
           if (e.target === e.currentTarget) {
-               closeDialog();
+               closeSettings();
           }
      };
+     const [showFollowers, setshowFollowers] = useState(false);
 
+     const openFollowers = () => {
+          setshowFollowers(true);
+     };
+
+     const closeFollowers = () => {
+          setshowFollowers(false);
+     };
 
      const { currentUser } = useSelector(state => state.userSlice) || null
      const userId = currentUser.data._id
@@ -34,6 +46,10 @@ export default function Profile() {
 
 
      const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
+
+     useOutsideClick(settingRef, () => {
+          if (showSettings) setshowSettings(false);
+        });
 
      const fallbackImage = '/images/avatar.jpg';
 
@@ -64,7 +80,7 @@ export default function Profile() {
                                                                  Edit profile
                                                             </button>
                                                        </Link>
-                                                       <div className='cursor-pointer px-1' onClick={openDialog}>
+                                                       <div className='cursor-pointer px-1' onClick={openSettingsHandler}>
                                                             <svg
                                                                  aria-label="Options"
                                                                  className="x1lliihq x1n2onr6"
@@ -137,10 +153,27 @@ export default function Profile() {
                               </div>
                          </div>
 
-                         {showDialog && (
-                              <div className='fixed inset-0 z-40 flex items-center justify-center w-screen h-screen' onClick={handleOutsideClick}>
+                         {showSettings && (
+                              <div ref={settingRef} className='fixed inset-0 z-40 flex items-center justify-center w-screen h-screen' onClick={handleOutsideClick}>
                                    <div className='modal-container'>
                                         <div className='modal-content settings flex items-center justify-between flex-col close-card bg-white w-[360px] rounded-2xl shadow-lg overflow-hidden'>
+
+                                             <button className='py-3 w-full hover:bg-slate-100'>Apps and Websites</button>
+                                             <button className='py-3 border-t w-full hover:bg-slate-100'>QR Code</button>
+                                             <button className='py-3 border-t w-full hover:bg-slate-100'>Notifications</button>
+                                             <Link className='w-full' to="/settings"><button className='py-3 border-t w-full hover:bg-slate-100'>Settings and Privacy</button></Link>
+                                             <button className='py-3 border-t w-full hover:bg-slate-100'>Supervision</button>
+                                             <button className='py-3 border-t w-full hover:bg-slate-100'>Logout</button>
+                                             <button onClick={closeSettingsHandler} className='py-3 border-t w-full hover:bg-slate-100'>Cancel</button>
+                                        </div>
+                                   </div>
+                              </div>
+                         )}
+
+                         {/* {showDialog && (
+                              <div className='fixed inset-0 z-40 flex items-center justify-center w-screen h-screen' onClick={handleOutsideClick}>
+                                   <div className='modal-container'>
+                                        <div className='modal-content follwers flex items-center justify-between flex-col close-card bg-white w-[360px] rounded-2xl shadow-lg overflow-hidden'>
 
                                              <button className='py-3 w-full hover:bg-slate-100'>Apps and Websites</button>
                                              <button className='py-3 border-t w-full hover:bg-slate-100'>QR Code</button>
@@ -152,7 +185,7 @@ export default function Profile() {
                                         </div>
                                    </div>
                               </div>
-                         )}
+                         )} */}
 
 
                     </>

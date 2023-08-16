@@ -31,7 +31,7 @@ function App() {
     {currentUser ? (
           <>
     <Navbar />
-    <div className='flex  pt-[72px] w-full'>
+    <div className='flex justify-between pt-[72px] w-full'>
     <SideBar/>
     <Routes>
     <Route path='/' element={<Home/>}/>
