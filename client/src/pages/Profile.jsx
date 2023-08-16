@@ -18,6 +18,8 @@ export default function Profile({ }) {
      const [postId, setPostId] = useState(null);
      const [openSettings, setOpenSettings] = useState(false);
      const [openFollowers, setOpenFollowers] = useState(false);
+     const [openFollowing, setOpenFollowing] = useState(false);
+     const [isFollowing, setIsFollowing] = useState(true);
      const textInputElement = useRef();
      const settingRef = useRef();
 
@@ -99,6 +101,17 @@ export default function Profile({ }) {
           setOpenFollowers(false);
      };
 
+     const openFollowingHandler = () => {
+          setOpenFollowing(true);
+     };
+     const closeFollowingHandler = () => {
+          setOpenFollowing(false);
+     };
+
+
+     const handleFollowButtonClick = () => {
+          setIsFollowing(!isFollowing);
+     };
 
 
 
@@ -157,7 +170,7 @@ export default function Profile({ }) {
                                                   <span className='font-medium'>{userDetails.data.data.followers.length}</span>
                                                   <h3 className='font-normal'>followers</h3>
                                              </div>
-                                             <div className='flex gap-3 '>
+                                             <div className='flex gap-3 cursor-pointer' onClick={openFollowingHandler}>
                                                   <span className='font-medium'>{userDetails.data.data.following.length}</span>
                                                   <h3 className='font-normal'>following</h3>
                                              </div>
@@ -241,26 +254,249 @@ export default function Profile({ }) {
                                                   </svg>
                                              </div>
                                         </div>
-                                        <div className="body w-[400px]">
-                                             <div className='bg-white py-2 px-5'>
-                                                  <div className="searchbar flex items-center bg-gray-200 rounded-md">
-                                                       <input
-                                                            className="pl-4 pr-7 py-1 text-sm bg-gray-200 border w-full h-full rounded-md outline-none"
-                                                            type="text"
-                                                            placeholder="Search"
-                                                       // value={search}
-                                                       // onChange={handleSearchChange}
-                                                       />
-                                                       <div className="w-4 h-4 mr-2 rounded-full bg-[#b8b6b6] flex items-center justify-center cursor-pointer">
-                                                            {" "}
-                                                            <CloseOutlinedIcon style={{ fontSize: 12 }} />
+                                        <div className='bg-white w-full py-2 px-5'>
+                                             <div className="searchbar sticky z-10 flex items-center bg-gray-200 rounded-md">
+                                                  <input
+                                                       className="pl-4 pr-7 py-1 text-sm bg-gray-200 border w-full h-full rounded-md outline-none"
+                                                       type="text"
+                                                       placeholder="Search"
+                                                  // value={search}
+                                                  // onChange={handleSearchChange}
+                                                  />
+                                                  <div className="w-4 h-4 mr-2 rounded-full bg-[#b8b6b6] flex items-center justify-center cursor-pointer">
+                                                       {" "}
+                                                       <CloseOutlinedIcon style={{ fontSize: 12 }} />
+                                                  </div>
+                                             </div>
+                                        </div>
+                                        <div className="body w-full h-[346px] overflow-hidden flex-grow-1 flex flex-col">
+                                             <div className='followers-wrapper px-5 overflow-y-auto'>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
                                                        </div>
                                                   </div>
                                              </div>
-                                             <div className='followers-wrapper max-height: calc(100vh - 350px); overflow-y-auto  px-5'>
-                                                  <div className='card py-2 flex bg-stone-100 items-center justify-between gap-2'>
+                                        </div>
+                                   </div>
+                              </div>
+                         </Dialog>
+
+
+                         <Dialog open={openFollowing} onClose={closeFollowingHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh', }, }}>
+                              <div className='modal-container relative h-[440px]  w-[400px]'>
+                                   <div className='modal-content follwers flex items-center justify-between flex-col close-card bg-white'>
+                                        <div className="header w-full bg-white rounded-t-[14px] flex justify-between items-center py-3 px-2 border-b">
+                                             <div>
+                                             </div>
+                                             <div className="title flex items-center">
+                                                  <h1 className='font-bold'>Following</h1>
+                                             </div>
+                                             <div onClick={closeFollowingHandler} className='cursor-pointer'>
+                                                  <svg aria-label="Close" className="" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="24" role="img" viewBox="0 0 24 24" width="24"
+                                                  >
+                                                       <title>Close</title>
+                                                       <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path>
+                                                  </svg>
+                                             </div>
+                                        </div>
+                                        <div className='bg-white w-full py-2 px-5'>
+                                             <div className="searchbar sticky z-10 flex items-center bg-gray-200 rounded-md">
+                                                  <input
+                                                       className="pl-4 pr-7 py-1 text-sm bg-gray-200 border w-full h-full rounded-md outline-none"
+                                                       type="text"
+                                                       placeholder="Search"
+                                                  // value={search}
+                                                  // onChange={handleSearchChange}
+                                                  />
+                                                  <div className="w-4 h-4 mr-2 rounded-full bg-[#b8b6b6] flex items-center justify-center cursor-pointer">
+                                                       {" "}
+                                                       <CloseOutlinedIcon style={{ fontSize: 12 }} />
+                                                  </div>
+                                             </div>
+                                        </div>
+                                        <div className="body w-full h-[346px] overflow-hidden flex-grow-1 flex flex-col">
+                                             <div className='followers-wrapper px-5 overflow-y-auto'>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
                                                        <div className='flex items-center gap-3'>
-                                                            <div className='img w-10 h-10 bg-gray-300 rounded-full '
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
                                                                  style={{
                                                                       // backgroundImage: ` url("${fallbackImage}")`,
                                                                       backgroundPosition: 'center',
@@ -271,7 +507,7 @@ export default function Profile({ }) {
                                                             </div>
                                                             <div className='flex -space-y-1 flex-col'>
                                                                  <div className='flex gap-1'>
-                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2>
                                                                  </div>
                                                                  <div className='flex gap-1 text-sm text-gray-500'>
                                                                       <div className='status'>
@@ -281,217 +517,14 @@ export default function Profile({ }) {
                                                             </div>
                                                        </div>
                                                        <div>
-                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                            <button
+                                                                 className={`px-4 py-1 bg-gray-200 ${isFollowing ? 'text-black hover:bg-gray-300 transition duration-500 ease-in-out' : 'text-white bg-blue-500 hover:bg-blue-600 transition duration-500 ease-in-out'} rounded-md text-sm font-medium`}
+                                                                 onClick={handleFollowButtonClick}>
+                                                                 {isFollowing ? 'Following' : 'Follow'}
+                                                            </button>
                                                        </div>
                                                   </div>
-                                                  <div className='card py-2 flex bg-stone-100 items-center justify-between gap-2'>
-                                                       <div className='flex items-center gap-3'>
-                                                            <div className='img w-10 h-10 bg-gray-300 rounded-full '
-                                                                 style={{
-                                                                      // backgroundImage: ` url("${fallbackImage}")`,
-                                                                      backgroundPosition: 'center',
-                                                                      backgroundSize: 'cover',
-                                                                      backgroundRepeat: 'no-repeat',
-                                                                 }}>
 
-                                                            </div>
-                                                            <div className='flex -space-y-1 flex-col'>
-                                                                 <div className='flex gap-1'>
-                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
-                                                                 </div>
-                                                                 <div className='flex gap-1 text-sm text-gray-500'>
-                                                                      <div className='status'>
-                                                                           <h2>UserName</h2>
-                                                                      </div>
-                                                                 </div>
-                                                            </div>
-                                                       </div>
-                                                       <div>
-                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
-                                                       </div>
-                                                  </div>
-                                                  <div className='card py-2 flex bg-stone-100 items-center justify-between gap-2'>
-                                                       <div className='flex items-center gap-3'>
-                                                            <div className='img w-10 h-10 bg-gray-300 rounded-full '
-                                                                 style={{
-                                                                      // backgroundImage: ` url("${fallbackImage}")`,
-                                                                      backgroundPosition: 'center',
-                                                                      backgroundSize: 'cover',
-                                                                      backgroundRepeat: 'no-repeat',
-                                                                 }}>
-
-                                                            </div>
-                                                            <div className='flex -space-y-1 flex-col'>
-                                                                 <div className='flex gap-1'>
-                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
-                                                                 </div>
-                                                                 <div className='flex gap-1 text-sm text-gray-500'>
-                                                                      <div className='status'>
-                                                                           <h2>UserName</h2>
-                                                                      </div>
-                                                                 </div>
-                                                            </div>
-                                                       </div>
-                                                       <div>
-                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
-                                                       </div>
-                                                  </div>
-                                                  <div className='card py-2 flex bg-stone-100 items-center justify-between gap-2'>
-                                                       <div className='flex items-center gap-3'>
-                                                            <div className='img w-10 h-10 bg-gray-300 rounded-full '
-                                                                 style={{
-                                                                      // backgroundImage: ` url("${fallbackImage}")`,
-                                                                      backgroundPosition: 'center',
-                                                                      backgroundSize: 'cover',
-                                                                      backgroundRepeat: 'no-repeat',
-                                                                 }}>
-
-                                                            </div>
-                                                            <div className='flex -space-y-1 flex-col'>
-                                                                 <div className='flex gap-1'>
-                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
-                                                                 </div>
-                                                                 <div className='flex gap-1 text-sm text-gray-500'>
-                                                                      <div className='status'>
-                                                                           <h2>UserName</h2>
-                                                                      </div>
-                                                                 </div>
-                                                            </div>
-                                                       </div>
-                                                       <div>
-                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
-                                                       </div>
-                                                  </div>
-                                                  <div className='card py-2 flex bg-stone-100 items-center justify-between gap-2'>
-                                                       <div className='flex items-center gap-3'>
-                                                            <div className='img w-10 h-10 bg-gray-300 rounded-full '
-                                                                 style={{
-                                                                      // backgroundImage: ` url("${fallbackImage}")`,
-                                                                      backgroundPosition: 'center',
-                                                                      backgroundSize: 'cover',
-                                                                      backgroundRepeat: 'no-repeat',
-                                                                 }}>
-
-                                                            </div>
-                                                            <div className='flex -space-y-1 flex-col'>
-                                                                 <div className='flex gap-1'>
-                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
-                                                                 </div>
-                                                                 <div className='flex gap-1 text-sm text-gray-500'>
-                                                                      <div className='status'>
-                                                                           <h2>UserName</h2>
-                                                                      </div>
-                                                                 </div>
-                                                            </div>
-                                                       </div>
-                                                       <div>
-                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
-                                                       </div>
-                                                  </div>
-                                                  <div className='card py-2 flex bg-stone-100 items-center justify-between gap-2'>
-                                                       <div className='flex items-center gap-3'>
-                                                            <div className='img w-10 h-10 bg-gray-300 rounded-full '
-                                                                 style={{
-                                                                      // backgroundImage: ` url("${fallbackImage}")`,
-                                                                      backgroundPosition: 'center',
-                                                                      backgroundSize: 'cover',
-                                                                      backgroundRepeat: 'no-repeat',
-                                                                 }}>
-
-                                                            </div>
-                                                            <div className='flex -space-y-1 flex-col'>
-                                                                 <div className='flex gap-1'>
-                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
-                                                                 </div>
-                                                                 <div className='flex gap-1 text-sm text-gray-500'>
-                                                                      <div className='status'>
-                                                                           <h2>UserName</h2>
-                                                                      </div>
-                                                                 </div>
-                                                            </div>
-                                                       </div>
-                                                       <div>
-                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
-                                                       </div>
-                                                  </div>
-                                                  <div className='card py-2 flex bg-stone-100 items-center justify-between gap-2'>
-                                                       <div className='flex items-center gap-3'>
-                                                            <div className='img w-10 h-10 bg-gray-300 rounded-full '
-                                                                 style={{
-                                                                      // backgroundImage: ` url("${fallbackImage}")`,
-                                                                      backgroundPosition: 'center',
-                                                                      backgroundSize: 'cover',
-                                                                      backgroundRepeat: 'no-repeat',
-                                                                 }}>
-
-                                                            </div>
-                                                            <div className='flex -space-y-1 flex-col'>
-                                                                 <div className='flex gap-1'>
-                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
-                                                                 </div>
-                                                                 <div className='flex gap-1 text-sm text-gray-500'>
-                                                                      <div className='status'>
-                                                                           <h2>UserName</h2>
-                                                                      </div>
-                                                                 </div>
-                                                            </div>
-                                                       </div>
-                                                       <div>
-                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
-                                                       </div>
-                                                  </div>
-                                                  <div className='card py-2 flex bg-stone-100 items-center justify-between gap-2'>
-                                                       <div className='flex items-center gap-3'>
-                                                            <div className='img w-10 h-10 bg-gray-300 rounded-full '
-                                                                 style={{
-                                                                      // backgroundImage: ` url("${fallbackImage}")`,
-                                                                      backgroundPosition: 'center',
-                                                                      backgroundSize: 'cover',
-                                                                      backgroundRepeat: 'no-repeat',
-                                                                 }}>
-
-                                                            </div>
-                                                            <div className='flex -space-y-1 flex-col'>
-                                                                 <div className='flex gap-1'>
-                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
-                                                                 </div>
-                                                                 <div className='flex gap-1 text-sm text-gray-500'>
-                                                                      <div className='status'>
-                                                                           <h2>UserName</h2>
-                                                                      </div>
-                                                                 </div>
-                                                            </div>
-                                                       </div>
-                                                       <div>
-                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
-                                                       </div>
-                                                  </div>
-                                                  <div className='card py-2 flex bg-stone-100 items-center justify-between gap-2'>
-                                                       <div className='flex items-center gap-3'>
-                                                            <div className='img w-10 h-10 bg-gray-300 rounded-full '
-                                                                 style={{
-                                                                      // backgroundImage: ` url("${fallbackImage}")`,
-                                                                      backgroundPosition: 'center',
-                                                                      backgroundSize: 'cover',
-                                                                      backgroundRepeat: 'no-repeat',
-                                                                 }}>
-
-                                                            </div>
-                                                            <div className='flex -space-y-1 flex-col'>
-                                                                 <div className='flex gap-1'>
-                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
-                                                                 </div>
-                                                                 <div className='flex gap-1 text-sm text-gray-500'>
-                                                                      <div className='status'>
-                                                                           <h2>UserName</h2>
-                                                                      </div>
-                                                                 </div>
-                                                            </div>
-                                                       </div>
-                                                       <div>
-                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
-                                                       </div>
-                                                  </div>
                                              </div>
                                         </div>
                                    </div>
