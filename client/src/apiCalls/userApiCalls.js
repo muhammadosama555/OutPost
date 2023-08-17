@@ -171,3 +171,35 @@ export const useChangePassword = () => {
     },
   });
 };
+
+// Generate Password
+
+export const generatePassword = async (userData) => {
+  return axios.put(`${API_BASE_URL}/auth/resetPassword`, userData);
+};
+
+export const useGeneratePassword = () => {
+  const navigate = useNavigate();
+  return useMutation(generatePassword, {
+    onSuccess: (data) => {
+      console.log(data)
+      navigate("/");
+    toast.success('Password Generated Successfully!');
+    },
+  });
+};
+
+// Generate Otp
+
+export const generateOtp = async (userData) => {
+  return axios.post(`${API_BASE_URL}/auth/generateOtp`, userData);
+};
+
+export const useGenerateOtp = () => {
+  return useMutation(generateOtp, {
+    onSuccess: (data) => {
+      console.log(data)
+   toast.success('OTP Generated Successfully!');
+    },
+  });
+};

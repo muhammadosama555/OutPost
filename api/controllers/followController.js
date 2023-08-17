@@ -159,6 +159,13 @@ exports.unfollowUser = asyncHandler(async (req, res, next) => {
     return res.status(404).json({ success: false, message: 'Follow relationship not found' });
   }
 
+   // Remove the notification related to this unfollow action
+   await Notification.findOneAndDelete({
+    senderUser: followerId,
+    receiverUser: followingId,
+    type: 'follow'
+  });
+
   res.status(200).json({ success: true, message: 'Unfollowed successfully' });
 });
 

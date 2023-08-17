@@ -219,7 +219,7 @@ export default function SideBar() {
     moment(notificationGroup.createdAt).fromNow()
   ))
 
-
+console.log(notificationsArray)
 
   const fallbackImage = "/images/avatar.jpg";
 

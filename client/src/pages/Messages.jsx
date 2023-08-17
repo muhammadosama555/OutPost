@@ -289,8 +289,16 @@ export default function Messages() {
                             <div className='flex-1' key={message._id}>
                               {message.sender._id !== currentUser.data._id ? ( // Check if the sender is the current user
                                 <div className="user-1 flex items-end space-x-2">
-                                  <img className="h-9 w-9 bg-gray-300 rounded-full" />
+                                   <div className="h-9 w-9 bg-gray-300 rounded-full" 
+                                   style={{
+                                    backgroundImage: `url("${message?.sender?.profile?.picture}"), url("${fallbackImage}")`,
+                                    backgroundPosition: 'center',
+                                    backgroundSize: 'cover',
+                                    backgroundRepeat: 'no-repeat',
+                                  }}>
+                                </div>
                                   <div className="bg-gray-200 rounded-3xl px-4 py-2 text-gray-800 max-w-xs" >
+                                  
                                     <p>{message.text}</p>
                                   </div>
                                 </div>
