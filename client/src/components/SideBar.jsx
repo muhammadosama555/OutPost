@@ -12,7 +12,7 @@ import { addSearchHistory } from "../redux/reducers/searchReducers";
 import useOutsideClick from "../hooks/useOutsideClick";
 
 export default function SideBar() {
-  
+
   const [openSearch, setOpenSearch] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const [openCreatePost, setOpenCreatePost] = useState(false);
@@ -24,7 +24,7 @@ export default function SideBar() {
   const searchRef = useRef(null);
   const notificationRef = useRef(null);
 
-  
+
 
   const navigate = useNavigate()
   const dispatch = useDispatch();
@@ -51,15 +51,15 @@ export default function SideBar() {
   useOutsideClick(dropdownRef, () => {
     if (showDropdown) setShowDropdown(false);
   });
-  
+
   useOutsideClick(searchRef, () => {
     if (openSearch) setOpenSearch(false);
   });
-  
+
   useOutsideClick(notificationRef, () => {
     if (openNotifications) setOpenNotifications(false);
   });
-  
+
 
 
   const handleLogout = () => {
@@ -102,7 +102,7 @@ export default function SideBar() {
   const closeCreatePostHandler = () => {
     setOpenCreatePost(false);
   };
-  
+
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
@@ -114,7 +114,7 @@ export default function SideBar() {
     }
   };
 
-  
+
 
   // Get the user's specific search history
   const userSearchHistory = searchHistories[userId] || [];
@@ -256,7 +256,7 @@ console.log(notificationsArray)
               </Link>
             )}
 
-            <div 
+            <div
               onClick={() => {
                 !openSearch ? setToggleSidebar(true) : setToggleSidebar(false);
                 openSearchHandler();
@@ -365,7 +365,7 @@ console.log(notificationsArray)
               ) : null}
             </div>
             <Link to="/messages">
-              <div 
+              <div
 
                 className="Messages flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
               >
@@ -399,7 +399,7 @@ console.log(notificationsArray)
                 ) : null}
               </div>
             </Link>
-            <div 
+            <div
               onClick={() => {
                 !openNotifications ? setToggleSidebar(true) : setToggleSidebar(false);
                 openNotificationsHandler();
@@ -512,7 +512,7 @@ console.log(notificationsArray)
 
               </div>
               {showDropdown && (
-                <div  className="absolute bottom-14 left-3 w-[75%] bg-white shadow-lg border rounded-2xl">
+                <div className="absolute bottom-14 left-3 w-[75%] bg-white shadow-lg border rounded-2xl">
                   <div className="top p-2">
                     <Link to="/settings" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
                       <svg aria-label="Options" className="x1lliihq x1n2onr6" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="20" role="img" viewBox="0 0 24 24" width="20">
@@ -714,7 +714,7 @@ console.log(notificationsArray)
                           <span className="time text-gray-500">{moment(notificationGroup.createdAt).fromNow()}</span>
                         </div>
                       </div>
-                  
+
                     </div>
                   ))}
 
@@ -779,7 +779,7 @@ console.log(notificationsArray)
                             <span className="time text-gray-500">{moment(notificationGroup.createdAt).fromNow()}</span>
                           </div>
                         </div>
-                        
+
                       </div>
                     ))}
 
@@ -843,7 +843,7 @@ console.log(notificationsArray)
                             <span className="time text-gray-500">{moment(notificationGroup.createdAt).fromNow()}</span>
                           </div>
                         </div>
-                       
+
                       </div>
                     ))}
 
@@ -853,34 +853,34 @@ console.log(notificationsArray)
           </div>
         </div>
         <Dialog open={openCreatePost}
-        onClose={closeCreatePostHandler}
-        BackdropProps={{ onClick: closeCreatePostHandler }} // Close on backdrop click
-        fullWidth
-        maxWidth="sm">
-        <div className={` ${openCreatePost ? "" : "hidden"} create-post  fixed inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen`}>
-          <div className="absolute right-6 top-3">
-            <CloseOutlinedIcon style={{ fontSize: 32 }} onClick={closeCreatePostHandler} className="cursor-pointer text-white" />
-          </div>
-          <CreatePost closeCreatePostHandler={closeCreatePostHandler} />
-          <div className=" hidden cancel-post  flex items-center justify-between flex-col close-card bg-white h-52 absolute w-[360px] rounded-2xl shadow-lg">
-            <div className="flex flex-col justify-center text-center h-1/2 w-full">
-              <h3 className="text-2xl">Discard Post?</h3>
-              <h4 className="pt-1 text-gray-500">
-                If you leave your edits won't be saved.
-              </h4>
+          onClose={closeCreatePostHandler}
+          BackdropProps={{ onClick: closeCreatePostHandler }} // Close on backdrop click
+          fullWidth
+          maxWidth="sm">
+          <div className={` ${openCreatePost ? "" : "hidden"} create-post  fixed inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen`}>
+            <div className="absolute right-6 top-3">
+              <CloseOutlinedIcon style={{ fontSize: 32 }} onClick={closeCreatePostHandler} className="cursor-pointer text-white" />
             </div>
-            <div className="flex flex-col w-full">
-              <button className="py-3 border-t w-full font-medium text-red-600 hover:bg-slate-100">
-                Discard
-              </button>
-              <button className="py-3 border-t w-full hover:bg-slate-100">
-                Cancel
-              </button>
+            <CreatePost closeCreatePostHandler={closeCreatePostHandler} />
+            <div className=" hidden cancel-post  flex items-center justify-between flex-col close-card bg-white h-52 absolute w-[360px] rounded-2xl shadow-lg">
+              <div className="flex flex-col justify-center text-center h-1/2 w-full">
+                <h3 className="text-2xl">Discard Post?</h3>
+                <h4 className="pt-1 text-gray-500">
+                  If you leave your edits won't be saved.
+                </h4>
+              </div>
+              <div className="flex flex-col w-full">
+                <button className="py-3 border-t w-full font-medium text-red-600 hover:bg-slate-100">
+                  Discard
+                </button>
+                <button className="py-3 border-t w-full hover:bg-slate-100">
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </Dialog>
-    </div >
+        </Dialog>
+      </div >
     </>
   );
 }

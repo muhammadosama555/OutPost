@@ -4,20 +4,24 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useGetUserDetails } from '../apiCalls/userApiCalls'
 import Loader from '../components/Loader'
-import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import Dialog from '@material-ui/core/Dialog';
 import { useGetPostDetails, useLikePost } from '../apiCalls/postApiCalls'
 import moment from 'moment';
 import { useCreateComment } from '../apiCalls/commentApiCalls'
+import useOutsideClick from "../hooks/useOutsideClick";
 
-
-export default function Profile({}) {
+export default function Profile({ }) {
 
 
      const [openPostDetails, setOpenPostDetails] = useState(false);
      const [postId, setPostId] = useState(null);
-     const [showDialog, setShowDialog] = useState(false);
+     const [openSettings, setOpenSettings] = useState(false);
+     const [openFollowers, setOpenFollowers] = useState(false);
+     const [openFollowing, setOpenFollowing] = useState(false);
+     const [isFollowing, setIsFollowing] = useState(true);
      const textInputElement = useRef();
+     const settingRef = useRef();
 
 
      const { currentUser } = useSelector(state => state.userSlice) || null
@@ -32,70 +36,88 @@ export default function Profile({}) {
           isError: isCreateCommentError,
           error: createCommentError,
           isSuccess: createCommentIsSuccess,
-        } = useCreateComment();
-        const {
+     } = useCreateComment();
+     const {
           mutate: likePostMutate,
-        } = useLikePost();
-      
-      
-        const isCurrentUserLiked = () => {
+     } = useLikePost();
+
+
+     const isCurrentUserLiked = () => {
           return postDetails?.data.data.likes.some((like) => like._id === currentUser.data._id);
-        };
-      
-        const handleSubmit = (event) => {
+     };
+
+     const handleSubmit = (event) => {
           event.preventDefault();
           const data = {
-            token: token,
-            text: textInputElement.current?.value,
-            postId: postId
+               token: token,
+               text: textInputElement.current?.value,
+               postId: postId
           };
           createCommentMutate(data);
-      
-        };
-      
-      
-        const likeSubmitHandler = (event) => {
+
+     };
+
+
+     const likeSubmitHandler = (event) => {
           event.preventDefault();
           const data = {
-            token: token,
-            postId: postId
+               token: token,
+               postId: postId
           };
           likePostMutate(data);
-      
-        };
-      
-        useEffect(() => {
-          if (createCommentIsSuccess) {
-            textInputElement.current.value = "";
-          }
-        }, [createCommentIsSuccess]);
-      
-        console.log(postDetails?.data)
 
-    
+     };
+
+     useEffect(() => {
+          if (createCommentIsSuccess) {
+               textInputElement.current.value = "";
+          }
+     }, [createCommentIsSuccess]);
+
+     console.log(postDetails?.data)
+
+
 
      const openPostDetailsHandler = (id) => {
           setOpenPostDetails(true);
           setPostId(id)
-        };
-      
-        const closePostDetailsHandler = () => {
+     };
+
+     const closePostDetailsHandler = () => {
           setOpenPostDetails(false);
-        };
-
-        const openDialog = () => {
-          setShowDialog(true);
      };
 
-     const closeDialog = () => {
-          setShowDialog(false);
+     const openSettingsHandler = () => {
+          setOpenSettings(true);
+     };
+     const closeSettingsHandler = () => {
+          setOpenSettings(false);
      };
 
-     const handleOutsideClick = (e) => {
-          if (e.target === e.currentTarget) {
-               closeDialog();
-          }
+     const openFollowersHandler = () => {
+          setOpenFollowers(true);
      };
+     const closeFollowersHandler = () => {
+          setOpenFollowers(false);
+     };
+
+     const openFollowingHandler = () => {
+          setOpenFollowing(true);
+     };
+     const closeFollowingHandler = () => {
+          setOpenFollowing(false);
+     };
+
+
+     const handleFollowButtonClick = () => {
+          setIsFollowing(!isFollowing);
+     };
+
+
+
+
+
+
 
      const fallbackImage = '/images/avatar.jpg';
 
@@ -126,7 +148,7 @@ export default function Profile({}) {
                                                                  Edit profile
                                                             </button>
                                                        </Link>
-                                                       <div className='cursor-pointer px-1' onClick={openDialog}>
+                                                       <div className='cursor-pointer px-1' onClick={openSettingsHandler}>
                                                             <svg
                                                                  aria-label="Options"
                                                                  className="x1lliihq x1n2onr6"
@@ -144,11 +166,11 @@ export default function Profile({}) {
                                                        </div>
                                                   </div>
                                              </div>
-                                             <div className='flex gap-3 pt-3'>
+                                             <div className='flex gap-3 cursor-pointer pt-3' onClick={openFollowersHandler}>
                                                   <span className='font-medium'>{userDetails.data.data.followers.length}</span>
                                                   <h3 className='font-normal'>followers</h3>
                                              </div>
-                                             <div className='flex gap-3 '>
+                                             <div className='flex gap-3 cursor-pointer' onClick={openFollowingHandler}>
                                                   <span className='font-medium'>{userDetails.data.data.following.length}</span>
                                                   <h3 className='font-normal'>following</h3>
                                              </div>
@@ -199,280 +221,573 @@ export default function Profile({}) {
                               </div>
                          </div>
 
-                         {showDialog && (
-                              <div className='fixed inset-0 z-40 flex items-center justify-center w-screen h-screen' onClick={handleOutsideClick}>
-                                   <div className='modal-container'>
-                                        <div className='modal-content settings flex items-center justify-between flex-col close-card bg-white w-[360px] rounded-2xl shadow-lg overflow-hidden'>
 
-                                             <button className='py-3 w-full hover:bg-slate-100'>Apps and Websites</button>
-                                             <button className='py-3 border-t w-full hover:bg-slate-100'>QR Code</button>
-                                             <button className='py-3 border-t w-full hover:bg-slate-100'>Notifications</button>
-                                             <Link className='w-full' to="/settings"><button className='py-3 border-t w-full hover:bg-slate-100'>Settings and Privacy</button></Link>
-                                             <button className='py-3 border-t w-full hover:bg-slate-100'>Supervision</button>
-                                             <button className='py-3 border-t w-full hover:bg-slate-100'>Logout</button>
-                                             <button onClick={closeDialog} className='py-3 border-t w-full hover:bg-slate-100'>Cancel</button>
+                         <Dialog open={openSettings} onClose={closeSettingsHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh' }, }}>
+                              <div className='modal-container'>
+                                   <div className='modal-content follwers flex items-center justify-between flex-col close-card bg-white w-[360px] rounded-2xl shadow-lg overflow-hidden'>
+
+                                        <button className='py-3 w-full hover:bg-slate-100'>Apps and Websites</button>
+                                        <button className='py-3 border-t w-full hover:bg-slate-100'>QR Code</button>
+                                        <button className='py-3 border-t w-full hover:bg-slate-100'>Notifications</button>
+                                        <Link className='w-full' to="/settings"><button className='py-3 border-t w-full hover:bg-slate-100'>Settings and Privacy</button></Link>
+                                        <button className='py-3 border-t w-full hover:bg-slate-100'>Supervision</button>
+                                        <button className='py-3 border-t w-full hover:bg-slate-100'>Logout</button>
+                                        <button onClick={closeSettingsHandler} className='py-3 border-t w-full hover:bg-slate-100'>Cancel</button>
+                                   </div>
+                              </div>
+                         </Dialog>
+
+                         <Dialog open={openFollowers} onClose={closeFollowersHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh', }, }}>
+                              <div className='modal-container relative h-[440px]  w-[400px]'>
+                                   <div className='modal-content follwers flex items-center justify-between flex-col close-card bg-white'>
+                                        <div className="header w-full bg-white rounded-t-[14px] flex justify-between items-center py-3 px-2 border-b">
+                                             <div>
+                                             </div>
+                                             <div className="title flex items-center">
+                                                  <h1 className='font-bold'>Followers</h1>
+                                             </div>
+                                             <div onClick={closeFollowersHandler} className='cursor-pointer'>
+                                                  <svg aria-label="Close" className="" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="24" role="img" viewBox="0 0 24 24" width="24"
+                                                  >
+                                                       <title>Close</title>
+                                                       <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path>
+                                                  </svg>
+                                             </div>
+                                        </div>
+                                        <div className='bg-white w-full py-2 px-5'>
+                                             <div className="searchbar sticky z-10 flex items-center bg-gray-200 rounded-md">
+                                                  <input
+                                                       className="pl-4 pr-7 py-1 text-sm bg-gray-200 border w-full h-full rounded-md outline-none"
+                                                       type="text"
+                                                       placeholder="Search"
+                                                  // value={search}
+                                                  // onChange={handleSearchChange}
+                                                  />
+                                                  <div className="w-4 h-4 mr-2 rounded-full bg-[#b8b6b6] flex items-center justify-center cursor-pointer">
+                                                       {" "}
+                                                       <CloseOutlinedIcon style={{ fontSize: 12 }} />
+                                                  </div>
+                                             </div>
+                                        </div>
+                                        <div className="body w-full h-[346px] overflow-hidden flex-grow-1 flex flex-col">
+                                             <div className='followers-wrapper px-5 overflow-y-auto'>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2><span className='text-sm'>•</span><span className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>Follow</span>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                                                       </div>
+                                                  </div>
+                                             </div>
                                         </div>
                                    </div>
                               </div>
-                         )}
+                         </Dialog>
+
+
+                         <Dialog open={openFollowing} onClose={closeFollowingHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh', }, }}>
+                              <div className='modal-container relative h-[440px]  w-[400px]'>
+                                   <div className='modal-content follwers flex items-center justify-between flex-col close-card bg-white'>
+                                        <div className="header w-full bg-white rounded-t-[14px] flex justify-between items-center py-3 px-2 border-b">
+                                             <div>
+                                             </div>
+                                             <div className="title flex items-center">
+                                                  <h1 className='font-bold'>Following</h1>
+                                             </div>
+                                             <div onClick={closeFollowingHandler} className='cursor-pointer'>
+                                                  <svg aria-label="Close" className="" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="24" role="img" viewBox="0 0 24 24" width="24"
+                                                  >
+                                                       <title>Close</title>
+                                                       <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path>
+                                                  </svg>
+                                             </div>
+                                        </div>
+                                        <div className='bg-white w-full py-2 px-5'>
+                                             <div className="searchbar sticky z-10 flex items-center bg-gray-200 rounded-md">
+                                                  <input
+                                                       className="pl-4 pr-7 py-1 text-sm bg-gray-200 border w-full h-full rounded-md outline-none"
+                                                       type="text"
+                                                       placeholder="Search"
+                                                  // value={search}
+                                                  // onChange={handleSearchChange}
+                                                  />
+                                                  <div className="w-4 h-4 mr-2 rounded-full bg-[#b8b6b6] flex items-center justify-center cursor-pointer">
+                                                       {" "}
+                                                       <CloseOutlinedIcon style={{ fontSize: 12 }} />
+                                                  </div>
+                                             </div>
+                                        </div>
+                                        <div className="body w-full h-[346px] overflow-hidden flex-grow-1 flex flex-col">
+                                             <div className='followers-wrapper px-5 overflow-y-auto'>
+                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                       <div className='flex items-center gap-3'>
+                                                            <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                                                 style={{
+                                                                      // backgroundImage: ` url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+
+                                                            </div>
+                                                            <div className='flex -space-y-1 flex-col'>
+                                                                 <div className='flex gap-1'>
+                                                                      <h2 className='text-sm font-bold cursor-pointer'>UserName</h2>
+                                                                 </div>
+                                                                 <div className='flex gap-1 text-sm text-gray-500'>
+                                                                      <div className='status'>
+                                                                           <h2>UserName</h2>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                       <div>
+                                                            <button
+                                                                 className={`px-4 py-1 bg-gray-200 ${isFollowing ? 'text-black hover:bg-gray-300 transition duration-500 ease-in-out' : 'text-white bg-blue-500 hover:bg-blue-600 transition duration-500 ease-in-out'} rounded-md text-sm font-medium`}
+                                                                 onClick={handleFollowButtonClick}>
+                                                                 {isFollowing ? 'Following' : 'Follow'}
+                                                            </button>
+                                                       </div>
+                                                  </div>
+
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </Dialog>
 
 
                     </>
                )
                }
 
-<Dialog open={openPostDetails} onClose={closePostDetailsHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh' }, }}>
-        {isPostLoading ? <Loader/> :
-        <div className="flex w-[65vw] h-[85vh] relative">
-          <div className='left h-[100%] w-[65%]'>
-            <div className='h-full'
-              style={{
-                backgroundImage: `url("${postDetails?.data.data.imageUrl}")`,
-                backgroundPosition: 'center',
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-              }}>
+               <Dialog open={openPostDetails} onClose={closePostDetailsHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh' }, }}>
+                    {isPostLoading ? <Loader /> :
+                         <div className="flex w-[65vw] h-[85vh] relative">
+                              <div className='left h-[100%] w-[65%]'>
+                                   <div className='h-full'
+                                        style={{
+                                             backgroundImage: `url("${postDetails?.data.data.imageUrl}")`,
+                                             backgroundPosition: 'center',
+                                             backgroundSize: 'cover',
+                                             backgroundRepeat: 'no-repeat',
+                                        }}>
 
-            </div>
-          </div>
-          <div className='right w-[35%]'>
-            <div className="header flex items-center justify-between py-3 px-4 border-b">
-              <div className='flex items-center gap-3'>
-                <div className="img w-8 h-8 bg-gray-400 rounded-full"
-                  style={{
-                    backgroundImage: `url("${postDetails?.data.data.owner?.profile?.picture}"), url("${fallbackImage}")`,
-                    backgroundPosition: 'center',
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                  }}>
-                </div>
-                <div className='flex items-center gap-1'>
-                  <div>
-                    <h1 className='font-medium text-black hover:text-gray-400 cursor-pointer text-sm'>{postDetails?.data.data.owner?.username}</h1>
-                  </div>
-                  <div>
-                    <span>•</span>
-                    <span className='text-sm text-blue-400 cursor-pointer hover:text-blue-800 font-medium pl-1'>Follow</span>
-                  </div>
-                </div>
-              </div>
-              <div className="more cursor-pointer flex gap-1">
-                <svg
-                  className='svg-icon'
-                  aria-label="More options"
-                  color="rgb(0, 0, 0)"
-                  fill="rgb(0, 0, 0)"
-                  height={24}
-                  role="img"
-                  viewBox="0 0 24 24"
-                  width={24}
-                >
-                  <circle cx={12} cy={12} r="1.5" />
-                  <circle cx={6} cy={12} r="1.5" />
-                  <circle cx={18} cy={12} r="1.5" />
-                </svg>
-              </div>
-            </div>
+                                   </div>
+                              </div>
+                              <div className='right w-[35%]'>
+                                   <div className="header flex items-center justify-between py-3 px-4 border-b">
+                                        <div className='flex items-center gap-3'>
+                                             <div className="img w-8 h-8 bg-gray-400 rounded-full"
+                                                  style={{
+                                                       backgroundImage: `url("${postDetails?.data.data.owner?.profile?.picture}"), url("${fallbackImage}")`,
+                                                       backgroundPosition: 'center',
+                                                       backgroundSize: 'cover',
+                                                       backgroundRepeat: 'no-repeat',
+                                                  }}>
+                                             </div>
+                                             <div className='flex items-center gap-1'>
+                                                  <div>
+                                                       <h1 className='font-medium text-black hover:text-gray-400 cursor-pointer text-sm'>{postDetails?.data.data.owner?.username}</h1>
+                                                  </div>
+                                                  <div>
+                                                       <span>•</span>
+                                                       <span className='text-sm text-blue-400 cursor-pointer hover:text-blue-800 font-medium pl-1'>Follow</span>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                        <div className="more cursor-pointer flex gap-1">
+                                             <svg
+                                                  className='svg-icon'
+                                                  aria-label="More options"
+                                                  color="rgb(0, 0, 0)"
+                                                  fill="rgb(0, 0, 0)"
+                                                  height={24}
+                                                  role="img"
+                                                  viewBox="0 0 24 24"
+                                                  width={24}
+                                             >
+                                                  <circle cx={12} cy={12} r="1.5" />
+                                                  <circle cx={6} cy={12} r="1.5" />
+                                                  <circle cx={18} cy={12} r="1.5" />
+                                             </svg>
+                                        </div>
+                                   </div>
 
-            <div className='comment-section space-y-3 pt-3 pb-4 overflow-y-auto scrollbar-none' style={{ maxHeight: 'calc(80vh - 156px)', scrollbarWidth: 'thin', scrollbarColor: 'transparent transparent' }}>
-              <div className='post-desc flex gap-3 mx-4'>
-                <div className="img flex-shrink-0 w-8 h-8 bg-gray-400 rounded-full"
-                  style={{
-                    backgroundImage: `url("${postDetails?.data.data.owner?.profile?.picture}"), url("${fallbackImage}")`,
-                    backgroundPosition: 'center',
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                  }}>
-                </div>
-                <div className="comment flex flex-col pt-1">
-                  <span className='font-medium text-black hover:text-gray-400 cursor-pointer text-sm'>{postDetails?.data.data.owner?.username}</span>
-                  <span className='text-sm'>{postDetails?.data.data.content}</span>
-                  <div className="time pt-[2px]">
-                    <h1 className='text-xs text-gray-500'>{moment(postDetails?.data.data.createdAt).fromNow()}</h1>
-                  </div>
-                </div>
+                                   <div className='comment-section space-y-3 pt-3 pb-4 overflow-y-auto scrollbar-none' style={{ maxHeight: 'calc(80vh - 156px)', scrollbarWidth: 'thin', scrollbarColor: 'transparent transparent' }}>
+                                        <div className='post-desc flex gap-3 mx-4'>
+                                             <div className="img flex-shrink-0 w-8 h-8 bg-gray-400 rounded-full"
+                                                  style={{
+                                                       backgroundImage: `url("${postDetails?.data.data.owner?.profile?.picture}"), url("${fallbackImage}")`,
+                                                       backgroundPosition: 'center',
+                                                       backgroundSize: 'cover',
+                                                       backgroundRepeat: 'no-repeat',
+                                                  }}>
+                                             </div>
+                                             <div className="comment flex flex-col pt-1">
+                                                  <span className='font-medium text-black hover:text-gray-400 cursor-pointer text-sm'>{postDetails?.data.data.owner?.username}</span>
+                                                  <span className='text-sm'>{postDetails?.data.data.content}</span>
+                                                  <div className="time pt-[2px]">
+                                                       <h1 className='text-xs text-gray-500'>{moment(postDetails?.data.data.createdAt).fromNow()}</h1>
+                                                  </div>
+                                             </div>
 
-              </div>
-
-            
-             
-              {postDetails?.data.data?.comments ?
-              <>
-                {postDetails?.data.data?.comments.slice().reverse().map((comment) => (
-              <div className='comment flex mx-4'>
-                <div className="img flex-shrink-0 w-8 h-8 bg-gray-400 rounded-full"
-                  style={{
-                    backgroundImage: `url("${comment.owner.profile?.picture}"), url("${fallbackImage}")`,
-                    backgroundPosition: 'center',
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                  }}>
-                </div>
-                <div className="content flex flex-col pt-1 pl-3">
-                  <div className='leading-5'>
-                    <span className='font-medium text-black hover:text-gray-400 cursor-pointer text-sm'>{comment.owner.username}</span>
-                    <span className='text-sm pl-2 tracking-tight'>{comment.text}</span>
-                  </div>
-                  <div className="time flex gap-3 pt-1">
-                    <h1 className='text-xs text-gray-500'>{moment(comment.createdAt).fromNow()}</h1>
-                    <button className='text-xs font-medium text-gray-500'>Reply</button>
-                  </div>
-                </div>
-                <div className='mt-2 comment-like h-full p-1'>
-                  <svg aria-label="Like" class="" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="12" role="img" viewBox="0 0 24 24" width="12"><title>Like</title><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
-                </div>
-               
-              </div>
-               ))}
-               </> : null}
-
-            </div>
-
-
-            <div className="footer bg-white absolute bottom-0 w-[35%] border-t pt-2">
-              <div className="actions pl-4 pr-3  flex justify-between items-center">
-                <div className="flex items-center">
-                  <div onClick={likeSubmitHandler} className="like cursor-pointer py-1">
-                    <svg
-                      aria-label="Like"
-                      className="svg-icon mr-3"
-                      color={isCurrentUserLiked() ? "rgb(255, 0, 0)" : "rgb(38, 38, 38)"}
-                      fill={isCurrentUserLiked() ? "rgb(255, 0, 0)" : "rgb(38, 38, 38)"}
-                      height={24}
-                      role="img"
-                      viewBox="0 0 24 24"
-                      width={24}
-                    >
-                      <title>Like</title>
-                      <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z" />
-                    </svg>
-                  </div>
-                  <div className="comment cursor-pointer py-1">
-                    <svg
-                      aria-label="Comment"
-                      className="svg-icon mr-2"
-                      color="rgb(0, 0, 0)"
-                      fill="rgb(0, 0, 0)"
-                      height={24}
-                      role="img"
-                      viewBox="0 0 24 24"
-                      width={24}
-                    >
-                      <title>Comment</title>
-                      <path
-                        d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                      />
-                    </svg>
-                  </div>
-                  <div className="share cursor-pointer py-1">
-                    <svg
-                      aria-label="Share Post"
-                      className="mr-2 "
-                      color="rgb(0, 0, 0)"
-                      fill="rgb(0, 0, 0)"
-                      height={24}
-                      role="img"
-                      viewBox="0 0 24 24"
-                      width={24}
-                    >
-                      <title>Share Post</title>
-                      <line
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        x1={22}
-                        x2="9.218"
-                        y1={3}
-                        y2="10.083"
-                      />
-                      <polygon
-                        fill="none"
-                        points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"
-                        stroke="currentColor"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div className="save cursor-pointer py-1 p-1">
-                  <svg
-                    aria-label="Save"
-                    className="x1lliihq x1n2onr6"
-                    color="rgb(0, 0, 0)"
-                    fill="rgb(0, 0, 0)"
-                    height={24}
-                    role="img"
-                    viewBox="0 0 24 24"
-                    width={24}
-                  >
-                    <title>Save</title>
-                    <polygon
-                      fill="none"
-                      points="20 21 12 13.44 4 21 4 3 20 3 20 21"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div className='flex flex-col py-2 -space-y-2'>
-                <div className='px-4'>
-                  <h1 className='font-medium cursor-pointer inline-block'>{postDetails?.data.data.likes.length} likes</h1>
-                </div>
-                <div className='px-4'>
-                  <p className='font-light text-xs text-gray-500 cursor-pointer inline-block '>1 DAY AGO</p>
-                </div>
-              </div>
-
-              <form action="">
-                <div className="border-t flex items-center px-4 py-3">
-                  <div className="w-6 h-6 mr-1 cursor-pointer">
-                    <svg
-                      aria-label="Emoji"
-                      className="w-full h-full"
-                      color="rgb(115, 115, 115)"
-                      fill="rgb(115, 115, 115)"
-                      role="img"
-                      viewBox="0 0 24 24"
-                      width={32}
-                    >
-                      <title>Emoji</title>
-                      <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" />
-                    </svg>
-                  </div>
-                  <input
-                   className="text-sm h-5 outline-none bg-transparent flex-grow mx-2"
-                    aria-label="Add a comment..."
-                     placeholder="Add a comment..."
-                     name="text"
-                     ref={textInputElement}
-                      />
-
-                  <button onClick={handleSubmit} className="text-blue-400 hover:text-blue-800 font-medium">Post</button>
-                  {isCreateCommentError && (
-                <div className='text-sm font-medium text-red-600 pt-2'>
-                  <p>{createCommentError.response.data.error}</p>
-                </div>
-              )}
-                </div>
-              </form>
+                                        </div>
 
 
 
-            </div>
-          </div>
+                                        {postDetails?.data.data?.comments ?
+                                             <>
+                                                  {postDetails?.data.data?.comments.slice().reverse().map((comment) => (
+                                                       <div className='comment flex mx-4'>
+                                                            <div className="img flex-shrink-0 w-8 h-8 bg-gray-400 rounded-full"
+                                                                 style={{
+                                                                      backgroundImage: `url("${comment.owner.profile?.picture}"), url("${fallbackImage}")`,
+                                                                      backgroundPosition: 'center',
+                                                                      backgroundSize: 'cover',
+                                                                      backgroundRepeat: 'no-repeat',
+                                                                 }}>
+                                                            </div>
+                                                            <div className="content flex flex-col pt-1 pl-3">
+                                                                 <div className='leading-5'>
+                                                                      <span className='font-medium text-black hover:text-gray-400 cursor-pointer text-sm'>{comment.owner.username}</span>
+                                                                      <span className='text-sm pl-2 tracking-tight'>{comment.text}</span>
+                                                                 </div>
+                                                                 <div className="time flex gap-3 pt-1">
+                                                                      <h1 className='text-xs text-gray-500'>{moment(comment.createdAt).fromNow()}</h1>
+                                                                      <button className='text-xs font-medium text-gray-500'>Reply</button>
+                                                                 </div>
+                                                            </div>
+                                                            <div className='mt-2 comment-like h-full p-1'>
+                                                                 <svg aria-label="Like" class="" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="12" role="img" viewBox="0 0 24 24" width="12"><title>Like</title><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+                                                            </div>
+
+                                                       </div>
+                                                  ))}
+                                             </> : null}
+
+                                   </div>
 
 
-        </div>}
-      </Dialog >
+                                   <div className="footer bg-white absolute bottom-0 w-[35%] border-t pt-2">
+                                        <div className="actions pl-4 pr-3  flex justify-between items-center">
+                                             <div className="flex items-center">
+                                                  <div onClick={likeSubmitHandler} className="like cursor-pointer py-1">
+                                                       <svg
+                                                            aria-label="Like"
+                                                            className="svg-icon mr-3"
+                                                            color={isCurrentUserLiked() ? "rgb(255, 0, 0)" : "rgb(38, 38, 38)"}
+                                                            fill={isCurrentUserLiked() ? "rgb(255, 0, 0)" : "rgb(38, 38, 38)"}
+                                                            height={24}
+                                                            role="img"
+                                                            viewBox="0 0 24 24"
+                                                            width={24}
+                                                       >
+                                                            <title>Like</title>
+                                                            <path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z" />
+                                                       </svg>
+                                                  </div>
+                                                  <div className="comment cursor-pointer py-1">
+                                                       <svg
+                                                            aria-label="Comment"
+                                                            className="svg-icon mr-2"
+                                                            color="rgb(0, 0, 0)"
+                                                            fill="rgb(0, 0, 0)"
+                                                            height={24}
+                                                            role="img"
+                                                            viewBox="0 0 24 24"
+                                                            width={24}
+                                                       >
+                                                            <title>Comment</title>
+                                                            <path
+                                                                 d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"
+                                                                 fill="none"
+                                                                 stroke="currentColor"
+                                                                 strokeLinejoin="round"
+                                                                 strokeWidth={2}
+                                                            />
+                                                       </svg>
+                                                  </div>
+                                                  <div className="share cursor-pointer py-1">
+                                                       <svg
+                                                            aria-label="Share Post"
+                                                            className="mr-2 "
+                                                            color="rgb(0, 0, 0)"
+                                                            fill="rgb(0, 0, 0)"
+                                                            height={24}
+                                                            role="img"
+                                                            viewBox="0 0 24 24"
+                                                            width={24}
+                                                       >
+                                                            <title>Share Post</title>
+                                                            <line
+                                                                 fill="none"
+                                                                 stroke="currentColor"
+                                                                 strokeLinejoin="round"
+                                                                 strokeWidth={2}
+                                                                 x1={22}
+                                                                 x2="9.218"
+                                                                 y1={3}
+                                                                 y2="10.083"
+                                                            />
+                                                            <polygon
+                                                                 fill="none"
+                                                                 points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"
+                                                                 stroke="currentColor"
+                                                                 strokeLinejoin="round"
+                                                                 strokeWidth={2}
+                                                            />
+                                                       </svg>
+                                                  </div>
+                                             </div>
+                                             <div className="save cursor-pointer py-1 p-1">
+                                                  <svg
+                                                       aria-label="Save"
+                                                       className="x1lliihq x1n2onr6"
+                                                       color="rgb(0, 0, 0)"
+                                                       fill="rgb(0, 0, 0)"
+                                                       height={24}
+                                                       role="img"
+                                                       viewBox="0 0 24 24"
+                                                       width={24}
+                                                  >
+                                                       <title>Save</title>
+                                                       <polygon
+                                                            fill="none"
+                                                            points="20 21 12 13.44 4 21 4 3 20 3 20 21"
+                                                            stroke="currentColor"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                       />
+                                                  </svg>
+                                             </div>
+                                        </div>
+                                        <div className='flex flex-col py-2 -space-y-2'>
+                                             <div className='px-4'>
+                                                  <h1 className='font-medium cursor-pointer inline-block'>{postDetails?.data.data.likes.length} likes</h1>
+                                             </div>
+                                             <div className='px-4'>
+                                                  <p className='font-light text-xs text-gray-500 cursor-pointer inline-block '>1 DAY AGO</p>
+                                             </div>
+                                        </div>
+
+                                        <form action="">
+                                             <div className="border-t flex items-center px-4 py-3">
+                                                  <div className="w-6 h-6 mr-1 cursor-pointer">
+                                                       <svg
+                                                            aria-label="Emoji"
+                                                            className="w-full h-full"
+                                                            color="rgb(115, 115, 115)"
+                                                            fill="rgb(115, 115, 115)"
+                                                            role="img"
+                                                            viewBox="0 0 24 24"
+                                                            width={32}
+                                                       >
+                                                            <title>Emoji</title>
+                                                            <path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z" />
+                                                       </svg>
+                                                  </div>
+                                                  <input
+                                                       className="text-sm h-5 outline-none bg-transparent flex-grow mx-2"
+                                                       aria-label="Add a comment..."
+                                                       placeholder="Add a comment..."
+                                                       name="text"
+                                                       ref={textInputElement}
+                                                  />
+
+                                                  <button onClick={handleSubmit} className="text-blue-400 hover:text-blue-800 font-medium">Post</button>
+                                                  {isCreateCommentError && (
+                                                       <div className='text-sm font-medium text-red-600 pt-2'>
+                                                            <p>{createCommentError.response.data.error}</p>
+                                                       </div>
+                                                  )}
+                                             </div>
+                                        </form>
+
+
+
+                                   </div>
+                              </div>
+
+
+                         </div>}
+               </Dialog >
           </>
      )
 }
