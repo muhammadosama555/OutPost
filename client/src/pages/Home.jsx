@@ -390,7 +390,9 @@ export default function Home() {
                 </div>
                 <div className="comment flex flex-col pt-1">
                   <span className='font-medium text-black hover:text-gray-400 cursor-pointer text-sm'>{postDetails?.data.data.owner?.username}</span>
-                  <span className='text-sm'>{postDetails?.data.data.content}</span>
+                  <span className='text-sm'>
+                    {postDetails?.data.data.content}
+                    </span>
                   <div className="time pt-[2px]">
                     <h1 className='text-xs text-gray-500'>{moment(postDetails?.data.data.createdAt).fromNow()}</h1>
                   </div>

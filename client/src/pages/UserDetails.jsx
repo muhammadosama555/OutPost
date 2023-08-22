@@ -21,6 +21,8 @@ export default function UserDetails() {
     const [openPostDetails, setOpenPostDetails] = useState(false);
     const [postId, setPostId] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [openFollowers, setOpenFollowers] = useState(false);
+    const [openFollowing, setOpenFollowing] = useState(false);
     const { currentUser } = useSelector(state => state.userSlice) || null
     const textInputElement = useRef();
     
@@ -90,6 +92,11 @@ export default function UserDetails() {
 //       const following = ['64aea2e6849f411f33d3c1aa'];
 // const userIdss = '64aea2e6849f411f33d3c1aa';
 // console.log(following.some(id => id === userIdss));
+
+const isCurrentUserFollowing = (followerId) => {
+  return currentUserDetails.data.data.following.some((followedUser) => followedUser._id === followerId);
+};
+
       const followUserHandler = (id) => {
 
         const data = {
@@ -127,11 +134,26 @@ export default function UserDetails() {
         setOpenPostDetails(false);
       };
 
+      const openFollowersHandler = () => {
+        setOpenFollowers(true);
+   };
+   const closeFollowersHandler = () => {
+        setOpenFollowers(false);
+   };
+
+   const openFollowingHandler = () => {
+        setOpenFollowing(true);
+   };
+   const closeFollowingHandler = () => {
+        setOpenFollowing(false);
+   };
+
     const fallbackImage = '/images/avatar.jpg';
 
     return (
         <>
             {isUserLoading ? <Loader /> : (
+              <>
                 <div className='flex justify-center h-screen w-[80%]'>
                     <div className='w-full mx-44'>
                         <div className='flex flex-col relative justify-center items-center'>
@@ -187,15 +209,15 @@ export default function UserDetails() {
 
                                 </div>
                                 <div className='flex flex-col'>
-                                    <div className='flex gap-3 pt-3'>
+                                    <div className='flex gap-3 pt-3' >
                                         <span className='font-medium'>{userDetails.data.data?.posts.length}</span>
                                         <h3 className='font-normal'>Posts</h3>
                                     </div>
-                                    <div className='flex gap-3'>
+                                    <div onClick={openFollowersHandler} className='flex gap-3'>
                                         <span className='font-medium'>{userDetails.data.data.followers.length}</span>
                                         <h3 className='font-normal'>followers</h3>
                                     </div>
-                                    <div className='flex gap-3 '>
+                                    <div onClick={openFollowingHandler} className='flex gap-3 '>
                                         <span className='font-medium'>{userDetails.data.data.following.length}</span>
                                         <h3 className='font-normal'>following</h3>
                                     </div>
@@ -246,6 +268,178 @@ export default function UserDetails() {
     </div>
                     </div>
                 </div>
+
+
+<Dialog open={openFollowers} onClose={closeFollowersHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh', }, }}>
+<div className='modal-container relative h-[440px]  w-[400px]'>
+     <div className='modal-content follwers flex items-center justify-between flex-col close-card bg-white'>
+          <div className="header w-full bg-white rounded-t-[14px] flex justify-between items-center py-3 px-2 border-b">
+               <div>
+               </div>
+               <div className="title flex items-center">
+                    <h1 className='font-bold'>Followers</h1>
+               </div>
+               <div onClick={closeFollowersHandler} className='cursor-pointer'>
+                    <svg aria-label="Close" className="" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="24" role="img" viewBox="0 0 24 24" width="24"
+                    >
+                         <title>Close</title>
+                         <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path>
+                    </svg>
+               </div>
+          </div>
+          <div className='bg-white w-full py-2 px-5'>
+               <div className="searchbar sticky z-10 flex items-center bg-gray-200 rounded-md">
+                    <input
+                         className="pl-4 pr-7 py-1 text-sm bg-gray-200 border w-full h-full rounded-md outline-none"
+                         type="text"
+                         placeholder="Search"
+                    // value={search}
+                    // onChange={handleSearchChange}
+                    />
+                    <div className="w-4 h-4 mr-2 rounded-full bg-[#b8b6b6] flex items-center justify-center cursor-pointer">
+                         {" "}
+                         <CloseOutlinedIcon style={{ fontSize: 12 }} />
+                    </div>
+               </div>
+          </div>
+          <div className="body w-full h-[346px] overflow-hidden flex-grow-1 flex flex-col">
+               <div className='followers-wrapper px-5 overflow-y-auto'>
+                {userDetails.data.data?.followers.map((follower)=>
+                <div key={follower._id} className='card py-2 flex items-center justify-between gap-2'>
+                <div className='flex items-center gap-3'>
+                     <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                          style={{
+                               backgroundImage: `url("${follower?.profile?.picture}"), url("${fallbackImage}")`,
+                               backgroundPosition: 'center',
+                               backgroundSize: 'cover',
+                               backgroundRepeat: 'no-repeat',
+                          }}>
+
+                     </div>
+                     <div className='flex -space-y-1 flex-col'>
+                          <div className='flex gap-1'>
+                               <h2 className='text-sm font-bold cursor-pointer'>{follower.firstName} {follower.lastName}</h2><span className='text-sm'>•</span>
+                               {currentUserDetails.data.data._id !== follower._id ?
+                               <span 
+                               onClick={() => {
+                                if (isCurrentUserFollowing(follower._id)) {
+                                  unfollowUserHandler(follower._id);
+                                } else {
+                                  followUserHandler(follower._id);
+                                }
+                              }}
+                                className='text-sm font-medium text-blue-500 hover:cursor-pointer hover:text-blue-900'>
+                                    {isCurrentUserFollowing(follower._id) ? "Following" : "Follow"}
+                                  </span> : null}
+                          </div>
+                          <div className='flex gap-1 text-sm text-gray-500'>
+                               <div className='status'>
+                                    <h2>{follower.username}</h2>
+                               </div>
+                          </div>
+                     </div>
+                </div>
+                <div>
+                     <button className='px-3 py-1 bg-gray-200 text-black hover:bg-gray-300 rounded-md text-sm font-medium'>Remove</button>
+                </div>
+           </div>
+                )}
+                    
+
+                   
+                   
+                   
+                    
+                   
+                   
+               </div>
+          </div>
+     </div>
+</div>
+</Dialog>
+
+
+<Dialog open={openFollowing} onClose={closeFollowingHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh', }, }}>
+<div className='modal-container relative h-[440px]  w-[400px]'>
+     <div className='modal-content follwers flex items-center justify-between flex-col close-card bg-white'>
+          <div className="header w-full bg-white rounded-t-[14px] flex justify-between items-center py-3 px-2 border-b">
+               <div>
+               </div>
+               <div className="title flex items-center">
+                    <h1 className='font-bold'>Following</h1>
+               </div>
+               <div onClick={closeFollowingHandler} className='cursor-pointer'>
+                    <svg aria-label="Close" className="" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height="24" role="img" viewBox="0 0 24 24" width="24"
+                    >
+                         <title>Close</title>
+                         <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path>
+                    </svg>
+               </div>
+          </div>
+          <div className='bg-white w-full py-2 px-5'>
+               <div className="searchbar sticky z-10 flex items-center bg-gray-200 rounded-md">
+                    <input
+                         className="pl-4 pr-7 py-1 text-sm bg-gray-200 border w-full h-full rounded-md outline-none"
+                         type="text"
+                         placeholder="Search"
+                    // value={search}
+                    // onChange={handleSearchChange}
+                    />
+                    <div className="w-4 h-4 mr-2 rounded-full bg-[#b8b6b6] flex items-center justify-center cursor-pointer">
+                         {" "}
+                         <CloseOutlinedIcon style={{ fontSize: 12 }} />
+                    </div>
+               </div>
+          </div>
+          <div className="body w-full h-[346px] overflow-hidden flex-grow-1 flex flex-col">
+               <div className='followers-wrapper px-5 overflow-y-auto'>
+               {userDetails.data.data?.following.map((follow)=>
+                    <div className='card py-2 flex items-center justify-between gap-2'>
+                         <div className='flex items-center gap-3'>
+                              <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
+                                   style={{
+                                    backgroundImage: `url("${follow?.profile?.picture}"), url("${fallbackImage}")`,
+                                        backgroundPosition: 'center',
+                                        backgroundSize: 'cover',
+                                        backgroundRepeat: 'no-repeat',
+                                   }}>
+
+                              </div>
+                              <div className='flex -space-y-1 flex-col'>
+                                   <div className='flex gap-1'>
+                                        <h2 className='text-sm font-bold cursor-pointer'>{follow.firstName} {follow.lastName}</h2>
+                                   </div>
+                                   <div className='flex gap-1 text-sm text-gray-500'>
+                                        <div className='status'>
+                                             <h2>{follow.username}</h2>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                         <div>
+                         {currentUserDetails.data.data._id !== follow._id ?
+                              <button
+                              onClick={() => {
+                                if (isCurrentUserFollowing(follow._id)) {
+                                  unfollowUserHandler(follow._id);
+                                } else {
+                                  followUserHandler(follow._id);
+                                }
+                              }}
+                                   className="px-4 py-1 bg-gray-200 text-black hover:bg-gray-300 transition duration-500 ease-in-out rounded-md text-sm font-medium">
+                                  
+                                   {isCurrentUserFollowing(follow._id) ? "Following" : "follow"}
+                              </button> : null }
+                         </div>
+                    </div>
+                     )}
+
+               </div>
+          </div>
+     </div>
+</div>
+</Dialog>
+</>
 
             )}
             <div className='fixed hidden inset-0 z-40 right-0 left-0 top-0 flex items-center justify-center w-screen h-screen'>
@@ -302,6 +496,9 @@ export default function UserDetails() {
                 </div>
 
             </div>
+
+
+          
 
             <Dialog open={openPostDetails} onClose={closePostDetailsHandler} PaperProps={{ style: { borderRadius: '14px', maxWidth: '100vw', maxHeight: '100vh' }, }}>
         {isPostLoading ? <Loader/> :

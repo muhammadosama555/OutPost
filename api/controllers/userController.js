@@ -38,7 +38,7 @@ exports.getAllUser = async (req, res) => {
     query = { username: { $regex: search, $options: 'i' } };
   }
     let users = await User.find(query)
-    .populate('followers following','username profile.picture')
+    .populate('followers following','username firstName lastName profile.picture')
     .populate('posts')
     .populate({
       path: 'posts',
@@ -90,7 +90,7 @@ exports.getAllUser = async (req, res) => {
 //access  private
 exports.getUser=asyncHandler(async(req,res)=>{
   const user= await User.findById(req.params.id)
-  .populate('followers following','username profile.picture')
+  .populate('followers following','username firstName lastName profile.picture')
   .populate('posts')
   .populate({
     path: 'posts',

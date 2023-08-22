@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ThumbUpOutlined, SendOutlined } from '@mui/icons-material'
 import { Link } from "react-router-dom";
 import { useCreateComment } from "../apiCalls/commentApiCalls";
@@ -14,6 +14,7 @@ const moment = require('moment');
 export default function Posts({ post, openPostDetailsHandler }) {
 
   const { currentUser } = useSelector((state) => state.userSlice);
+  const [showMoreContent,setShowMoreContent] = useState(false)
 
   const token = currentUser.token;
 
@@ -58,6 +59,14 @@ export default function Posts({ post, openPostDetailsHandler }) {
       textInputElement.current.value = "";
     }
   }, [createCommentIsSuccess]);
+
+  const showMoreContentHandler = () => {
+    setShowMoreContent(true)
+  }
+
+  const showLessContentHandler = () => {
+    setShowMoreContent(false)
+  }
 
   const fallbackImage = '/images/avatar.jpg';
 
@@ -213,12 +222,24 @@ export default function Posts({ post, openPostDetailsHandler }) {
           <div className="pt-3">
             <h2 className="text-sm">
               <span className="text-sm font-medium">{post.owner.username} </span>
-              {post.content}
+              {showMoreContent ? post.content : post.content.split(' ').slice(0, 2).join(' ')}
+              {post.content.split(' ').length > 2 && !showMoreContent ? "....." : null}
             </h2>
           </div>
-          <div className="pt-5">
-            <span className="text-sm text-gray-500">more</span>
-          </div>
+          {post.content.split(' ').length > 2 ? (
+  showMoreContent ? (
+    <div className="pt-5">
+      <span onClick={showLessContentHandler} className="cursor-pointer text-sm text-gray-500">less</span>
+    </div>
+  ) : (
+    <div className="pt-5">
+      <span onClick={showMoreContentHandler} className="cursor-pointer text-sm text-gray-500">more</span>
+    </div>
+  )
+) : null }
+
+          
+        
           <div className="pt-1">
             <span onClick={()=>openPostDetailsHandler(post._id)} className="cursor-pointer text-sm text-gray-500">
               View all {post.comments.length} comments
@@ -264,7 +285,7 @@ export default function Posts({ post, openPostDetailsHandler }) {
 
             {post.comments ?
               <>
-                {post.comments.slice(Math.max(post.comments.length - 3, 0)).reverse().map((comment) => (
+                {post.comments.slice(Math.max(post.comments.length - 2, 0)).reverse().map((comment) => (
                   <div key={comment._id} className="comment mt-6 flex items-start">
                     <div className="user-image border-2 border-pink-400 w-10 h-10 rounded-full flex items-center justify-center mr-4">
                       <div className="border border-gray-300 w-8 h-8 rounded-full"

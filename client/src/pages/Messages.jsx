@@ -85,9 +85,9 @@ export default function Messages() {
 
       // Update the conversation messages in the cache with the new message
       queryClient.setQueryData(["conversationMessages", conversationId, token], (oldData) => ({
-        ...oldData,
-        data: { ...oldData.data, data: [...oldData.data.data, data] },
+        data: [...oldData.data, data], // Add the new message to the array
       }));
+      
     };
 
     socket.on("message", handleIncomingMessage);
