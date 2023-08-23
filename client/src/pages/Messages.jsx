@@ -31,8 +31,8 @@ export default function Messages() {
   const token = currentUser.token
 
   const { isLoading: isUsersLoading, data: users } = useGetUsers(token, search);
-  const { isLoading: isConversationsLoading, data: conversations } = useGetConversations(token)
-  const { data: conversation } = useGetConversation(conversationId, token)
+  const { isLoading: isConversationsLoading, data: conversations } = useGetConversations()
+  const { data: conversation } = useGetConversation(conversationId)
   const { isLoading: isConversationMessagesLoading, data: conversationMessages } = useGetConversationsMessages(
     conversationId,
     {
@@ -69,7 +69,6 @@ export default function Messages() {
     // Extract _id values from selected members and create an array of memberIds
   const memberIds = selectedMembers.map(member => member._id);
     const data = {
-      token: token,
       members: memberIds
     };
     createConversationMutate(data);
