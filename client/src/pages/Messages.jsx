@@ -35,7 +35,6 @@ export default function Messages() {
   const { data: conversation } = useGetConversation(conversationId, token)
   const { isLoading: isConversationMessagesLoading, data: conversationMessages } = useGetConversationsMessages(
     conversationId,
-    token,
     {
       initialData: { data: [] },
     }
@@ -84,10 +83,10 @@ export default function Messages() {
       console.log("Received message from server:", data);
 
       // Update the conversation messages in the cache with the new message
-      queryClient.setQueryData(["conversationMessages", conversationId, token], (oldData) => ({
-        data: [...oldData.data, data], // Add the new message to the array
+      queryClient.setQueryData(["conversationMessages", conversationId], (oldData) => ({
+        ...oldData,
+        data: { ...oldData.data, data: [...oldData.data.data, data] },
       }));
-      
     };
 
     socket.on("message", handleIncomingMessage);
@@ -104,7 +103,6 @@ export default function Messages() {
     const text = textInputElement.current?.value.trim();
     if (text) {
       const data = {
-        token: token,
         text: text,
         sender: userId,
         conversation: conversationId,
