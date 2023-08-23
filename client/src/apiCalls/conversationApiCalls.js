@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { API_BASE_URL } from "../config";
 
-
+// get conversations
 
 const getConversations = async (token) => {
     return axios.get(`${API_BASE_URL}/conversations`, {
