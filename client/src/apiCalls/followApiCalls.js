@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { API_BASE_URL } from "../config";
+import { store } from "../redux/store";
 
 
 
@@ -10,9 +11,11 @@ import { API_BASE_URL } from "../config";
 
 export const followUser = async (followData) => {
   console.log(followData)
+  const currentUser = store.getState().userSlice.currentUser;
+  const token = currentUser ? currentUser.token : null;
   return axios.post(`${API_BASE_URL}/follows`, followData, {
     headers: {
-      authorization: "Bearer " + followData.token,
+      authorization: "Bearer " + token,
     },
   });
 };
@@ -32,9 +35,11 @@ export const useFollowUser = () => {
 
 export const unFollowUser = async (unFollowData) => {
   console.log(unFollowData)
+  const currentUser = store.getState().userSlice.currentUser;
+  const token = currentUser ? currentUser.token : null;
   return axios.delete(`${API_BASE_URL}/follows/unfollow/${unFollowData.followingId}`, {
     headers: {
-      authorization: "Bearer " + unFollowData.token,
+      authorization: "Bearer " + token,
     },
   });
 };

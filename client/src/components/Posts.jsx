@@ -16,8 +16,6 @@ export default function Posts({ post, openPostDetailsHandler }) {
   const { currentUser } = useSelector((state) => state.userSlice);
   const [showMoreContent,setShowMoreContent] = useState(false)
 
-  const token = currentUser.token;
-
   const isCurrentUserLiked = () => {
     return post.likes.some((like) => like._id === currentUser.data._id);
   };
@@ -37,7 +35,6 @@ export default function Posts({ post, openPostDetailsHandler }) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = {
-      token: token,
       text: textInputElement.current?.value,
       postId: post._id
     };
@@ -47,7 +44,6 @@ export default function Posts({ post, openPostDetailsHandler }) {
   const likeSubmitHandler = (event) => {
     event.preventDefault();
     const data = {
-      token: token,
       postId: post._id
     };
     likePostMutate(data);

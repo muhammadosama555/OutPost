@@ -13,10 +13,9 @@ export default function EditProfile() {
 
     const { currentUser } = useSelector(state => state.userSlice) || null
     const userId = currentUser.data._id
-    const token = currentUser.token
 
 
-    const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
+    const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId)
     const { mutate: updateUserImageMutate, isLoading: isUpdateUserImageLoading, isError: isUpdateUserImageError, error: updateUserImageError, } = useUpdateUserImage();
 
     const {
@@ -29,7 +28,6 @@ export default function EditProfile() {
       const handleSubmit = (event) => {
         event.preventDefault();
         const data = {
-          token: token,
           bio: bioInputElement.current?.value,
           contact: contactInputElement.current?.value,
           userId: userId
@@ -40,7 +38,6 @@ export default function EditProfile() {
 
       const handleFileChange = (e) => {
         const imageData = {
-          token: token,
           userId: userId,
           image: e.target.files[0],
         };

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { API_BASE_URL } from "../config";
+import { store } from "../redux/store";
 
 // get posts
 
@@ -14,8 +15,10 @@ const getPosts = async (token) => {
     });
   };
   
-  export const useGetPosts = (token) => {
-    return useQuery(["posts",token], () => getPosts(token));
+  export const useGetPosts = () => {
+    const currentUser = store.getState().userSlice.currentUser;
+    const token = currentUser ? currentUser.token : null;
+    return useQuery(["posts"], () => getPosts(token));
   };
 
 // get post details
@@ -28,10 +31,12 @@ const getPostDetails = async (postId,token) => {
     });
   };
   
-  export const useGetPostDetails = (postId,token) => {
-    return useQuery(["post",postId,token], () => {
+  export const useGetPostDetails = (postId) => {
+    const currentUser = store.getState().userSlice.currentUser;
+    const token = currentUser ? currentUser.token : null;
+    return useQuery(["post",postId], () => {
       // Only call the API when conversationId is not null
-      if (postId !== null) {
+      if (postId !== null && token) {
         return getPostDetails(postId, token);
       }
     });
@@ -41,9 +46,11 @@ const getPostDetails = async (postId,token) => {
 
 export const createPost = async (postData) => {
   console.log(postData)
+  const currentUser = store.getState().userSlice.currentUser;
+  const token = currentUser ? currentUser.token : null;
   return axios.post(`${API_BASE_URL}/posts`, postData, {
     headers: {
-      authorization: "Bearer " + postData.token,
+      authorization: "Bearer " + token,
       "Content-Type": "multipart/form-data",
     },
   });
@@ -65,9 +72,11 @@ export const useCreatePost = () => {
 
 export const likePost = async (postData) => {
   console.log(postData)
+  const currentUser = store.getState().userSlice.currentUser;
+  const token = currentUser ? currentUser.token : null;
   return axios.post(`${API_BASE_URL}/posts/${postData.postId}/like`, postData, {
     headers: {
-      authorization: "Bearer " + postData.token,
+      authorization: "Bearer " + token,
     },
   });
 };

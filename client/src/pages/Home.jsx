@@ -21,15 +21,14 @@ export default function Home() {
   const textInputElement = useRef();
 
   const userId = currentUser.data._id
-  const token = currentUser.token
 
 
 
-  const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
-  const { isLoading: isUsersLoading, data: users } = useGetUsers(token);
+  const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId)
+  const { isLoading: isUsersLoading, data: users } = useGetUsers();
   console.log(userDetails?.data)
-  const { isLoading: isPostLoading, data: postDetails } = useGetPostDetails(postId, token)
-  const { isLoading: isPostsLoading, data: posts } = useGetPosts(token)
+  const { isLoading: isPostLoading, data: postDetails } = useGetPostDetails(postId)
+  const { isLoading: isPostsLoading, data: posts } = useGetPosts()
   const {
     mutate: createCommentMutate,
     isError: isCreateCommentError,
@@ -52,7 +51,6 @@ export default function Home() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = {
-      token: token,
       text: textInputElement.current?.value,
       postId: postId
     };
@@ -64,7 +62,6 @@ export default function Home() {
   const likeSubmitHandler = (event) => {
     event.preventDefault();
     const data = {
-      token: token,
       postId: postId
     };
     likePostMutate(data);
@@ -74,7 +71,6 @@ export default function Home() {
   const followUserHandler = (id) => {
 
     const data = {
-      token: token,
       followingId: id
     };
     followUserMutate(data);
@@ -405,7 +401,7 @@ export default function Home() {
               {postDetails?.data.data?.comments ?
               <>
                 {postDetails?.data.data?.comments.slice().reverse().map((comment) => (
-              <div className='comment flex mx-4'>
+              <div key={comment._id} className='comment flex mx-4'>
                 <div className="img flex-shrink-0 w-8 h-8 bg-gray-400 rounded-full"
                   style={{
                     backgroundImage: `url("${comment.owner.profile?.picture}"), url("${fallbackImage}")`,

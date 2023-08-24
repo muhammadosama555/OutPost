@@ -26,10 +26,9 @@ export default function Profile({ }) {
 
      const { currentUser } = useSelector(state => state.userSlice) || null
      const userId = currentUser.data._id
-     const token = currentUser.token
 
-     const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
-     const { isLoading: isPostLoading, data: postDetails } = useGetPostDetails(postId, token)
+     const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId)
+     const { isLoading: isPostLoading, data: postDetails } = useGetPostDetails(postId)
      const {
           mutate: createCommentMutate,
           isError: isCreateCommentError,
@@ -54,7 +53,6 @@ export default function Profile({ }) {
      const handleSubmit = (event) => {
           event.preventDefault();
           const data = {
-               token: token,
                text: textInputElement.current?.value,
                postId: postId
           };
@@ -66,7 +64,6 @@ export default function Profile({ }) {
      const likeSubmitHandler = (event) => {
           event.preventDefault();
           const data = {
-               token: token,
                postId: postId
           };
           likePostMutate(data);
@@ -80,7 +77,6 @@ export default function Profile({ }) {
     const followUserHandler = (id) => {
 
       const data = {
-        token: token,
         followingId: id
       };
       followUserMutate(data);
@@ -90,7 +86,6 @@ export default function Profile({ }) {
     const unfollowUserHandler = (id) => {
 
       const data = {
-        token: token,
         followingId: id
       };
       unFollowUserMutate(data);
@@ -136,11 +131,6 @@ export default function Profile({ }) {
      const closeFollowingHandler = () => {
           setOpenFollowing(false);
      };
-
-
-     
-
-
 
 
 
@@ -237,7 +227,7 @@ export default function Profile({ }) {
                                         {Array.from({ length: Math.ceil(userDetails.data.data?.posts.length / 3) }, (_, index) => (
                                              <div className={`flex items-stretch box-border flex-row flex-shrink-0 ${index < Math.ceil(userDetails.data.data?.posts.length / 3) - 1 && 'mb-2'}`} key={index}>
                                                   {userDetails.data.data?.posts.slice(index * 3, (index + 1) * 3).map((post) => (
-                                                       <div onClick={() => openPostDetailsHandler(post._id)} className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
+                                                       <div key={post._id} onClick={() => openPostDetailsHandler(post._id)} className='post-box mr-[6px] cursor-pointer h-96 w-[32%] rounded-[5px] bg-cover bg-center bg-no-repeat'
                                                             style={{ backgroundImage: `url(${post.imageUrl})` }}
                                                             key={post._id}>
                                                        </div>
@@ -387,7 +377,7 @@ export default function Profile({ }) {
                                         <div className="body w-full h-[346px] overflow-hidden flex-grow-1 flex flex-col">
                                              <div className='followers-wrapper px-5 overflow-y-auto'>
                                              {userDetails.data.data?.following.map((follow)=>
-                                                  <div className='card py-2 flex items-center justify-between gap-2'>
+                                                  <div key={follow._id} className='card py-2 flex items-center justify-between gap-2'>
                                                        <div className='flex items-center gap-3'>
                                                             <div className='img cursor-pointer w-10 h-10 bg-gray-300 rounded-full '
                                                                  style={{
@@ -508,7 +498,7 @@ export default function Profile({ }) {
                                         {postDetails?.data.data?.comments ?
                                              <>
                                                   {postDetails?.data.data?.comments.slice().reverse().map((comment) => (
-                                                       <div className='comment flex mx-4'>
+                                                       <div key={comment._id} className='comment flex mx-4'>
                                                             <div className="img flex-shrink-0 w-8 h-8 bg-gray-400 rounded-full"
                                                                  style={{
                                                                       backgroundImage: `url("${comment.owner.profile?.picture}"), url("${fallbackImage}")`,

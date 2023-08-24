@@ -35,13 +35,11 @@ export default function SideBar() {
 
 
   const userId = currentUser.data._id;
-  const token = currentUser.token;
 
   const { isLoading: isUserLoading, data: userDetails, isFetching } = useGetUserDetails(
-    userId,
-    token
+    userId
   );
-  const { isLoading: isUsersLoading, data: users } = useGetUsers(token, search);
+  const { isLoading: isUsersLoading, data: users } = useGetUsers(search);
   const {
     mutate: readAllNotificationsMutate,
   } = useReadAllNotifications();
@@ -68,13 +66,7 @@ export default function SideBar() {
 
   const readNotificationsHandler = () => {
 
-    const data = {
-      token: token,
-    };
-    readAllNotificationsMutate(data);
-
-
-
+    readAllNotificationsMutate();
   };
 
   const toggleSidebarHandler = () => {
@@ -215,8 +207,10 @@ export default function SideBar() {
 
 
 
-  const time = notificationsArray.map((notificationGroup) => (
-    moment(notificationGroup.createdAt).fromNow()
+  const time = notificationsArray.map((notificationGroup,index) => (
+    <span key={index}>
+    {moment(notificationGroup.createdAt).fromNow()}
+    </span>
   ))
 
 console.log(notificationsArray)

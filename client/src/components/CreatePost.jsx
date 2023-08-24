@@ -15,7 +15,6 @@ export default function CreatePost({closeCreatePostHandler}) {
   const { currentUser } = useSelector((state) => state.userSlice);
 
   const userId = currentUser.data._id;
-  const token = currentUser.token;
 
   const [toggle, setToggle] = useState(false);
   const [imageFile, setImageFile] = useState(null);
@@ -24,7 +23,6 @@ export default function CreatePost({closeCreatePostHandler}) {
 
   const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(
     userId,
-    token
   );
 
   const contentInputElement = useRef();
@@ -41,7 +39,6 @@ export default function CreatePost({closeCreatePostHandler}) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = {
-      token: token,
       content: contentInputElement.current?.value,
       image: imageInputElement.current?.files[0],
     };

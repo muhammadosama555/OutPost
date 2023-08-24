@@ -30,7 +30,7 @@ export default function Messages() {
   const userId = currentUser.data._id
   const token = currentUser.token
 
-  const { isLoading: isUsersLoading, data: users } = useGetUsers(token, search);
+  const { isLoading: isUsersLoading, data: users } = useGetUsers(search);
   const { isLoading: isConversationsLoading, data: conversations } = useGetConversations()
   const { data: conversation } = useGetConversation(conversationId)
   const { isLoading: isConversationMessagesLoading, data: conversationMessages } = useGetConversationsMessages(

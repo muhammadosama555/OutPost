@@ -9,10 +9,9 @@ export default function Navbar() {
   const { currentUser } = useSelector(state => state.userSlice)
 
   const userId = currentUser.data._id
-  const token = currentUser.token
 
  
-  const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId, token)
+  const { isLoading: isUserLoading, data: userDetails } = useGetUserDetails(userId)
 
 
 

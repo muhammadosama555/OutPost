@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { API_BASE_URL } from "../config";
+import { store } from "../redux/store";
 
 
 
@@ -10,9 +11,11 @@ import { API_BASE_URL } from "../config";
 
 export const createComment = async (commentData) => {
   console.log(commentData)
+  const currentUser = store.getState().userSlice.currentUser;
+  const token = currentUser ? currentUser.token : null;
   return axios.post(`${API_BASE_URL}/comments`, commentData, {
     headers: {
-      authorization: "Bearer " + commentData.token,
+      authorization: "Bearer " + token,
     },
   });
 };
