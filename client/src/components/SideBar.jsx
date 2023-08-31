@@ -14,7 +14,9 @@ import useOutsideClick from "../hooks/useOutsideClick";
 export default function SideBar() {
 
   const [openSearch, setOpenSearch] = useState(false);
+  const [clickedFromSearchButton, setClickedFromSearchButton] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
+  const [clickedFromNotificationButton, setClickedFromNotificationButton] = useState(false);
   const [openCreatePost, setOpenCreatePost] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const [search, setSearch] = useState("");
@@ -24,10 +26,10 @@ export default function SideBar() {
   const searchRef = useRef(null);
   const notificationRef = useRef(null);
 
-
-
   const navigate = useNavigate()
   const dispatch = useDispatch();
+
+
 
   const { searchHistories } = useSelector((state) => state.searchSlice);
 
@@ -51,11 +53,20 @@ export default function SideBar() {
   });
 
   useOutsideClick(searchRef, () => {
-    if (openSearch) setOpenSearch(false);
+    if (openSearch && !clickedFromSearchButton) {
+      setOpenSearch(false);
+    }
+    setClickedFromSearchButton(false);
   });
+  
+
+
 
   useOutsideClick(notificationRef, () => {
-    if (openNotifications) setOpenNotifications(false);
+    if (openNotifications && !clickedFromNotificationButton) {
+      setOpenNotifications(false);
+    }
+    setClickedFromNotificationButton(false);
   });
 
 
@@ -75,18 +86,30 @@ export default function SideBar() {
     setOpenNotifications(false);
   };
 
+
   const openSearchHandler = () => {
-    setOpenSearch(!openSearch);
+    setClickedFromSearchButton(true);
+    setOpenSearch((prev) => !prev);
     setOpenNotifications(false);
-  };
+    if (openSearch) {
+      setToggleSidebar(!toggleSidebar);
+    }
+  }
+  
+
   const openNotificationsHandler = () => {
-    setOpenNotifications(!openNotifications);
+    setClickedFromNotificationButton(true);
+    setOpenNotifications((prev) => !prev);
     setOpenSearch(false);
     if (notificationCount > 0) {
       readNotificationsHandler();
     }
-
+    if ( openNotifications) {
+    setToggleSidebar(!toggleSidebar);
+    }
   };
+
+
   const openCreatePostHandler = () => {
     setOpenCreatePost(true);
   };
@@ -213,7 +236,11 @@ export default function SideBar() {
     </span>
   ))
 
-console.log(notificationsArray)
+console.log(clickedFromSearchButton)
+useEffect(() => {
+  console.log("OpenSearch state:", openSearch, toggleSidebar);
+}, [openSearch,toggleSidebar]);
+
 
   const fallbackImage = "/images/avatar.jpg";
 
@@ -250,14 +277,13 @@ console.log(notificationsArray)
               </Link>
             )}
 
-            <div
-              onClick={() => {
-                !openSearch ? setToggleSidebar(true) : setToggleSidebar(false);
-                openSearchHandler();
-              }}
+            <div onClick={openSearchHandler}
+              
               className="search flex items-center pt-1 gap-3  hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
             >
-              <div className="w-12 h-12 flex items-center justify-center">
+              <div 
+
+                 className="w-12 h-12 flex items-center justify-center">
                 <svg
                   aria-label="Search"
                   className="w-6 h-6 text-gray-600"
@@ -294,7 +320,6 @@ console.log(notificationsArray)
               ) : null}
             </div>
             <div
-              onClick={toggleSidebarHandler}
               className="Reels flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
             >
               <div className="w-12 h-12 flex items-center justify-center">
@@ -394,10 +419,7 @@ console.log(notificationsArray)
               </div>
             </Link>
             <div
-              onClick={() => {
-                !openNotifications ? setToggleSidebar(true) : setToggleSidebar(false);
-                openNotificationsHandler();
-              }}
+              onClick={openNotificationsHandler}
               className="Create flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
             >
               <div className="relative w-12 h-12 flex items-center justify-center">
@@ -477,7 +499,6 @@ console.log(notificationsArray)
               ) : null}
             </div>
             <div
-              onClick={toggleSidebarHandler}
               className="flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out">
               <div className="w-12 h-12 flex items-center justify-center">
                 <svg aria-label="Saved" className="w-6 h-6" color="rgb(0, 0, 0)" fill="rgb(0, 0, 0)" height={18} role="img" viewBox="0 0 24 24" width={18}>
