@@ -3,18 +3,20 @@ import { ThumbUpOutlined, SendOutlined } from '@mui/icons-material'
 import { Link } from "react-router-dom";
 import { useCreateComment } from "../apiCalls/commentApiCalls";
 import { useSelector } from "react-redux";
-import { useLikePost } from "../apiCalls/postApiCalls";
+import { useLikePost, useSharePost } from "../apiCalls/postApiCalls";
 import "../App.css";
+import { Dialog } from "@mui/material";
 
 
 const moment = require('moment');
-
 
 
 export default function Posts({ post, openPostDetailsHandler }) {
 
   const { currentUser } = useSelector((state) => state.userSlice);
   const [showMoreContent,setShowMoreContent] = useState(false)
+  const [shareLink,setShareLink] = useState(null)
+  const [linkPopup,setLinkPopup] = useState(false)
 
   const isCurrentUserLiked = () => {
     return post.likes.some((like) => like._id === currentUser.data._id);
@@ -30,6 +32,9 @@ export default function Posts({ post, openPostDetailsHandler }) {
   const {
     mutate: likePostMutate,
   } = useLikePost();
+  const {
+    mutate: sharePostMutate,
+  } = useSharePost();
 
 
   const handleSubmit = (event) => {
@@ -50,6 +55,19 @@ export default function Posts({ post, openPostDetailsHandler }) {
 
   };
 
+  const shareSubmitHandler = async (event) => {
+    event.preventDefault();
+    setLinkPopup(true)
+    const data = {
+      postId: post._id
+    };
+  
+    sharePostMutate(data,{
+      onSuccess: (data) => {
+        setShareLink(data.data.data.shareLink)
+      }})
+  };
+  
   useEffect(() => {
     if (createCommentIsSuccess) {
       textInputElement.current.value = "";
@@ -62,6 +80,14 @@ export default function Posts({ post, openPostDetailsHandler }) {
 
   const showLessContentHandler = () => {
     setShowMoreContent(false)
+  }
+
+  const openLinkPopupHandler = () => {
+    setLinkPopup(true)
+  }
+
+  const closeLinkPopupHandler = () => {
+    setLinkPopup(false)
   }
 
   const fallbackImage = '/images/avatar.jpg';
@@ -157,7 +183,7 @@ export default function Posts({ post, openPostDetailsHandler }) {
                   />
                 </svg>
               </div>
-              <div className="share cursor-pointer">
+              <div onClick={shareSubmitHandler} className="share cursor-pointer">
                 <svg
                   aria-label="Share Post"
                   className="x1lliihq x1n2onr6"
@@ -188,6 +214,14 @@ export default function Posts({ post, openPostDetailsHandler }) {
                   />
                 </svg>
               </div>
+              
+    <Dialog open={linkPopup} onClose={closeLinkPopupHandler} className="share-link">
+      <p>Share Link: {shareLink}</p>
+      <button onClick={() => navigator.clipboard.writeText(shareLink)}>
+        Copy Link
+      </button>
+    </Dialog>
+  
             </div>
             <div className="save cursor-pointer">
               <svg

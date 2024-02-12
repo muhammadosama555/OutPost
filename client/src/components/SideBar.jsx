@@ -319,6 +319,7 @@ useEffect(() => {
                 <p className=" w-full">Search</p>
               ) : null}
             </div>
+            <Link to="/reels">
             <div
               className="Reels flex items-center pt-1 gap-3 hover:bg-gray-100 rounded-lg mx-3 px-2 py-1 hover:font-bold hover:cursor-pointer hover:transition-all ease-in-out"
             >
@@ -383,6 +384,7 @@ useEffect(() => {
                 <p className=" w-full">Reels</p>
               ) : null}
             </div>
+            </Link>
             <Link to="/messages">
               <div
 

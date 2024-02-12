@@ -8,6 +8,8 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const sharp = require("sharp");
 const cloudinary = require("../config/cloudinary.js");
 const Notification = require('../models/Notification');
+const { v4: uuidv4 } = require('uuid');
+
 
 
 //------------------------------------------------------ Create Post  -----------------------------------------//
@@ -56,6 +58,7 @@ exports.createPost = asyncHandler(async (req, res, next) => {
     content: content,
     imageUrl: imageUrl,
     owner: userId, // Set the owner field to the userId
+    shareLink: uuidv4()
   });
   
   // Save the new post to the database
@@ -290,5 +293,38 @@ exports.likePost = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: updatedPost,
+  });
+});
+
+// Placeholder function for generating a share link
+function generateShareLink(shareLink) {
+  // You can customize the logic for generating a share link here
+  return `https://example.com/share/${shareLink}`;
+}
+
+// Share Post route
+exports.sharePost = asyncHandler(async (req, res, next) => {
+  const postId = req.params.id;
+
+  const post = await Post.findById(postId);
+
+  if (!post) {
+    return next(new ErrorResponse(`Post not found with id of ${postId}`, 404));
+  }
+
+  // Generate a new share link using uuid
+  post.shareLink = uuidv4();
+
+  // Save the updated post with the new share link
+  await post.save();
+
+  // Return the updated share link to the client
+  const shareLink = generateShareLink(post.shareLink);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      shareLink: shareLink,
+    },
   });
 });

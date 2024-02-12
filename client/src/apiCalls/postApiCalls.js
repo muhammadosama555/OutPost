@@ -90,3 +90,28 @@ export const useLikePost = () => {
     },
   });
 };
+
+  // share post
+
+export const sharePost = async (postData) => {
+  console.log(postData)
+  const currentUser = store.getState().userSlice.currentUser;
+  const token = currentUser ? currentUser.token : null;
+  return axios.post(`${API_BASE_URL}/posts/${postData.postId}/share`, postData, {
+    headers: {
+      authorization: "Bearer " + token,
+    },
+  });
+};
+
+export const useSharePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation(sharePost, {
+    onSuccess: (data) => {
+      console.log(data)
+      toast.success('Share Link is created Sucessfully!');
+      queryClient.invalidateQueries("post");
+      queryClient.invalidateQueries("posts"); 
+    },
+  });
+};

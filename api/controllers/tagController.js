@@ -35,6 +35,7 @@ exports.createTag = asyncHandler(async (req, res, next) => {
   });
 });
 
+
 //------------------------------------------------------ Update Tag  -----------------------------------------//
 //desc    Update Tag
 //route   /api/tags/:id
@@ -74,6 +75,7 @@ exports.getAllTags = asyncHandler(async (req, res, next) => {
     data: tags
   });
 });
+
 
 //------------------------------------------------------ Get Single Tag  -----------------------------------------//
 //desc    Get Single Tag

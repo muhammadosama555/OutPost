@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import { useLogin } from '../apiCalls/userApiCalls';
 import { Link } from 'react-router-dom';
+
 export default function Login() {
 
   const emailInputElement = useRef();
@@ -30,7 +31,7 @@ export default function Login() {
           <div className="left w-1/2">
             <div className="imgage h-full w-full"
               style={{
-                backgroundImage: `url("/images/profile.jpg")`,
+                backgroundImage: `url("/images/login.png")`,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',

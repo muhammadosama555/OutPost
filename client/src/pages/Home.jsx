@@ -5,13 +5,13 @@ import { useSelector } from 'react-redux'
 import { useGetUserDetails, useGetUsers } from '../apiCalls/userApiCalls'
 import Loader from '../components/Loader'
 import { useGetPostDetails, useGetPosts, useLikePost } from '../apiCalls/postApiCalls'
-import Status from '../components/Status';
 import Profile from './Profile';
 import Dialog from '@material-ui/core/Dialog';
 import "../App.css";
 import { useCreateComment } from '../apiCalls/commentApiCalls';
 import moment from 'moment';
 import { useFollowUser, useUnFollowUser } from '../apiCalls/followApiCalls';
+import Status from '../components/Status';
 
 export default function Home() {
 
@@ -112,7 +112,7 @@ export default function Home() {
   return (
     <>
       <div className='center-content'>
-        <Status />
+        <Status/>
 
         {isPostsLoading ? <Loader /> :
           (

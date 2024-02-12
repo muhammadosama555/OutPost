@@ -61,6 +61,11 @@ const userSchema = new Schema({
       ref: 'Notification'
     }
   ],
+  reels: [{
+  type: Schema.Types.ObjectId,
+  ref: 'Reel'
+}]
+
   
 }, { timestamps: true });
 

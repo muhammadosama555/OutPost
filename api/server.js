@@ -33,13 +33,13 @@ io.on("connection", (socket) => {
   console.log("New client connected");
 
   // Handle events (e.g., 'message') from the client
-  socket.on("message", (data) => {
+socket.on("message", (data) => {
     // Broadcast the received message to all connected clients
     io.emit("message", data);
   });
 
   // Handle disconnection
-  socket.on("disconnect", () => {
+socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
 });
@@ -56,7 +56,7 @@ const tags=require('./routes/tag.js')
 const media=require('./routes/media.js')
 const conversations=require('./routes/conversation.js')
 const messages=require('./routes/message.js')
-
+const reels=require('./routes/reel.js')
 
 
 
@@ -71,11 +71,12 @@ app.use('/api/media',media)
 app.use('/api/tags',tags)
 app.use('/api/conversations',conversations)
 app.use('/api/messages',messages)
+app.use('/api/reels',reels)
 
 //errorHandler
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`Socket.IO server running on port ${PORT}`);
+  console.log(`Socket.IO server running on port ${PORT}`)
 });
